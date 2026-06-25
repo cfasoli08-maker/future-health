@@ -35,19 +35,15 @@
 body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--body); min-height:100vh; font-size:18px; line-height:1.55; }
 
 /* LOGIN */
-#login-screen { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:200; padding:2rem; }
-.login-brand { font-family:'Cormorant Garamond',serif; font-size:3.2rem; font-weight:500; color:var(--charcoal); letter-spacing:0.04em; margin-bottom:0.2rem; text-align:center; }
-.login-sub { font-size:0.78rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--sage); margin-bottom:2.5rem; text-align:center; }
-.login-box { background:var(--surface); border-radius:20px; padding:2.5rem 2rem; width:100%; max-width:360px; box-shadow:var(--shadow); border:1px solid var(--border); }
+
 .field-label { display:block; font-size:0.8rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem; font-weight:600; }
 .field-input { width:100%; padding:1rem 1.1rem; border:1.5px solid var(--border); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:1.1rem; color:var(--charcoal); background:var(--surface2); outline:none; margin-bottom:1.2rem; transition:border-color 0.2s; }
 .field-input:focus { border-color:var(--sage); }
 .primary-btn { width:100%; padding:1.1rem; background:var(--sage); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; transition:opacity 0.2s; }
 .primary-btn:active { opacity:0.85; }
-.login-err { color:var(--warn); font-size:0.9rem; text-align:center; margin-top:0.8rem; display:none; }
 
 /* APP */
-#app { display:none; min-height:100vh; padding-bottom:5.5rem; }
+#app { display:block; min-height:100vh; padding-bottom:5.5rem; }
 .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0.9rem 1.25rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
 .topbar-brand { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:500; color:var(--charcoal); letter-spacing:0.04em; }
 .topbar-user { font-size:0.85rem; color:var(--muted); font-weight:400; }
@@ -266,20 +262,6 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--body)
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login-screen">
-  <div class="login-brand">Future Health</div>
-  <div class="login-sub">Your transformation, recorded</div>
-  <div style="font-size:0.82rem;color:var(--muted);font-weight:300;text-align:center;margin-bottom:2rem;">A private health portal by Future Health coaching</div>
-  <div class="login-box">
-    <label class="field-label" for="u">Your name</label>
-    <input class="field-input" type="text" id="u" placeholder="e.g. Valerie" autocomplete="off">
-    <label class="field-label" for="p">Access code</label>
-    <input class="field-input" type="password" id="p" placeholder="••••••••">
-    <button class="primary-btn" onclick="doLogin()">Open My Portal</button>
-    <div class="login-err" id="login-err">Name or code not recognised.</div>
-  </div>
-</div>
 
 <!-- APP -->
 <div id="app">
@@ -430,18 +412,27 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--body)
     <div class="supp-card">
       <div class="supp-header">
         <div class="supp-title">Morning — with breakfast</div>
-        <div class="supp-sub">Resuming June 5 on return home</div>
+        <div class="supp-sub">Take with your first meal</div>
       </div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Florastor — Saccharomyces boulardii</div><div class="supp-item-dose">250mg · 1 capsule with food</div></div></div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Enterogermina — Bacillus clausii</div><div class="supp-item-dose">Alternating 2.5B / 4B spores daily</div></div></div>
+      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Florastor — Saccharomyces boulardii</div><div class="supp-item-dose">1 capsule with food</div></div></div>
+      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Enterogermina — Bacillus clausii</div><div class="supp-item-dose">Alternating 2B / 4B spores daily</div></div></div>
       <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Vitamin C</div><div class="supp-item-dose">500mg · 1 chewable</div></div></div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Vitamin D3</div><div class="supp-item-dose">4000 IU — 4 x 1000 IU capsules</div></div></div>
+      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Vitamin D3</div><div class="supp-item-dose">4000 IU</div></div></div>
+    </div>
+    <div class="supp-card">
+      <div class="supp-header" style="background:var(--surface2);">
+        <div class="supp-title">Largest meal of the day</div>
+        <div class="supp-sub">ALA must be taken with food</div>
+      </div>
+      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Alpha lipoic acid</div><div class="supp-item-dose">600mg · 6 x 100mg capsules together</div></div></div>
+      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Vitamin C — afternoon</div><div class="supp-item-dose">500mg · 1 chewable</div></div></div>
     </div>
     <div class="supp-card">
       <div class="supp-header" style="background:var(--surface2);">
         <div class="supp-title">Evening — at bedtime</div>
       </div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Magnesium glycinate</div><div class="supp-item-dose">200mg · bisglycinate form · at bedtime</div></div></div>
+      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Magnesium glycinate</div><div class="supp-item-dose">200mg · bisglycinate form · non-negotiable</div></div></div>
+      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Melatonin — tapering</div><div class="supp-item-dose">~1.25mg · quarter dose · do not stop cold turkey</div></div></div>
     </div>
   </div>
 
@@ -583,7 +574,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--body)
   <div class="page" id="page-wins">
     <div class="wins-hero">
       <div style="font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;opacity:0.75;margin-bottom:0.4rem;">Valerie's results — Future Health protocol</div>
-      <div class="wins-big">15</div>
+      <div class="wins-big">18</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:400;font-style:italic;opacity:0.95;margin-top:0.2rem;text-align:center;">milestones since March 7, 2026</div>
       <div style="font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;opacity:0.8;margin-top:0.3rem;text-align:center;" id="wins-days-line">— days on protocol · 3 chronic medications eliminated</div>
       <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:0.85rem 1rem;margin-top:1rem;font-size:0.9rem;font-weight:300;line-height:1.6;">A 75-year-old woman came off insulin, blood pressure medication, and Ozempic in under 60 days through nutrition and supplementation alone. Her surgical team called her numbers remarkable.</div>
@@ -669,7 +660,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--body)
 
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbwnWfBbg4sCMdKWO_u6yDOZee7GUexUVBeOX-TcBfZ7sDy6Vu8ZWgm7_vgxDs_PCOSa7A/exec";
 
-// Fallback local auth — used if sheet is unreachable
+// Fallback local auth — kept for reference only, login removed
 const CLIENTS = {
   "valerie": { password: "future1", displayName: "Valerie" }
 };
@@ -692,36 +683,11 @@ async function sheetCall(payload) {
   }
 }
 
-async function doLogin() {
-  const name = document.getElementById('u').value.trim().toLowerCase();
-  const pass = document.getElementById('p').value.trim();
-  const btn  = document.querySelector('.primary-btn');
-  btn.textContent = 'Checking…';
-  btn.disabled = true;
-
-  // Try sheet auth first
-  const result = await sheetCall({ action: "auth_client", name, password: pass });
-
-  if (result.success) {
-    currentClientId = result.clientId || name;
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('topbar-user').textContent = result.displayName;
-    initApp();
-  } else if (CLIENTS[name] && CLIENTS[name].password === pass) {
-    // Fallback to local if sheet unreachable
-    currentClientId = name;
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('topbar-user').textContent = CLIENTS[name].displayName;
-    initApp();
-  } else {
-    document.getElementById('login-err').style.display = 'block';
-    btn.textContent = 'Open My Portal';
-    btn.disabled = false;
-  }
-}
-document.getElementById('p').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+// Login removed — app opens directly for Valerie
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('topbar-user').textContent = 'Valerie';
+  initApp();
+});
 
 async function initApp() {
   // Days on protocol — calculated live from March 7 2026
@@ -811,7 +777,14 @@ const logs = [
   { date:"May 29", glucose:8.0,  sys:128, dia:82,  weight:146.8, pulse:66   },
   { date:"May 31", glucose:6.3,  sys:122, dia:78,  weight:146.8, pulse:65   },
   { date:"Jun 2",  glucose:7.7,  sys:132, dia:79,  weight:null,  pulse:65   },
-  { date:"Jun 3",  glucose:null, sys:null,dia:null, weight:null,  pulse:61   }
+  { date:"Jun 3",  glucose:null, sys:null,dia:null, weight:null,  pulse:61   },
+  { date:"Jun 8",  glucose:9.1,  sys:138, dia:84,  weight:144.2, pulse:74   },
+  { date:"Jun 10", glucose:8.4,  sys:136, dia:82,  weight:143.8, pulse:72   },
+  { date:"Jun 14", glucose:9.8,  sys:133, dia:80,  weight:143.1, pulse:71   },
+  { date:"Jun 17", glucose:10.3, sys:140, dia:86,  weight:142.5, pulse:78   },
+  { date:"Jun 20", glucose:7.6,  sys:130, dia:79,  weight:142.0, pulse:69   },
+  { date:"Jun 22", glucose:6.8,  sys:127, dia:78,  weight:141.8, pulse:67   },
+  { date:"Jun 25", glucose:9.2,  sys:151, dia:93,  weight:141.6, pulse:82   }
 ];
 
 function initCharts() {
@@ -847,7 +820,20 @@ function initCharts() {
     { date:'May 29', val:14.1 },
     { date:'May 29', val:8.0  },
     { date:'May 31', val:6.3  },
-    { date:'Jun 2',  val:7.7  }
+    { date:'Jun 2',  val:7.7  },
+    { date:'Jun 8',  val:9.1  },
+    { date:'Jun 8',  val:6.4  },
+    { date:'Jun 10', val:8.4  },
+    { date:'Jun 10', val:5.9  },
+    { date:'Jun 14', val:9.8  },
+    { date:'Jun 14', val:6.2  },
+    { date:'Jun 17', val:10.3 },
+    { date:'Jun 17', val:7.1  },
+    { date:'Jun 20', val:8.1  },
+    { date:'Jun 20', val:7.6  },
+    { date:'Jun 22', val:6.8  },
+    { date:'Jun 25', val:9.2  },
+    { date:'Jun 25', val:6.1  }
   ];
   const total = glucoseReadings.length;
   const greenCount = glucoseReadings.filter(r=>r.val < 6.1).length;
@@ -1009,7 +995,10 @@ const wins = [
   { icon:"✅", title:"Off every medication — fully confirmed", desc:"Insulin. BP medication. Everything. Autonomous metabolic state. This is what healing looks like.", date:"May 26" },
   { icon:"🌟", title:"Blood sugar hit 5.7 mmol/L", desc:"Fully non-diabetic reading. Second occurrence logged. Your pancreas is doing exactly what a healthy pancreas does.", date:"May 28" },
   { icon:"❤️", title:"Surgery BP called perfect by surgical team", desc:"Knee replacement June 2. BP perfect throughout the procedure. Oxygen levels outstanding. No insulin required post-operatively.", date:"Jun 2" },
-  { icon:"🦵", title:"Knee replacement — flying colours", desc:"Robotic-assisted procedure completed successfully in Toronto. First pain-free knee in months. Body performed under maximum stress.", date:"Jun 2" }
+  { icon:"🦵", title:"Knee replacement — flying colours", desc:"Robotic-assisted procedure completed successfully in Toronto. First pain-free knee in months. Body performed under maximum stress.", date:"Jun 2" },
+  { icon:"🚶", title:"Walking outdoors post-surgery", desc:"Walker in hand, moving independently outside within 6 days of major surgery. Recovery is ahead of schedule.", date:"Jun 8" },
+  { icon:"🧠", title:"Root cause identified after 5 months", desc:"Diabetic autonomic neuropathy confirmed as the upstream driver of chronic gut symptoms. Cajal cell and vagal motor fiber damage from years of T2D now the active target. The protocol was working correctly all along.", date:"Jun 25" },
+  { icon:"⚡", title:"Alpha lipoic acid protocol begins", desc:"600mg daily confirmed. Direct nerve tissue support targeting autonomic recovery. The next layer of healing starts Friday June 27.", date:"Jun 27" }
 ];
 
 function initWins() {
