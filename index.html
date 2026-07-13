@@ -2,582 +2,334 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Future Health — Valerie</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500;600&family=Oswald:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;700&family=Oswald:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #F2EDE3;
-  --surface: #FFFFFF;
-  --surface2: #F7F3EB;
-  --border: #DDD5C0;
-  --sage: #2D5A2D;
-  --sage-bg: #E8F0E4;
-  --sage-dark: #1E3A1E;
-  --sage-mid: #4A8040;
-  --gold: #C87830;
-  --gold-bg: #F5ECD8;
-  --olive: #4A5C20;
-  --olive-mid: #6A8030;
-  --luff1: #1A5FA8;
-  --luff2: #1E78C8;
-  --charcoal: #1C1C1A;
-  --body: #302E28;
-  --muted: #7A7060;
-  --warn: #B85C3A;
-  --warn-bg: #FAF0EC;
-  --red: #8B2020;
-  --red-bg: #FDF0F0;
-  --radius: 16px;
-  --shadow: 0 2px 20px rgba(0,0,0,0.07);
+  --bg:#F5F2EA; --surface:#FFFFFF; --surface2:#FAF8F2;
+  --ink:#1C1C1A; --muted:#6B6B60;
+  --sage:#2D5A2D; --sage-soft:#E8F3E4;
+  --olive1:#4A5D23; --olive2:#6B7D3A;
+  --gold:#C8960A; --gold-soft:#FBF3DD;
+  --luff1:#1E5A96; --luff2:#2E7BC4; --luff-soft:#E3F0FC;
+  --green:#2D7D3A; --amber:#D4960A; --red:#B03030;
+  --green-soft:#E8F3E4; --amber-soft:#FBF3DD; --red-soft:#F9E8E8;
+  --radius:20px;
 }
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--body); min-height:100vh; font-size:18px; line-height:1.55; }
+html { font-size:18px; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink); padding-bottom:110px; }
+#app { max-width:560px; margin:0 auto; padding:1rem 1rem 0; }
 
-/* LOGIN */
+/* ── TOP BAR ── */
+.topbar { display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.2rem 1rem; }
+.topbar-brand { font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:600; color:var(--sage); }
+.topbar-user { font-size:1rem; color:var(--muted); font-weight:500; }
 
-.field-label { display:block; font-size:0.8rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem; font-weight:600; }
-.field-input { width:100%; padding:1rem 1.1rem; border:1.5px solid var(--border); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:1.1rem; color:var(--charcoal); background:var(--surface2); outline:none; margin-bottom:1.2rem; transition:border-color 0.2s; }
-.field-input:focus { border-color:var(--sage); }
-.primary-btn { width:100%; padding:1.1rem; background:var(--sage); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; transition:opacity 0.2s; }
-.primary-btn:active { opacity:0.85; }
+/* ── PAGES ── */
+.page { display:none; }
+.page.active { display:block; animation:fadein 0.25s ease; }
+@keyframes fadein { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:none;} }
+.page-title { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:600; margin-bottom:1rem; }
+.page-title em { color:var(--gold); font-style:italic; }
+.section-label { font-size:0.85rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); font-weight:700; margin:1.6rem 0 0.8rem; }
 
-/* APP */
-#app { display:block; min-height:100vh; padding-bottom:5.5rem; }
-.topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0.9rem 1.25rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
-.topbar-brand { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:500; color:var(--charcoal); letter-spacing:0.04em; }
-.topbar-user { font-size:0.85rem; color:var(--muted); font-weight:400; }
+/* ── HERO ── */
+.hero { background:linear-gradient(145deg,#5C6E33,#7D8F4E); border-radius:var(--radius); padding:1.4rem 1.6rem; color:#fff; margin-bottom:1rem; }
+.hero-time { font-size:0.95rem; letter-spacing:0.12em; text-transform:uppercase; opacity:0.85; font-weight:500; }
+.hero-name { font-family:'Cormorant Garamond',serif; font-size:2.2rem; font-weight:600; line-height:1.1; margin-top:0.15rem; }
 
-/* NAV */
-.bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--surface); border-top:1px solid var(--border); display:flex; z-index:100; padding-bottom:env(safe-area-inset-bottom); }
-.nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0.7rem 0.3rem; border:none; background:transparent; cursor:pointer; gap:4px; }
-.nav-icon { font-size:1.4rem; line-height:1; }
-.nav-label { font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); font-family:'DM Sans',sans-serif; font-weight:500; }
-.nav-btn.active .nav-label { color:var(--sage); }
-.nav-btn:not(.active) { opacity:0.45; }
-
-/* PAGES */
-.page { display:none; padding:1.25rem; max-width:580px; margin:0 auto; }
-.page.active { display:block; animation:fadeUp 0.3s ease; }
-@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-
-/* TYPE */
-.page-title { font-family:'Cormorant Garamond',serif; font-size:2.3rem; font-weight:500; color:var(--charcoal); margin-bottom:1.25rem; line-height:1.15; }
-.page-title em { color:var(--sage); font-style:italic; }
-.section-label { font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:0.85rem; margin-top:1.6rem; }
-
-/* CARDS */
-.card { background:var(--surface); border-radius:var(--radius); border:1px solid var(--border); box-shadow:var(--shadow); margin-bottom:0.9rem; overflow:hidden; }
-.card-body { padding:1.3rem; }
-.card-label { font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:0.5rem; }
-
-/* HOME */
-.hero-card { background:linear-gradient(145deg,var(--olive),var(--olive-mid)); border-radius:20px; padding:1.75rem 1.5rem; margin-bottom:0.9rem; color:white; }
-.hero-time { font-size:0.72rem; letter-spacing:0.22em; text-transform:uppercase; opacity:0.75; margin-bottom:0.35rem; }
-.hero-name { font-family:'Cormorant Garamond',serif; font-size:2.5rem; font-weight:500; line-height:1.1; margin-bottom:0.75rem; }
-.hero-msg { font-size:1rem; font-weight:300; opacity:0.93; line-height:1.7; }
-.streak-card { background:var(--gold-bg); border:1px solid #E8D4A8; border-radius:var(--radius); padding:1.2rem 1.3rem; margin-bottom:0.9rem; display:flex; align-items:center; gap:1rem; }
-.streak-number { font-family:'Oswald',sans-serif; font-size:4rem; font-weight:700; color:var(--gold); line-height:1; flex-shrink:0; letter-spacing:-0.02em; }
-.streak-label { font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:600; }
-.streak-desc { font-size:0.92rem; color:var(--body); font-weight:300; margin-top:0.2rem; line-height:1.55; }
-.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; margin-bottom:0.9rem; }
-.stat-tile { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:1.2rem; box-shadow:var(--shadow); }
-.stat-val { font-family:'Oswald',sans-serif; font-size:2.1rem; font-weight:700; color:var(--charcoal); line-height:1; margin-bottom:0.25rem; letter-spacing:-0.01em; }
-.stat-lbl { font-size:0.68rem; letter-spacing:0.13em; text-transform:uppercase; color:var(--muted); font-weight:600; }
-.stat-delta { font-size:0.78rem; margin-top:0.3rem; font-weight:500; }
-.delta-good { color:var(--sage); }
-.delta-bad { color:var(--warn); }
-.context-card { background:var(--sage-bg); border:1px solid #C5D5C2; border-radius:var(--radius); padding:1.4rem; margin-bottom:0.9rem; }
-.context-label { font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--sage); font-weight:700; margin-bottom:0.6rem; }
-.context-text { font-size:1rem; color:var(--body); font-weight:300; line-height:1.75; }
-
-/* VERSE CARD */
-.verse-card { background:linear-gradient(145deg,var(--luff1),var(--luff2)); border-radius:20px; padding:1.75rem 1.5rem; margin-bottom:0.9rem; color:white; position:relative; overflow:hidden; }
+/* ── VERSE (Luff blue) ── */
+.verse-card { background:linear-gradient(145deg,#4F7EA8,#6E9CC2); border-radius:var(--radius); padding:1.8rem 1.6rem; margin-bottom:1rem; color:#fff; position:relative; overflow:hidden; }
 .verse-card::before { content:''; position:absolute; top:-30px; right:-20px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,0.1); }
-.verse-card::after { content:''; position:absolute; bottom:-40px; left:-10px; width:90px; height:90px; border-radius:50%; background:rgba(255,255,255,0.07); }
-.verse-eyebrow { font-size:0.68rem; letter-spacing:0.25em; text-transform:uppercase; opacity:0.75; margin-bottom:0.5rem; position:relative; z-index:1; }
-.verse-text { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:600; line-height:1.85; font-style:italic; margin-bottom:1rem; position:relative; z-index:1; text-shadow:0 1px 4px rgba(0,0,0,0.25); }
-.verse-ref { font-size:0.78rem; letter-spacing:0.15em; text-transform:uppercase; color:#A8D4FF; font-weight:700; position:relative; z-index:1; }
+.verse-eyebrow { font-size:0.78rem; letter-spacing:0.25em; text-transform:uppercase; opacity:0.8; margin-bottom:0.6rem; position:relative; z-index:1; }
+.verse-text { font-family:'Cormorant Garamond',serif; font-size:1.35rem; font-weight:600; line-height:1.75; font-style:italic; margin-bottom:1rem; position:relative; z-index:1; text-shadow:0 1px 4px rgba(0,0,0,0.25); }
+.verse-ref { font-size:0.88rem; letter-spacing:0.15em; text-transform:uppercase; color:#EAF4FF; font-weight:700; position:relative; z-index:1; }
 
-/* BASELINE SECTION */
-.baseline-hero { background:linear-gradient(145deg,#6B3A2A 0%,#8B4A35 100%); border-radius:20px; padding:1.75rem 1.5rem; margin-bottom:0.9rem; color:white; }
-.baseline-hero-label { font-size:0.72rem; letter-spacing:0.22em; text-transform:uppercase; opacity:0.75; margin-bottom:0.35rem; }
-.baseline-hero-title { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:500; line-height:1.15; margin-bottom:0.75rem; }
-.baseline-hero-sub { font-size:0.95rem; font-weight:300; opacity:0.9; line-height:1.7; }
-.baseline-stat { background:var(--surface); border-radius:14px; border:1px solid var(--border); padding:1.1rem 1.3rem; margin-bottom:0.7rem; box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; }
-.baseline-stat-label { font-size:0.95rem; color:var(--body); font-weight:400; }
-.baseline-stat-value { font-family:'Oswald',sans-serif; font-size:1.4rem; font-weight:700; color:var(--red); letter-spacing:-0.01em; }
-.baseline-narrative { background:var(--red-bg); border:1px solid #E8C0C0; border-radius:var(--radius); padding:1.3rem; margin-bottom:0.9rem; }
-.baseline-narrative-label { font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--red); font-weight:700; margin-bottom:0.75rem; }
-.baseline-narrative-item { font-size:0.98rem; color:var(--body); font-weight:300; line-height:1.75; padding:0.55rem 0; border-bottom:1px solid #F0D0D0; }
-.baseline-narrative-item:last-child { border-bottom:none; }
-.baseline-narrative-item strong { font-weight:700; color:var(--red); }
+/* ── DAYS TILE ── */
+.days-card { background:var(--surface); border-radius:var(--radius); padding:1.6rem; text-align:center; margin-bottom:1rem; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+.days-number { font-family:'Oswald',sans-serif; font-size:3.4rem; font-weight:600; color:var(--sage); line-height:1; }
+.days-label { font-size:1.05rem; color:var(--muted); font-weight:500; margin-top:0.3rem; }
+.days-sub { font-size:0.9rem; color:var(--muted); font-weight:300; margin-top:0.4rem; }
 
-/* PROGRESS CHARTS */
-.chart-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.3rem; margin-bottom:0.9rem; box-shadow:var(--shadow); }
-.chart-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:0.75rem; }
-.chart-metric { font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); font-weight:700; }
-.chart-sub { font-size:0.82rem; color:var(--muted); font-weight:300; margin-top:0.25rem; }
-.chart-current { font-family:'Oswald',sans-serif; font-size:1.9rem; font-weight:700; color:var(--charcoal); line-height:1; text-align:right; letter-spacing:-0.01em; }
-.chart-unit { font-size:0.75rem; color:var(--muted); font-weight:300; display:block; text-align:right; }
-.chart-wrap { position:relative; height:110px; }
-.trend-pill { display:inline-flex; align-items:center; gap:4px; background:var(--sage-bg); color:var(--sage); border-radius:20px; padding:0.35rem 1rem; font-size:0.78rem; font-weight:700; margin-top:0.65rem; }
-.context-note { font-size:0.85rem; color:var(--muted); font-weight:300; line-height:1.65; margin-top:0.65rem; padding-top:0.65rem; border-top:1px solid var(--border); font-style:italic; }
+/* ── INPUT TILES ── */
+.tile { border-radius:var(--radius); padding:1.5rem 1.4rem; margin-bottom:0.9rem; min-height:112px; display:flex; align-items:center; gap:1.1rem; cursor:pointer; border:3px solid var(--green); background:var(--green-soft); transition:all 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+.tile:active { transform:scale(0.98); }
+.tile.done { border-color:var(--luff1); background:var(--luff-soft); }
+.tile-icon { font-size:2.4rem; line-height:1; flex-shrink:0; }
+.tile-body { flex:1; }
+.tile-label { font-size:1.25rem; font-weight:700; line-height:1.25; }
+.tile-sub { font-size:0.95rem; color:var(--muted); font-weight:400; margin-top:0.15rem; }
+.tile-value { font-family:'Oswald',sans-serif; font-size:2rem; font-weight:600; color:var(--luff1); flex-shrink:0; text-align:right; line-height:1.1; }
+.tile.done .tile-check { display:block; }
+.tile-check { display:none; font-size:1.5rem; color:var(--luff1); flex-shrink:0; }
 
-/* LOG */
-.log-entry-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:0.9rem; box-shadow:var(--shadow); overflow:hidden; }
-.log-entry-header { padding:1.1rem 1.3rem; background:var(--surface2); border-bottom:1px solid var(--border); }
-.log-entry-title { font-size:1rem; font-weight:700; color:var(--charcoal); }
-.log-entry-sub { font-size:0.85rem; color:var(--muted); font-weight:300; margin-top:0.2rem; }
-.log-field-row { display:flex; align-items:center; padding:1rem 1.3rem; border-bottom:1px solid var(--border); gap:0.9rem; }
-.log-field-row:last-child { border-bottom:none; }
-.log-field-icon { font-size:1.5rem; flex-shrink:0; width:2rem; text-align:center; }
-.log-field-body { flex:1; }
-.log-field-label { font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:0.25rem; }
-.log-field-input { width:100%; border:none; background:transparent; font-family:'Oswald',sans-serif; font-size:1.8rem; font-weight:700; color:var(--charcoal); outline:none; letter-spacing:-0.01em; }
-.log-field-input::placeholder { font-family:'Oswald',sans-serif; font-weight:300; color:#C5BDB3; }
-.log-field-unit { font-size:0.82rem; color:var(--muted); font-weight:500; flex-shrink:0; }
-.time-row { display:flex; align-items:center; padding:1rem 1.3rem; gap:0.75rem; flex-wrap:wrap; }
-.time-chip { padding:0.6rem 1rem; border:1.5px solid var(--border); border-radius:20px; font-size:0.88rem; font-weight:500; color:var(--muted); cursor:pointer; transition:all 0.15s; background:var(--surface); }
-.time-chip.selected { border-color:var(--sage); background:var(--sage-bg); color:var(--sage); font-weight:700; }
+/* ── ENTRY OVERLAY ── */
+.overlay { display:none; position:fixed; inset:0; background:rgba(28,28,26,0.55); z-index:50; align-items:flex-end; justify-content:center; }
+.overlay.open { display:flex; }
+.sheet { background:var(--surface); border-radius:26px 26px 0 0; width:100%; max-width:560px; max-height:88vh; overflow-y:auto; padding:1.8rem 1.5rem 2.2rem; animation:slideup 0.25s ease; }
+@keyframes slideup { from{transform:translateY(40px);opacity:0;} to{transform:none;opacity:1;} }
+.sheet-icon { font-size:2.6rem; text-align:center; }
+.sheet-title { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:600; text-align:center; margin-top:0.3rem; }
+.sheet-help { font-size:1.05rem; color:var(--muted); line-height:1.55; text-align:center; margin:0.7rem 0 1.4rem; font-weight:400; }
+.big-input { width:100%; font-family:'Oswald',sans-serif; font-size:3.2rem; font-weight:600; text-align:center; border:none; border-bottom:4px solid var(--sage); background:transparent; color:var(--ink); padding:0.2rem 0 0.4rem; outline:none; }
+.big-input::placeholder { color:#C9C4B5; }
+.input-unit { text-align:center; font-size:1rem; color:var(--muted); font-weight:500; margin-top:0.5rem; letter-spacing:0.08em; text-transform:uppercase; }
+.dual-wrap { display:flex; gap:1.2rem; }
+.dual-wrap > div { flex:1; }
+.dual-label { text-align:center; font-size:0.95rem; font-weight:700; color:var(--muted); margin-bottom:0.4rem; }
+.scale-row { display:flex; flex-wrap:wrap; gap:0.55rem; justify-content:center; margin-top:0.4rem; }
+.scale-btn { width:56px; height:56px; border-radius:14px; border:3px solid #D8D2C2; background:var(--surface2); font-family:'Oswald',sans-serif; font-size:1.5rem; font-weight:600; color:var(--ink); cursor:pointer; }
+.scale-btn.sel { border-color:var(--sage); background:var(--sage); color:#fff; }
+.opt-col { display:flex; flex-direction:column; gap:0.7rem; margin-top:0.4rem; }
+.opt-btn { padding:1.1rem 1.2rem; border-radius:16px; border:3px solid #D8D2C2; background:var(--surface2); font-size:1.15rem; font-weight:600; text-align:left; cursor:pointer; color:var(--ink); font-family:'DM Sans',sans-serif; line-height:1.4; }
+.opt-btn small { display:block; font-size:0.9rem; color:var(--muted); font-weight:400; }
+.opt-btn.sel { border-color:var(--sage); background:var(--sage-soft); }
+.opt-btn.sel small { color:var(--sage); }
+.sheet-field-label { font-size:1rem; font-weight:700; margin:1.2rem 0 0.5rem; }
+.sheet-text { width:100%; font-family:'DM Sans',sans-serif; font-size:1.15rem; padding:0.9rem 1rem; border-radius:14px; border:2px solid #D8D2C2; background:var(--surface2); outline:none; }
+.sheet-text:focus { border-color:var(--sage); }
+.save-btn { width:100%; padding:1.15rem; border:none; border-radius:16px; background:var(--sage); color:#fff; font-size:1.3rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; margin-top:1.6rem; }
+.cancel-btn { width:100%; padding:0.9rem; border:none; background:transparent; color:var(--muted); font-size:1.05rem; font-weight:500; font-family:'DM Sans',sans-serif; cursor:pointer; margin-top:0.5rem; }
+.saved-flash { text-align:center; font-size:1.15rem; color:var(--green); font-weight:700; padding:1rem 0 0; display:none; }
 
-/* NOTES CARDS */
-.notes-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:0.9rem; box-shadow:var(--shadow); overflow:hidden; }
-.notes-header { padding:1.1rem 1.3rem; border-bottom:1px solid var(--border); }
-.notes-header-food { background:#F0F5EF; }
-.notes-header-other { background:#F5F0E8; }
-.notes-title { font-size:1rem; font-weight:700; color:var(--charcoal); }
-.notes-sub { font-size:0.85rem; color:var(--muted); font-weight:300; margin-top:0.2rem; }
-.notes-textarea { width:100%; border:none; background:transparent; font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:400; color:var(--charcoal); outline:none; resize:none; padding:1.1rem 1.3rem; min-height:90px; line-height:1.65; }
-.notes-textarea::placeholder { color:#C5BDB3; }
+/* ── SUPPLEMENTS ── */
+.supp-tick { border-radius:var(--radius); padding:1.3rem 1.4rem; margin-bottom:0.8rem; min-height:96px; display:flex; align-items:center; gap:1rem; cursor:pointer; border:3px solid #D8D2C2; background:var(--surface); transition:all 0.2s; }
+.supp-tick:active { transform:scale(0.98); }
+.supp-tick.checked { border-color:var(--green); background:var(--green-soft); }
+.supp-tick-box { width:44px; height:44px; border-radius:12px; border:3px solid #C9C4B5; background:var(--surface2); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.6rem; color:#fff; font-weight:700; }
+.supp-tick.checked .supp-tick-box { background:var(--green); border-color:var(--green); }
+.supp-tick-name { font-size:1.2rem; font-weight:700; line-height:1.25; }
+.supp-tick-dose { font-size:0.95rem; color:var(--muted); margin-top:0.15rem; }
+.tier-btn { width:100%; border-radius:var(--radius); padding:1.4rem 1.5rem; margin-bottom:0.9rem; min-height:96px; display:flex; align-items:center; gap:1rem; cursor:pointer; border:3px solid; font-family:'DM Sans',sans-serif; text-align:left; }
+.tier-btn:active { transform:scale(0.98); }
+.tier-dot { width:26px; height:26px; border-radius:50%; flex-shrink:0; }
+.tier-btn-title { font-size:1.3rem; font-weight:700; }
+.tier-btn-sub { font-size:0.95rem; font-weight:400; margin-top:0.1rem; }
+.tier-green { border-color:var(--green); background:var(--green-soft); color:var(--ink); }
+.tier-green .tier-dot { background:var(--green); }
+.tier-amber { border-color:var(--amber); background:var(--amber-soft); color:var(--ink); }
+.tier-amber .tier-dot { background:var(--amber); }
+.tier-red { border-color:var(--red); background:var(--red-soft); color:var(--ink); }
+.tier-red .tier-dot { background:var(--red); }
+.tier-arrow { margin-left:auto; font-size:1.4rem; color:var(--muted); transition:transform 0.2s; }
+.tier-btn.open .tier-arrow { transform:rotate(90deg); }
+.tier-list { display:none; margin:-0.3rem 0 1rem; }
+.tier-list.open { display:block; }
+.tier-item { background:var(--surface); border-radius:14px; padding:1.1rem 1.3rem; margin-bottom:0.6rem; box-shadow:0 1px 6px rgba(0,0,0,0.04); }
+.tier-item-name { font-size:1.1rem; font-weight:700; }
+.tier-item-note { font-size:0.95rem; color:var(--muted); margin-top:0.2rem; line-height:1.45; }
 
-.log-submit { width:100%; padding:1.15rem; background:var(--sage); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; margin-bottom:0.9rem; transition:opacity 0.2s; }
-.log-submit:active { opacity:0.85; }
-.log-success { background:var(--sage-bg); border:1px solid #C5D5C2; border-radius:var(--radius); padding:1.5rem; text-align:center; margin-bottom:0.9rem; display:none; }
-.log-success-icon { font-size:2rem; margin-bottom:0.5rem; }
-.log-success-text { font-family:'Cormorant Garamond',serif; font-size:1.3rem; color:var(--sage); font-style:italic; }
+/* ── FOOD ── */
+.food-entry-card { background:var(--surface); border-radius:var(--radius); padding:1.5rem 1.4rem; margin-bottom:1rem; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+.food-textarea { width:100%; min-height:130px; font-family:'DM Sans',sans-serif; font-size:1.2rem; padding:1rem; border-radius:16px; border:3px solid #D8D2C2; background:var(--surface2); outline:none; resize:vertical; line-height:1.5; }
+.food-textarea:focus { border-color:var(--sage); }
+.food-btn-row { display:flex; gap:0.8rem; margin-top:1rem; }
+.food-save { flex:1; padding:1.1rem; border:none; border-radius:16px; background:var(--sage); color:#fff; font-size:1.2rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; }
+.food-photo { flex-shrink:0; width:74px; border:3px solid var(--sage); border-radius:16px; background:var(--sage-soft); font-size:1.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.food-hint { font-size:0.95rem; color:var(--muted); text-align:center; margin-top:0.8rem; }
+.search-wrap { position:relative; margin-bottom:1rem; }
+.search-input { width:100%; font-family:'DM Sans',sans-serif; font-size:1.15rem; padding:1rem 1.1rem 1rem 3rem; border-radius:16px; border:3px solid #D8D2C2; background:var(--surface); outline:none; }
+.search-input:focus { border-color:var(--sage); }
+.search-icon { position:absolute; left:1rem; top:50%; transform:translateY(-50%); font-size:1.3rem; }
+.search-result { background:var(--surface); border-radius:14px; padding:1rem 1.2rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.8rem; font-size:1.1rem; font-weight:600; }
+.food-chip { display:inline-block; background:var(--surface); border-radius:12px; padding:0.55rem 0.9rem; margin:0 0.4rem 0.5rem 0; font-size:1.02rem; font-weight:500; box-shadow:0 1px 4px rgba(0,0,0,0.04); }
 
-/* SUPPLEMENT CHECKLIST */
-.supp-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:0.9rem; box-shadow:var(--shadow); overflow:hidden; }
-.supp-header { padding:1.1rem 1.3rem; background:var(--gold-bg); border-bottom:1px solid #E8D4A8; }
-.supp-title { font-size:1rem; font-weight:700; color:var(--charcoal); }
-.supp-sub { font-size:0.85rem; color:var(--muted); font-weight:300; margin-top:0.2rem; }
-.supp-item { display:flex; align-items:center; gap:0.9rem; padding:1.1rem 1.3rem; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
-.supp-item:last-child { border-bottom:none; }
-.supp-item.checked { background:var(--sage-bg); }
-.supp-box { width:30px; height:30px; border-radius:8px; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1rem; transition:all 0.15s; }
-.supp-item.checked .supp-box { background:var(--sage); border-color:var(--sage); color:white; }
-.supp-item-label { font-size:1rem; font-weight:500; color:var(--body); flex:1; line-height:1.4; }
-.supp-item.checked .supp-item-label { color:var(--sage); }
-.supp-item-dose { font-size:0.82rem; color:var(--muted); font-weight:300; }
+/* ── WINS ── */
+.wins-hero { background:linear-gradient(145deg,var(--olive1),var(--olive2)); border-radius:var(--radius); padding:1.8rem 1.5rem; color:#fff; margin-bottom:1rem; display:flex; flex-direction:column; align-items:center; }
+.wins-big { font-family:'Oswald',sans-serif; font-size:4rem; font-weight:600; line-height:1; }
+.win-card { background:var(--surface); border-radius:16px; padding:1.2rem 1.3rem; margin-bottom:0.7rem; display:flex; gap:1rem; box-shadow:0 1px 6px rgba(0,0,0,0.04); }
+.win-emoji { font-size:1.9rem; flex-shrink:0; }
+.win-title { font-size:1.12rem; font-weight:700; line-height:1.3; }
+.win-desc { font-size:0.98rem; color:var(--muted); line-height:1.5; margin-top:0.25rem; font-weight:300; }
+.win-date { font-size:0.85rem; color:var(--gold); font-weight:700; margin-top:0.35rem; letter-spacing:0.05em; }
+.baseline-hero { background:var(--surface); border-radius:var(--radius); padding:1.5rem 1.4rem; margin-bottom:0.8rem; border-left:5px solid var(--gold); }
+.baseline-hero-label { font-size:0.8rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+.baseline-hero-title { font-family:'Cormorant Garamond',serif; font-size:1.7rem; font-weight:600; margin-top:0.3rem; }
+.baseline-hero-sub { font-size:1rem; color:var(--muted); line-height:1.55; margin-top:0.5rem; font-weight:300; }
+.baseline-stat { background:var(--surface); border-radius:12px; padding:0.95rem 1.2rem; margin-bottom:0.45rem; display:flex; justify-content:space-between; align-items:center; }
+.baseline-stat-label { font-size:1rem; color:var(--muted); font-weight:500; }
+.baseline-stat-value { font-size:1.05rem; font-weight:700; }
+.baseline-narrative { background:var(--surface); border-radius:var(--radius); padding:1.4rem; margin-top:0.8rem; }
+.baseline-narrative-label { font-size:0.8rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:0.8rem; }
+.baseline-narrative-item { font-size:1rem; line-height:1.6; color:var(--ink); font-weight:300; margin-bottom:0.8rem; }
 
-/* PROTOCOL */
-.protocol-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:0.9rem; box-shadow:var(--shadow); overflow:hidden; }
-.protocol-header { padding:1.1rem 1.3rem; background:var(--sage-bg); border-bottom:1px solid #C5D5C2; }
-.protocol-title { font-size:1rem; font-weight:700; color:var(--sage-dark); }
-.protocol-sub { font-size:0.85rem; color:var(--muted); font-weight:300; margin-top:0.2rem; }
-.protocol-item { display:flex; align-items:flex-start; padding:1.1rem 1.3rem; border-bottom:1px solid var(--border); gap:0.9rem; }
-.protocol-item:last-child { border-bottom:none; }
-.protocol-bullet { width:9px; height:9px; border-radius:50%; background:var(--sage); flex-shrink:0; margin-top:0.55rem; }
-.protocol-text { font-size:1rem; font-weight:300; color:var(--body); line-height:1.65; flex:1; }
-.protocol-text strong { font-weight:700; color:var(--charcoal); }
+/* ── COACH ── */
+.msg-date { font-size:0.95rem; color:var(--muted); margin-bottom:0.8rem; }
+.msg-card { background:var(--surface); border-radius:var(--radius); padding:1.6rem 1.5rem; margin-bottom:1rem; box-shadow:0 2px 10px rgba(0,0,0,0.05); position:relative; }
+.msg-quote { font-family:'Cormorant Garamond',serif; font-size:3.2rem; color:var(--gold); line-height:0.5; margin-bottom:0.8rem; }
+.msg-text { font-size:1.1rem; line-height:1.7; font-weight:300; }
+.msg-sig { display:flex; align-items:center; gap:0.8rem; margin-top:1.2rem; }
+.msg-avatar { width:48px; height:48px; border-radius:50%; background:var(--sage); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.05rem; }
+.msg-coach { font-weight:700; font-size:1.05rem; }
+.msg-title { font-size:0.9rem; color:var(--muted); }
+.protocol-card { background:var(--surface); border-radius:var(--radius); overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+.protocol-header { background:var(--sage); color:#fff; padding:1.2rem 1.4rem; }
+.protocol-title { font-size:1.15rem; font-weight:700; }
+.protocol-sub { font-size:0.92rem; opacity:0.85; margin-top:0.2rem; }
+.protocol-item { display:flex; gap:0.9rem; padding:1rem 1.4rem; border-bottom:1px solid #EFEBE0; }
+.protocol-bullet { width:10px; height:10px; border-radius:50%; background:var(--gold); flex-shrink:0; margin-top:0.45rem; }
+.protocol-text { font-size:1.02rem; line-height:1.6; font-weight:300; }
+.msg-history-label { font-size:0.85rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); font-weight:700; margin:1.8rem 0 0.8rem; }
+.msg-history-item { background:var(--surface); border-radius:14px; padding:1.1rem 1.3rem; margin-bottom:0.6rem; }
+.msg-history-date { font-size:0.85rem; color:var(--gold); font-weight:700; margin-bottom:0.3rem; }
+.msg-history-text { font-size:1rem; line-height:1.6; font-weight:300; }
+/* chat */
+.chat-thread { margin-top:1rem; }
+.chat-msg { max-width:88%; margin-bottom:0.8rem; }
+.chat-msg.coach { margin-right:auto; }
+.chat-msg.valerie { margin-left:auto; }
+.chat-bubble { border-radius:18px; padding:1rem 1.2rem; font-size:1.08rem; line-height:1.6; font-weight:300; }
+.chat-msg.coach .chat-bubble { background:var(--surface); box-shadow:0 1px 6px rgba(0,0,0,0.05); border-bottom-left-radius:6px; }
+.chat-msg.valerie .chat-bubble { background:var(--sage-soft); border:2px solid var(--sage); border-bottom-right-radius:6px; }
+.chat-meta { font-size:0.82rem; color:var(--muted); margin-top:0.3rem; font-weight:500; }
+.chat-msg.coach .chat-meta { padding-left:0.4rem; }
+.chat-msg.valerie .chat-meta { text-align:right; padding-right:0.4rem; }
+.reply-card { background:var(--surface); border-radius:var(--radius); padding:1rem; margin-top:1.2rem; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+.reply-box { width:100%; min-height:90px; font-family:'DM Sans',sans-serif; font-size:1.15rem; padding:0.9rem 1rem; border-radius:14px; border:3px solid #D8D2C2; background:var(--surface2); outline:none; resize:vertical; line-height:1.5; }
+.reply-box:focus { border-color:var(--sage); }
+.reply-send { width:100%; padding:1.05rem; border:none; border-radius:14px; background:var(--sage); color:#fff; font-size:1.2rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; margin-top:0.7rem; }
+.reply-sent { text-align:center; font-size:1rem; color:var(--green); font-weight:700; margin-top:0.6rem; display:none; }
 
-/* WINS */
-.wins-hero { background:linear-gradient(145deg,var(--gold) 0%,#C49A4A 100%); border-radius:20px; padding:2rem 1.5rem; margin-bottom:0.9rem; text-align:center; color:white; }
-.wins-big { font-family:'Oswald',sans-serif; font-size:5.5rem; font-weight:700; line-height:1; letter-spacing:-0.02em; }
-.wins-hero-label { font-size:0.75rem; letter-spacing:0.22em; text-transform:uppercase; opacity:0.85; margin-top:0.4rem; }
-.win-card { background:var(--surface); border-radius:var(--radius); border:1px solid var(--border); box-shadow:var(--shadow); margin-bottom:0.75rem; padding:1.3rem; display:flex; gap:1rem; align-items:flex-start; }
-.win-emoji { font-size:1.85rem; flex-shrink:0; margin-top:0.1rem; }
-.win-title { font-family:'Cormorant Garamond',serif; font-size:1.25rem; font-weight:600; color:var(--charcoal); margin-bottom:0.3rem; line-height:1.3; }
-.win-desc { font-size:0.88rem; color:var(--muted); font-weight:300; line-height:1.6; }
-.win-date { font-size:0.68rem; color:var(--sage); letter-spacing:0.12em; text-transform:uppercase; margin-top:0.45rem; font-weight:700; }
+/* ── BOTTOM NAV ── */
+.bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--surface); display:flex; max-width:560px; margin:0 auto; border-radius:22px 22px 0 0; box-shadow:0 -4px 20px rgba(0,0,0,0.1); padding:0.4rem 0.3rem calc(0.5rem + env(safe-area-inset-bottom)); z-index:40; }
+.nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0.6rem 0.2rem; border:none; background:transparent; cursor:pointer; gap:3px; border-radius:16px; }
+.nav-icon { font-size:1.9rem; line-height:1; }
+.nav-label { font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); font-family:'DM Sans',sans-serif; font-weight:700; }
+.nav-btn.active { background:var(--sage-soft); }
+.nav-btn.active .nav-label { color:var(--sage); }
+.nav-btn:not(.active) { opacity:0.55; }
 
-/* COACH */
-.msg-date { font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); text-align:center; margin-bottom:0.9rem; }
-.msg-card { background:var(--surface); border-radius:20px; border:1px solid var(--border); box-shadow:var(--shadow); padding:2rem 1.5rem; margin-bottom:0.9rem; position:relative; }
-.msg-quote { font-family:'Cormorant Garamond',serif; font-size:5rem; color:var(--sage-bg); line-height:1; position:absolute; top:0.5rem; left:1.25rem; }
-.msg-text { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:400; color:var(--charcoal); line-height:1.9; font-style:italic; padding-top:1.75rem; margin-bottom:1.5rem; }
-.msg-sig { display:flex; align-items:center; gap:0.85rem; padding-top:1rem; border-top:1px solid var(--border); }
-.msg-avatar { width:44px; height:44px; border-radius:50%; background:var(--sage); color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; flex-shrink:0; }
-.msg-coach { font-size:1rem; font-weight:700; color:var(--charcoal); }
-.msg-title { font-size:0.78rem; color:var(--muted); font-weight:300; }
-.msg-history-label { font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); text-align:center; margin:1.25rem 0 0.75rem; }
-.msg-history-item { background:var(--surface2); border-radius:12px; border:1px solid var(--border); padding:1.1rem 1.3rem; margin-bottom:0.6rem; }
-.msg-history-date { font-size:0.72rem; color:var(--sage); letter-spacing:0.12em; text-transform:uppercase; font-weight:700; margin-bottom:0.5rem; }
-.msg-history-text { font-size:0.95rem; color:var(--body); font-weight:300; line-height:1.65; }
-
-/* PAST LOGS */
-.log-history-item { background:var(--surface); border-radius:12px; border:1px solid var(--border); padding:1rem 1.2rem; margin-bottom:0.6rem; }
-.log-history-date { font-size:0.78rem; color:var(--sage); font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.3rem; }
-.log-history-time { font-size:0.75rem; color:var(--muted); font-weight:300; margin-bottom:0.4rem; }
-.log-history-vals { font-family:'Oswald',sans-serif; font-size:1.1rem; font-weight:700; color:var(--charcoal); line-height:1.5; letter-spacing:-0.01em; }
-.log-history-notes { font-size:0.88rem; color:var(--body); font-weight:300; line-height:1.6; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--border); }
-.log-history-notes-label { font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:0.2rem; }
-
-/* CGM DASHBOARD */
-.cgm-stat-row { display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; margin-bottom:1rem; }
-.cgm-stat-tile { background:var(--sage-bg); border:1px solid #C5D5C2; border-radius:12px; padding:1.1rem; }
-.cgm-stat-label { font-size:0.68rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--sage); font-weight:700; margin-bottom:0.35rem; }
-.cgm-stat-val { font-family:'Oswald',sans-serif; font-size:2.4rem; font-weight:700; color:var(--sage); line-height:1; letter-spacing:-0.02em; }
-.cgm-stat-unit { font-size:0.75rem; color:var(--sage-mid); font-weight:400; }
-.cgm-stat-delta { font-size:0.8rem; color:var(--sage); font-weight:500; margin-top:0.3rem; }
-.range-bar-wrap { margin-bottom:0.75rem; }
-.range-bar { display:flex; border-radius:8px; overflow:hidden; height:22px; }
-.range-seg-green { background:#2D7D3A; height:100%; }
-.range-seg-amber { background:#D4960A; height:100%; }
-.range-seg-red { background:#B03030; height:100%; }
-.range-legend { display:flex; gap:1rem; margin-top:0.5rem; flex-wrap:wrap; }
-.range-legend-item { display:flex; align-items:center; gap:5px; font-size:0.78rem; color:var(--body); font-weight:500; }
-.range-dot-green { width:10px; height:10px; border-radius:50%; background:#2D7D3A; flex-shrink:0; }
-.range-dot-amber { width:10px; height:10px; border-radius:50%; background:#D4960A; flex-shrink:0; }
-.range-dot-red { width:10px; height:10px; border-radius:50%; background:#B03030; flex-shrink:0; }
-.dotplot-wrap { position:relative; height:150px; }
-
-/* ROLLING AVERAGE CARD */
-.avg-row { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:0.6rem; }
-.avg-big { font-family:'Oswald',sans-serif; font-size:3.5rem; font-weight:700; color:var(--sage); line-height:1; letter-spacing:-0.03em; }
-.avg-unit { font-size:0.85rem; color:var(--sage-mid); font-weight:400; }
-.avg-sub { font-size:0.88rem; color:var(--muted); font-weight:300; margin-top:0.3rem; line-height:1.5; }
-.avg-right { text-align:right; }
-.avg-count { font-family:'Oswald',sans-serif; font-size:1.8rem; font-weight:700; color:var(--charcoal); line-height:1; }
-.avg-count-label { font-size:0.68rem; letter-spacing:0.13em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-top:0.2rem; }
-.avg-a1c-note { font-size:0.8rem; color:var(--sage); font-weight:500; margin-top:0.4rem; }
-.avg-chart-wrap { position:relative; height:80px; margin-top:0.75rem; }
-
-/* PULSE LOG */
-.pulse-log-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:0.85rem; }
-.pulse-log-label { font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); font-weight:700; }
-.pulse-log-current { font-family:'Oswald',sans-serif; font-size:2.4rem; font-weight:700; color:var(--sage); line-height:1; letter-spacing:-0.02em; }
-.pulse-log-unit { font-size:0.8rem; color:var(--sage-mid); font-weight:400; }
-.pulse-entry { display:flex; align-items:center; padding:0.85rem 0; border-bottom:1px solid var(--border); gap:0.75rem; }
-.pulse-entry:last-child { border-bottom:none; }
-.pulse-entry-date { font-size:0.78rem; color:var(--muted); font-weight:600; width:54px; flex-shrink:0; letter-spacing:0.03em; }
-.pulse-entry-label { font-size:0.88rem; color:var(--body); font-weight:300; flex:1; line-height:1.4; }
-.pulse-entry-val { font-family:'Oswald',sans-serif; font-size:1.5rem; font-weight:700; color:var(--charcoal); letter-spacing:-0.01em; flex-shrink:0; }
-.pulse-entry-bpm { font-size:0.72rem; color:var(--muted); font-weight:400; }
-.pulse-callout { display:inline-block; background:var(--sage-bg); color:var(--sage); border-radius:20px; padding:0.2rem 0.7rem; font-size:0.72rem; font-weight:700; margin-top:0.25rem; }
-.show-more-btn { width:100%; padding:0.75rem; background:transparent; border:1.5px solid var(--border); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:600; color:var(--muted); cursor:pointer; margin-top:0.5rem; letter-spacing:0.05em; transition:all 0.15s; }
-.show-more-btn:active { background:var(--surface2); }
+/* ── COACH VIEW ── */
+#coach-view { display:none; }
+body.coach-mode #coach-view { display:block; }
+body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
+.coach-banner { background:linear-gradient(145deg,#5C6E33,#7D8F4E); border-radius:var(--radius); padding:1.3rem 1.5rem; color:#fff; margin-bottom:1rem; }
+.coach-banner-label { font-size:0.78rem; letter-spacing:0.22em; text-transform:uppercase; opacity:0.85; font-weight:700; }
+.coach-banner-title { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:600; margin-top:0.15rem; }
+.coach-chart-card { background:var(--surface); border-radius:var(--radius); padding:1.2rem 1.2rem 0.9rem; margin-bottom:0.9rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+.coach-chart-title { font-size:1rem; font-weight:700; margin-bottom:0.6rem; }
+.coach-chart-wrap { height:170px; position:relative; }
+.coach-empty { font-size:0.95rem; color:var(--muted); text-align:center; padding:1.2rem 0; font-weight:300; }
+.coach-log-item { background:var(--surface); border-radius:14px; padding:0.9rem 1.1rem; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center; gap:0.8rem; }
+.coach-log-field { font-size:1rem; font-weight:700; }
+.coach-log-time { font-size:0.82rem; color:var(--muted); }
+.coach-log-val { font-family:'Oswald',sans-serif; font-size:1.15rem; font-weight:600; color:var(--sage); text-align:right; }
 </style>
 </head>
 <body>
-
-
-<!-- APP -->
 <div id="app">
+
   <div class="topbar">
     <div class="topbar-brand">Future Health</div>
-    <div class="topbar-user" id="topbar-user"></div>
+    <div class="topbar-user" id="topbar-user">Valerie</div>
   </div>
 
-  <!-- ══ HOME ══ -->
+  <!-- ══ HOME / LOG ══ -->
   <div class="page active" id="page-home">
-    <div class="hero-card">
+    <div class="hero">
       <div class="hero-time" id="hero-time"></div>
-      <div class="hero-name" id="hero-name"></div>
-      <div class="hero-msg" id="hero-msg"></div>
+      <div class="hero-name">Valerie.</div>
     </div>
+
     <div class="verse-card">
       <div class="verse-eyebrow">✦ Verse of the day</div>
       <div class="verse-text" id="verse-text"></div>
       <div class="verse-ref" id="verse-ref"></div>
     </div>
-    <div class="streak-card">
-      <div class="streak-number" id="days-count">91</div>
-      <div>
-        <div class="streak-label">Days on protocol</div>
-        <div class="streak-desc">Since March 7, 2026. Every day your body is rebuilding what years of medication could not restore.</div>
-      </div>
+
+    <div class="days-card">
+      <div class="days-number" id="days-count">—</div>
+      <div class="days-label">Days on protocol</div>
+      <div class="days-sub">Since March 7, 2026</div>
     </div>
-    <div class="stat-grid">
-      <div class="stat-tile">
-        <div class="stat-val" id="h-glucose">7.7</div>
-        <div class="stat-lbl">Blood Sugar (mmol/L)</div>
-        <div class="stat-delta delta-good" id="h-glucose-d">↓ from 10.3 at start</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-val" id="h-bp">132/79</div>
-        <div class="stat-lbl">Blood Pressure</div>
-        <div class="stat-delta delta-good" id="h-bp-d">↓ off all medication</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-val" id="h-weight">146.8</div>
-        <div class="stat-lbl">Weight (lb)</div>
-        <div class="stat-delta delta-good">↓ 6.6 lb from start</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-val" id="h-pulse">65</div>
-        <div class="stat-lbl">Pulse (bpm)</div>
-        <div class="stat-delta delta-good">↓ from 72</div>
-      </div>
-    </div>
-    <div class="context-card">
-      <div class="context-label">What your numbers mean right now</div>
-      <div class="context-text" id="context-text">You are 3 days post knee replacement surgery. Your blood sugar reading of 7.7 on surgery morning — with the surgical stress response pushing it to 12.1 post-op — is exactly what healthy metabolic regulation looks like under extreme stress. Your team called your BP perfect and your oxygen amazing. No insulin was required. Your body performed. Rest and trust the process.</div>
-    </div>
+
+    <div class="section-label">Today's log · tap each tile to enter</div>
+    <div id="tiles"></div>
   </div>
 
-  <!-- ══ LOG VITALS ══ -->
-  <div class="page" id="page-log">
-    <div class="page-title">Log <em>vitals</em></div>
+  <!-- ══ SUPPLEMENTS ══ -->
+  <div class="page" id="page-supps">
+    <div class="page-title">Your <em>supplements</em></div>
+    <div class="section-label">Tap each one as you take it today</div>
+    <div id="supp-ticks"></div>
 
-    <div class="log-entry-card">
-      <div class="log-entry-header">
-        <div class="log-entry-title">When are these readings from?</div>
-        <div class="log-entry-sub">Select the time that matches — you can log morning and evening separately</div>
-      </div>
-      <div class="time-row">
-        <div class="time-chip selected" onclick="selectTime(this,'This morning')">This morning</div>
-        <div class="time-chip" onclick="selectTime(this,'Last night')">Last night</div>
-        <div class="time-chip" onclick="selectTime(this,'This afternoon')">This afternoon</div>
-        <div class="time-chip" onclick="selectTime(this,'Just now')">Just now</div>
-      </div>
-    </div>
+    <div class="section-label">Full supplement guide</div>
+    <button class="tier-btn tier-green" onclick="toggleTier('supp-green',this)">
+      <div class="tier-dot"></div>
+      <div><div class="tier-btn-title">Green · Allowed</div><div class="tier-btn-sub">In the protocol, take as directed</div></div>
+      <div class="tier-arrow">›</div>
+    </button>
+    <div class="tier-list" id="supp-green"></div>
 
-    <div class="log-entry-card">
-      <div class="log-entry-header">
-        <div class="log-entry-title">Vitals</div>
-        <div class="log-entry-sub">Enter what you have — skip anything you haven't measured</div>
-      </div>
-      <div class="log-field-row">
-        <div class="log-field-icon">🩸</div>
-        <div class="log-field-body">
-          <div class="log-field-label">Blood sugar</div>
-          <input class="log-field-input" type="number" id="in-glucose" placeholder="7.7" step="0.1" min="3" max="20">
-        </div>
-        <div class="log-field-unit">mmol/L</div>
-      </div>
-      <div class="log-field-row">
-        <div class="log-field-icon">💓</div>
-        <div class="log-field-body">
-          <div class="log-field-label">Blood pressure — top number</div>
-          <input class="log-field-input" type="number" id="in-sys" placeholder="132" min="80" max="220">
-        </div>
-        <div class="log-field-unit">mmHg</div>
-      </div>
-      <div class="log-field-row">
-        <div class="log-field-icon"></div>
-        <div class="log-field-body">
-          <div class="log-field-label">Blood pressure — bottom number</div>
-          <input class="log-field-input" type="number" id="in-dia" placeholder="79" min="50" max="130">
-        </div>
-        <div class="log-field-unit">mmHg</div>
-      </div>
-      <div class="log-field-row">
-        <div class="log-field-icon">⚖️</div>
-        <div class="log-field-body">
-          <div class="log-field-label">Weight</div>
-          <input class="log-field-input" type="number" id="in-weight" placeholder="146.8" step="0.1" min="80" max="300">
-        </div>
-        <div class="log-field-unit">lb</div>
-      </div>
-      <div class="log-field-row">
-        <div class="log-field-icon">💗</div>
-        <div class="log-field-body">
-          <div class="log-field-label">Pulse</div>
-          <input class="log-field-input" type="number" id="in-pulse" placeholder="65" min="40" max="130">
-        </div>
-        <div class="log-field-unit">bpm</div>
-      </div>
-    </div>
+    <button class="tier-btn tier-amber" onclick="toggleTier('supp-yellow',this)">
+      <div class="tier-dot"></div>
+      <div><div class="tier-btn-title">Yellow · Under review</div><div class="tier-btn-sub">Not ruled in or out yet, do not start on your own</div></div>
+      <div class="tier-arrow">›</div>
+    </button>
+    <div class="tier-list" id="supp-yellow"></div>
 
-    <!-- FOOD LOG -->
-    <div class="notes-card">
-      <div class="notes-header notes-header-food">
-        <div class="notes-title">🍽 What did you eat today?</div>
-        <div class="notes-sub">What you had and where — home, Alice's, hospital, restaurant, anything</div>
-      </div>
-      <textarea class="notes-textarea" id="in-food" placeholder="e.g. Scrambled eggs and butter at home for breakfast. Salmon and vegetables at Alice's for dinner."></textarea>
-    </div>
-
-    <!-- OTHER NOTES -->
-    <div class="notes-card">
-      <div class="notes-header notes-header-other">
-        <div class="notes-title">📝 Anything else to note?</div>
-        <div class="notes-sub">Activity, appointments, how you felt, anything out of the ordinary</div>
-      </div>
-      <textarea class="notes-textarea" id="in-notes" placeholder="e.g. Physiotherapy at 10am. Feeling tired but rested well. Dentist appointment tomorrow."></textarea>
-    </div>
-
-    <button class="log-submit" onclick="submitLog()">Save This Entry ✓</button>
-    <div class="log-success" id="log-success">
-      <div class="log-success-icon">🌿</div>
-      <div class="log-success-text" id="log-success-text">Logged. You're building something remarkable.</div>
-    </div>
-
-    <div class="section-label">Today's entries</div>
-    <div id="log-history-today"><div style="font-size:0.95rem;color:var(--muted);font-weight:300;text-align:center;padding:1.2rem;">Nothing logged yet today.</div></div>
-
-    <div class="section-label" style="margin-top:1.5rem;">Supplements — check off as you take them</div>
-    <div class="supp-card">
-      <div class="supp-header">
-        <div class="supp-title">Morning — with breakfast</div>
-        <div class="supp-sub">Take with your first meal</div>
-      </div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Florastor — Saccharomyces boulardii</div><div class="supp-item-dose">1 capsule with food</div></div></div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Enterogermina — Bacillus clausii</div><div class="supp-item-dose">Alternating 2B / 4B spores daily</div></div></div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Vitamin C</div><div class="supp-item-dose">500mg · 1 chewable</div></div></div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Vitamin D3</div><div class="supp-item-dose">4000 IU</div></div></div>
-    </div>
-    <div class="supp-card">
-      <div class="supp-header" style="background:var(--surface2);">
-        <div class="supp-title">Largest meal of the day</div>
-        <div class="supp-sub">ALA must be taken with food</div>
-      </div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Alpha lipoic acid</div><div class="supp-item-dose">600mg · 6 x 100mg capsules together</div></div></div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Vitamin C — afternoon</div><div class="supp-item-dose">500mg · 1 chewable</div></div></div>
-    </div>
-    <div class="supp-card">
-      <div class="supp-header" style="background:var(--surface2);">
-        <div class="supp-title">Evening — at bedtime</div>
-      </div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Magnesium glycinate</div><div class="supp-item-dose">200mg · bisglycinate form · non-negotiable</div></div></div>
-      <div class="supp-item" onclick="toggleSupp(this)"><div class="supp-box"></div><div class="log-field-body"><div class="supp-item-label">Melatonin — tapering</div><div class="supp-item-dose">~1.25mg · quarter dose · do not stop cold turkey</div></div></div>
-    </div>
+    <button class="tier-btn tier-red" onclick="toggleTier('supp-red',this)">
+      <div class="tier-dot"></div>
+      <div><div class="tier-btn-title">Red · Do not use</div><div class="tier-btn-sub">Out of the protocol completely</div></div>
+      <div class="tier-arrow">›</div>
+    </button>
+    <div class="tier-list" id="supp-red"></div>
   </div>
 
-  <!-- ══ PROGRESS ══ -->
-  <div class="page" id="page-progress">
-    <div class="page-title">Your <em>progress</em></div>
+  <!-- ══ FOOD ══ -->
+  <div class="page" id="page-food">
+    <div class="page-title">Food <em>log</em></div>
 
-    <!-- CGM BLOOD SUGAR DASHBOARD -->
-    <div class="chart-card">
-      <div class="chart-header" style="margin-bottom:0.9rem;">
-        <div><div class="chart-metric">Blood sugar dashboard</div><div class="chart-sub">A1C: 7.0% at start · Lowest: 5.7 mmol/L</div></div>
+    <div class="food-entry-card">
+      <div class="section-label" style="margin-top:0;">🍽 What did you eat?</div>
+      <textarea class="food-textarea" id="food-input" placeholder="Type it or tap the microphone on your keyboard and just say it. Example: Scrambled eggs with butter at home. Salmon and green beans at Alice's."></textarea>
+      <div class="food-btn-row">
+        <button class="food-save" onclick="saveFood()">Save ✓</button>
+        <label class="food-photo" for="food-cam">📷</label>
+        <input type="file" id="food-cam" accept="image/*" capture="environment" style="display:none" onchange="foodPhoto(this)">
       </div>
-      <!-- Two stat tiles -->
-      <div class="cgm-stat-row">
-        <div class="cgm-stat-tile">
-          <div class="cgm-stat-label">Most recent</div>
-          <div><span class="cgm-stat-val" id="p-glucose">7.7</span> <span class="cgm-stat-unit">mmol/L</span></div>
-          <div class="cgm-stat-delta">↓ from A1C 7.0% at start</div>
-        </div>
-        <div class="cgm-stat-tile">
-          <div class="cgm-stat-label">Time in range</div>
-          <div><span class="cgm-stat-val" id="p-tir">—</span><span class="cgm-stat-unit">%</span></div>
-          <div class="cgm-stat-delta" id="p-tir-sub">readings at or below 7.8</div>
-        </div>
-      </div>
-      <!-- Range breakdown bar -->
-      <div class="range-bar-wrap">
-        <div class="range-bar">
-          <div class="range-seg-green" id="range-green" style="width:0%"></div>
-          <div class="range-seg-amber" id="range-amber" style="width:0%"></div>
-          <div class="range-seg-red" id="range-red" style="width:0%"></div>
-        </div>
-        <div class="range-legend">
-          <div class="range-legend-item"><div class="range-dot-green"></div><span id="legend-green">Below 6.1 — 0%</span></div>
-          <div class="range-legend-item"><div class="range-dot-amber"></div><span id="legend-amber">6.1–7.8 — 0%</span></div>
-          <div class="range-legend-item"><div class="range-dot-red"></div><span id="legend-red">Above 7.8 — 0%</span></div>
-        </div>
-      </div>
-      <!-- Dot plot -->
-      <div style="font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:0.5rem;">Every reading logged</div>
-      <div class="dotplot-wrap"><canvas id="glucoseDotChart"></canvas></div>
-      <div class="trend-pill" style="margin-top:0.65rem;">↓ A1C 7.0% → 6.6% confirmed · next draw pending</div>
-      <div class="context-note">Surgery stress pushed blood sugar to 12.1 post-op — body self-corrected. The 14.1 on May 29 was restaurant gravy, confirmed trigger. The arc is always the story, not any single reading.</div>
+      <div class="food-hint" id="food-hint">Photo button: snap your plate and it saves automatically.</div>
     </div>
 
-    <!-- ROLLING AVERAGE CARD -->
-    <div class="chart-card">
-      <div class="avg-row">
-        <div>
-          <div class="chart-metric" style="margin-bottom:0.4rem;">Rolling average blood sugar</div>
-          <div><span class="avg-big" id="p-avg">—</span> <span class="avg-unit">mmol/L</span></div>
-          <div class="avg-sub">Getting more accurate as you log more.</div>
-        </div>
-        <div class="avg-right">
-          <div class="avg-count" id="p-count">—</div>
-          <div class="avg-count-label">readings logged</div>
-          <div class="avg-a1c-note">Starting A1C: 7.0%</div>
-        </div>
-      </div>
-      <div class="avg-chart-wrap"><canvas id="avgChart"></canvas></div>
-      <div class="context-note" style="margin-top:0.65rem;">Your rolling average is your personal A1C between lab draws. Every logged reading makes it more accurate.</div>
+    <div class="section-label">Have a question about a food?</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="food-search" placeholder="Type a food, like cheese or apple" oninput="searchFood(this.value)">
     </div>
+    <div id="food-search-results"></div>
 
-    <!-- BP SYSTOLIC -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <div><div class="chart-metric">Blood pressure — systolic (top number)</div><div class="chart-sub">Started: 145 on medication · Off all BP meds</div></div>
-        <div><div class="chart-current" id="p-bp">132</div><div class="chart-unit">mmHg</div></div>
-      </div>
-      <div class="chart-wrap"><canvas id="bpChart"></canvas></div>
-      <div class="trend-pill">↓ Down 23 points — no medication</div>
-      <div class="context-note">Magnesium glycinate introduced May 26. Systolic into the 120s within one week. Vascular resistance resolved at the root without pharmaceutical support.</div>
-    </div>
+    <div class="section-label">Your food guide</div>
+    <button class="tier-btn tier-green" onclick="toggleTier('food-green',this)">
+      <div class="tier-dot"></div>
+      <div><div class="tier-btn-title">Green · Enjoy freely</div><div class="tier-btn-sub">These foods are your medicine</div></div>
+      <div class="tier-arrow">›</div>
+    </button>
+    <div class="tier-list" id="food-green"></div>
 
-    <!-- BP DIASTOLIC -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <div><div class="chart-metric">Blood pressure — diastolic (bottom number)</div><div class="chart-sub">Started: 90 on medication · Off all BP meds</div></div>
-        <div><div class="chart-current" id="p-dia">79</div><div class="chart-unit">mmHg</div></div>
-      </div>
-      <div class="chart-wrap"><canvas id="diaChart"></canvas></div>
-      <div class="trend-pill">↓ Down 12 points — no medication</div>
-    </div>
+    <button class="tier-btn tier-amber" onclick="toggleTier('food-yellow',this)">
+      <div class="tier-dot"></div>
+      <div><div class="tier-btn-title">Yellow · Caution</div><div class="tier-btn-sub">Small amounts, watch how you feel</div></div>
+      <div class="tier-arrow">›</div>
+    </button>
+    <div class="tier-list" id="food-yellow"></div>
 
-    <!-- WEIGHT -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <div><div class="chart-metric">Weight</div><div class="chart-sub">Started: 154.0 lb · Down 7.2 lb</div></div>
-        <div><div class="chart-current" id="p-weight">146.8</div><div class="chart-unit">lb</div></div>
-      </div>
-      <div class="chart-wrap"><canvas id="weightChart"></canvas></div>
-      <div class="trend-pill">↓ Lean tissue preserved throughout</div>
-    </div>
-
-    <!-- PULSE LOG -->
-    <div class="chart-card">
-      <div class="pulse-log-header">
-        <div class="pulse-log-label">Pulse</div>
-        <div><span class="pulse-log-current">61</span> <span class="pulse-log-unit">bpm</span></div>
-      </div>
-      <div id="pulse-log-entries">
-        <div class="pulse-entry">
-          <div class="pulse-entry-date">Jun 3</div>
-          <div class="pulse-entry-label">Morning after surgery<div class="pulse-callout">Remarkable post-surgical reading</div></div>
-          <div style="text-align:right;"><div class="pulse-entry-val">61</div><div class="pulse-entry-bpm">bpm</div></div>
-        </div>
-        <div class="pulse-entry">
-          <div class="pulse-entry-date">Jun 2</div>
-          <div class="pulse-entry-label">Surgery day</div>
-          <div style="text-align:right;"><div class="pulse-entry-val">65</div><div class="pulse-entry-bpm">bpm</div></div>
-        </div>
-        <div class="pulse-entry">
-          <div class="pulse-entry-date">May 31</div>
-          <div class="pulse-entry-label">Morning</div>
-          <div style="text-align:right;"><div class="pulse-entry-val">65</div><div class="pulse-entry-bpm">bpm</div></div>
-        </div>
-        <div class="pulse-entry">
-          <div class="pulse-entry-date">May 29</div>
-          <div class="pulse-entry-label">Morning</div>
-          <div style="text-align:right;"><div class="pulse-entry-val">66</div><div class="pulse-entry-bpm">bpm</div></div>
-        </div>
-        <div class="pulse-entry">
-          <div class="pulse-entry-date">May 28</div>
-          <div class="pulse-entry-label">Morning</div>
-          <div style="text-align:right;"><div class="pulse-entry-val">64</div><div class="pulse-entry-bpm">bpm</div></div>
-        </div>
-        <div class="pulse-entry">
-          <div class="pulse-entry-date">May 4</div>
-          <div class="pulse-entry-label">First logged</div>
-          <div style="text-align:right;"><div class="pulse-entry-val">62</div><div class="pulse-entry-bpm">bpm</div></div>
-        </div>
-      </div>
-      <div class="context-note">61 bpm the morning after knee replacement surgery. That is what a healthy cardiovascular system looks like under stress.</div>
-    </div>
-
+    <button class="tier-btn tier-red" onclick="toggleTier('food-red',this)">
+      <div class="tier-dot"></div>
+      <div><div class="tier-btn-title">Red · Avoid</div><div class="tier-btn-sub">Confirmed triggers, off the menu</div></div>
+      <div class="tier-arrow">›</div>
+    </button>
+    <div class="tier-list" id="food-red"></div>
   </div>
 
-  <!-- ══ WINS + BASELINE ══ -->
+  <!-- ══ WINS ══ -->
   <div class="page" id="page-wins">
     <div class="wins-hero">
-      <div style="font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;opacity:0.75;margin-bottom:0.4rem;">Valerie's results — Future Health protocol</div>
+      <div style="font-size:0.78rem;letter-spacing:0.25em;text-transform:uppercase;opacity:0.75;margin-bottom:0.4rem;">Valerie's results — Future Health protocol</div>
       <div class="wins-big">18</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:400;font-style:italic;opacity:0.95;margin-top:0.2rem;text-align:center;">milestones since March 7, 2026</div>
-      <div style="font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;opacity:0.8;margin-top:0.3rem;text-align:center;" id="wins-days-line">— days on protocol · 3 chronic medications eliminated</div>
-      <div style="background:rgba(255,255,255,0.15);border-radius:10px;padding:0.85rem 1rem;margin-top:1rem;font-size:0.9rem;font-weight:300;line-height:1.6;">A 75-year-old woman came off insulin, blood pressure medication, and Ozempic in under 60 days through nutrition and supplementation alone. Her surgical team called her numbers remarkable.</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;font-style:italic;opacity:0.95;margin-top:0.2rem;text-align:center;">milestones since March 7, 2026</div>
+      <div style="font-size:0.82rem;letter-spacing:0.2em;text-transform:uppercase;opacity:0.8;margin-top:0.3rem;text-align:center;" id="wins-days-line">— days on protocol · 3 chronic medications eliminated</div>
     </div>
     <div id="wins-list"></div>
 
@@ -609,139 +361,431 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--body)
     </div>
   </div>
 
-  <!-- ══ COACH + PROTOCOL ══ -->
+  <!-- ══ COACH ══ -->
   <div class="page" id="page-message">
-    <div class="page-title">Coach <em>notes</em></div>
+    <div class="page-title">Coach <em>chat</em></div>
     <div class="msg-date" id="msg-date"></div>
 
-    <div class="msg-card">
-      <div class="msg-quote">"</div>
-      <div class="msg-text">Valerie. I need you to stop for a moment and really see what you have done. You came into this on insulin, on BP medication, with your glucose running at 10.3 and your gut in crisis every single day. You just came through a full knee replacement surgery with blood pressure described by your surgical team as perfect and oxygen levels described as amazing. No insulin required overnight. Not one medication. That is your biology — healed — showing up when it mattered most. The protocol did not do that. You did that. Every meal you chose, every morning you logged, every time you picked the right thing when the wrong thing was easier. Keep going.</div>
-      <div class="msg-sig">
-        <div class="msg-avatar">CH</div>
-        <div><div class="msg-coach">Christopher</div><div class="msg-title">Future Health — Your Coach</div></div>
-      </div>
-    </div>
-
-    <div class="section-label">Your current protocol — June 5 resumption</div>
-    <div class="protocol-card">
+    <button class="tier-btn tier-green" onclick="toggleTier('protocol-wrap',this)" style="margin-bottom:0.9rem;">
+      <div class="tier-dot"></div>
+      <div><div class="tier-btn-title">Today's plan</div><div class="tier-btn-sub">Your daily protocol, tap to open</div></div>
+      <div class="tier-arrow">›</div>
+    </button>
+    <div class="tier-list" id="protocol-wrap">
+    <div class="protocol-card" style="margin-bottom:1rem;">
       <div class="protocol-header">
         <div class="protocol-title">Daily protocol — what to do today</div>
-        <div class="protocol-sub">Resumes fully June 5 on return home to Kelowna</div>
+        <div class="protocol-sub">Updated July 2026</div>
       </div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Morning with breakfast:</strong> Florastor 250mg · Enterogermina (alternating dose) · Vitamin C 500mg · Vitamin D3 4000 IU</div></div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Bedtime:</strong> Magnesium glycinate 200mg — this is driving your BP into the 120s. Do not skip it.</div></div>
+      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Morning with breakfast:</strong> Florastor 1 capsule · Vitamin C 500mg · Vitamin D3 4000 IU · Magnesium glycinate 200mg</div></div>
+      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Largest meal:</strong> Alpha lipoic acid 600mg, six 100mg capsules together, always with food</div></div>
+      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Evening:</strong> Vitamin C 500mg · Magnesium glycinate 200mg at bedtime. The magnesium is driving your BP into the 120s. Do not skip it.</div></div>
       <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Eat:</strong> Fatty ruminant meat, eggs, butter, ghee, bone broth (Bonafide Provisions or homemade only), wild salmon, hard aged cheese, heavy cream in coffee. Animal fat is medicine right now.</div></div>
       <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Absolute no:</strong> Honey, balsamic glaze, bean soup, diet pop, seed oils, legumes, fermented foods, dates, raw salads, restaurant gravy. These are confirmed triggers with measured spike data.</div></div>
       <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Movement:</strong> Physiotherapy governs all movement post-surgery. No independent exercise until cleared. Walking resumes when PT approves — even 10 minutes lowers your blood sugar and BP measurably.</div></div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Log vitals:</strong> Morning blood sugar, BP, weight, and pulse daily. If a reading looks high, zoom out to the chart before drawing any conclusions. One number is never the verdict.</div></div>
+      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Log daily:</strong> Tap through your tiles on the Home page each morning. If a reading looks high, remember the arc is always the story, never a single number.</div></div>
       <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Alice's restaurant Fridays:</strong> Avoid gravy, mashed potatoes with gravy, and anything sauce-heavy. Protein and vegetables with butter is safe. Log blood sugar the next morning — it tells the full story.</div></div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>K2 coming soon:</strong> Vitamin K2 as MK-7 100–200mcg will be added once home. Your D3 needs K2 to direct calcium into bone and away from arteries. This is the next priority addition.</div></div>
+      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>K2 coming soon:</strong> Vitamin K2 as MK-7 will be added once sequencing allows. Your D3 needs K2 to direct calcium into bone and away from arteries. This is the next priority addition.</div></div>
+    </div>
     </div>
 
-    <div class="msg-history-label">Previous messages from Christopher</div>
-    <div class="msg-history-item"><div class="msg-history-date">May 29</div><div class="msg-history-text">That 14.1 reading is not a failure. It is data. Restaurant gravy is a confirmed spike trigger. Your body processed a significant glucose load and self-corrected to 8.0 by morning — a 5.8 point self-correction overnight without any intervention. That is robust regulation. That is your beta cells working. One meal does not erase what you have built.</div></div>
-    <div class="msg-history-item"><div class="msg-history-date">May 26</div><div class="msg-history-text">Off all medications. Every single one. This is not a small thing. Your vascular resistance has normalized without pharmaceutical intervention. Your glucose is self-regulating. Your gut is rebuilding. Today matters.</div></div>
-    <div class="msg-history-item"><div class="msg-history-date">May 10</div><div class="msg-history-text">Italy is proving something important. Twelve consecutive days with zero whoosh episodes. Walking daily, eating simply, numbers holding. The protocol travels. Your body has learned a new baseline.</div></div>
+    <div class="section-label">Messages with Christopher</div>
+    <div class="chat-thread" id="chat-thread"></div>
+
+    <div class="reply-card">
+      <textarea class="reply-box" id="reply-input" placeholder="Write to Christopher here. Type it or use the microphone on your keyboard."></textarea>
+      <button class="reply-send" onclick="sendReply()">Send to Christopher ✓</button>
+      <div class="reply-sent" id="reply-sent">Sent 🌿 Christopher will see this.</div>
+    </div>
   </div>
 
-  <!-- NAV -->
+  <!-- ══ COACH VIEW (Christopher only, ?coach=future1) ══ -->
+  <div id="coach-view">
+    <div class="coach-banner">
+      <div class="coach-banner-label">Coach view · Christopher only</div>
+      <div class="coach-banner-title">Valerie — Client Dashboard</div>
+    </div>
+
+    <div class="section-label" style="margin-top:0.5rem;">Chat with Valerie</div>
+    <div class="chat-thread" id="coach-chat-thread"></div>
+    <div class="reply-card">
+      <textarea class="reply-box" id="coach-reply-input" placeholder="Write your message to Valerie."></textarea>
+      <button class="reply-send" onclick="sendCoachMsg()">Send to Valerie ✓</button>
+      <div class="reply-sent" id="coach-reply-sent">Sent 🌿</div>
+    </div>
+
+    <div class="section-label">Trends</div>
+    <div class="coach-chart-card"><div class="coach-chart-title">🩸 Blood sugar (mmol/L)</div><div class="coach-chart-wrap"><canvas id="c-glucose"></canvas></div><div class="coach-empty" id="e-glucose">Waiting for logged data.</div></div>
+    <div class="coach-chart-card"><div class="coach-chart-title">💓 Blood pressure (mmHg)</div><div class="coach-chart-wrap"><canvas id="c-bp"></canvas></div><div class="coach-empty" id="e-bp">Waiting for logged data.</div></div>
+    <div class="coach-chart-card"><div class="coach-chart-title">⚖️ Weight (lb)</div><div class="coach-chart-wrap"><canvas id="c-weight"></canvas></div><div class="coach-empty" id="e-weight">Waiting for logged data.</div></div>
+    <div class="coach-chart-card"><div class="coach-chart-title">💗 Pulse (bpm)</div><div class="coach-chart-wrap"><canvas id="c-pulse"></canvas></div><div class="coach-empty" id="e-pulse">Waiting for logged data.</div></div>
+    <div class="coach-chart-card"><div class="coach-chart-title">🌙 Sleep hours</div><div class="coach-chart-wrap"><canvas id="c-sleep"></canvas></div><div class="coach-empty" id="e-sleep">Waiting for logged data.</div></div>
+    <div class="coach-chart-card"><div class="coach-chart-title">🦵⚡ Knee pain vs energy (0–10)</div><div class="coach-chart-wrap"><canvas id="c-painenergy"></canvas></div><div class="coach-empty" id="e-painenergy">Waiting for logged data.</div></div>
+
+    <div class="section-label">Latest entries</div>
+    <div id="coach-log-list"><div class="coach-empty">Entries appear here as Valerie logs them.</div></div>
+  </div>
+
+  <!-- ══ NAV ══ -->
   <div class="bottom-nav">
-    <button class="nav-btn active" onclick="showPage('home',this)"><div class="nav-icon">🏡</div><div class="nav-label">Home</div></button>
-    <button class="nav-btn" onclick="showPage('log',this)"><div class="nav-icon">✏️</div><div class="nav-label">Log</div></button>
-    <button class="nav-btn" onclick="showPage('progress',this)"><div class="nav-icon">📈</div><div class="nav-label">Progress</div></button>
+    <button class="nav-btn active" onclick="showPage('home',this)"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></button>
+    <button class="nav-btn" onclick="showPage('supps',this)"><div class="nav-icon">💊</div><div class="nav-label">Supplements</div></button>
+    <button class="nav-btn" onclick="showPage('food',this)"><div class="nav-icon">🍽️</div><div class="nav-label">Food</div></button>
     <button class="nav-btn" onclick="showPage('wins',this)"><div class="nav-icon">🏆</div><div class="nav-label">Wins</div></button>
     <button class="nav-btn" onclick="showPage('message',this)"><div class="nav-icon">💬</div><div class="nav-label">Coach</div></button>
   </div>
+
+  <!-- ══ ENTRY SHEET ══ -->
+  <div class="overlay" id="overlay" onclick="if(event.target===this)closeSheet()">
+    <div class="sheet" id="sheet"></div>
+  </div>
+
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
-
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbwnWfBbg4sCMdKWO_u6yDOZee7GUexUVBeOX-TcBfZ7sDy6Vu8ZWgm7_vgxDs_PCOSa7A/exec";
-
-// Fallback local auth — kept for reference only, login removed
-const CLIENTS = {
-  "valerie": { password: "future1", displayName: "Valerie" }
-};
-
 const PROTOCOL_START = new Date("2026-03-07");
-
-let selectedTime = "This morning";
-let todayLogs = [];
-let currentClientId = "valerie";
+const currentClientId = "valerie";
 
 async function sheetCall(payload) {
   try {
-    const res = await fetch(SHEET_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
+    const res = await fetch(SHEET_URL, { method:"POST", body: JSON.stringify(payload) });
     return await res.json();
-  } catch(e) {
-    return { success: false, error: e.toString() };
+  } catch(e) { return { success:false, error:e.toString() }; }
+}
+
+function stamp() {
+  const now = new Date();
+  return { iso: now.toISOString(), local: now.toLocaleString('en-CA',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) };
+}
+
+/* ── LOCAL DAY STATE ── */
+const dayKey = () => 'fh_' + new Date().toISOString().slice(0,10);
+function loadDay() { try { return JSON.parse(localStorage.getItem(dayKey())) || {}; } catch(e){ return {}; } }
+function saveDay(state) { localStorage.setItem(dayKey(), JSON.stringify(state)); }
+
+/* ── DAILY INPUT TILES ── */
+const INPUTS = [
+  { id:'glucose', icon:'🩸', label:'Blood sugar', sub:'Morning, before eating', type:'number', unit:'mmol/L', step:'0.1', placeholder:'6.5',
+    help:'Your fasting blood sugar, first thing in the morning before breakfast. Just the number from your meter.' },
+  { id:'pulse', icon:'💗', label:'Pulse', sub:'Morning heart rate', type:'number', unit:'beats per minute', step:'1', placeholder:'65',
+    help:'Your morning pulse in beats per minute.' },
+  { id:'bp', icon:'💓', label:'Blood pressure', sub:'Sit and rest 5 minutes first', type:'bp',
+    help:'Sit quietly for 5 minutes before taking it. Enter the top number and the bottom number from your monitor. The time is recorded for you automatically.' },
+  { id:'weight', icon:'⚖️', label:'Weight', sub:'Same scale, same time of day', type:'number', unit:'pounds', step:'0.1', placeholder:'145.0',
+    help:'Use the same scale at the same time each day, ideally first thing in the morning.' },
+  { id:'sleephours', icon:'🌙', label:'Sleep hours', sub:'Total hours slept', type:'number', unit:'hours', step:'0.5', placeholder:'7.5',
+    help:'Roughly how many hours did you sleep last night? Your best guess is fine.' },
+  { id:'sleepquality', icon:'😴', label:'Sleep quality', sub:'How rested do you feel?', type:'scale',
+    help:'How restful was your sleep? 1 means terrible, tossing and turning all night. 10 means wonderful, you woke up completely refreshed.' },
+  { id:'wakeups', icon:'🕑', label:'Night wake-ups', sub:'Times you woke overnight', type:'count',
+    help:'How many times did you wake up during the night? Count every time, including bathroom trips. 0 means you slept straight through.' },
+  { id:'kneepain', icon:'🦵', label:'Knee pain', sub:'0 to 10', type:'scale', zeroOk:true,
+    help:'How is your knee today? 0 means no pain at all. 10 means the worst pain you can imagine. Pick the number that fits right now.' },
+  { id:'fibropain', icon:'🌡️', label:'Body pain', sub:'Overall aches, 0 to 10', type:'scale', zeroOk:true,
+    help:'Your overall body aches and fibro pain, everywhere other than the knee. 0 means none at all. 10 means the worst imaginable.' },
+  { id:'energy', icon:'⚡', label:'Energy and clarity', sub:'How sharp do you feel?', type:'scale',
+    help:'One number for your energy and how clear your head feels. 1 means exhausted and foggy. 10 means bright, sharp, and full of energy.' },
+  { id:'activity', icon:'🚶', label:'Activity', sub:'What you did today', type:'activity',
+    help:'What movement did you do? Type what it was, pick how hard it felt, and roughly what time.' },
+  { id:'stress', icon:'🫶', label:'Stress', sub:'How heavy was today?', type:'stress',
+    help:'How much stress today? 1 means calm and easy. 10 means overwhelming. Then tap what caused it.' },
+  { id:'bowel', icon:'🚻', label:'Bowel movement', sub:'Bristol scale 1 to 7', type:'bristol',
+    help:'Pick the type that best matches, then tap whether it came with warning or no warning. Type 3 and 4 are the healthy middle.' },
+  { id:'hydration', icon:'💧', label:'Water and salt', sub:'How was today?', type:'hydration',
+    help:'Compared to a normal day, how much water and salt did you have today?' }
+];
+
+const BRISTOL = [
+  { n:1, d:'Hard little lumps, like nuts. Hard to pass.' },
+  { n:2, d:'Lumpy and sausage-shaped.' },
+  { n:3, d:'Sausage-shaped with cracks on the surface. Healthy.' },
+  { n:4, d:'Smooth and soft, like a sausage. Ideal.' },
+  { n:5, d:'Soft blobs with clear edges.' },
+  { n:6, d:'Mushy with ragged edges.' },
+  { n:7, d:'Entirely liquid, no solid pieces.' }
+];
+
+let activeInput = null;
+let sheetSel = {};
+
+function renderTiles() {
+  const day = loadDay();
+  document.getElementById('tiles').innerHTML = INPUTS.map(inp => {
+    const v = day[inp.id];
+    const done = v !== undefined && v !== null;
+    return `<div class="tile ${done?'done':''}" id="tile-${inp.id}" onclick="openEntry('${inp.id}')">
+      <div class="tile-icon">${inp.icon}</div>
+      <div class="tile-body">
+        <div class="tile-label">${inp.label}</div>
+        <div class="tile-sub">${done ? 'Done for today ✓ tap to change' : inp.sub}</div>
+      </div>
+      ${done ? `<div class="tile-value">${displayVal(inp,v)}</div>` : '<div class="tile-check">✓</div>'}
+    </div>`;
+  }).join('');
+}
+
+function displayVal(inp, v) {
+  if (inp.type==='bp') return v.sys + '/' + v.dia;
+  if (inp.type==='activity') return '✓';
+  if (inp.type==='stress') return v.intensity;
+  if (inp.type==='bristol') return 'Type ' + v.type;
+  if (inp.type==='hydration') return v.charAt(0).toUpperCase()+v.slice(1);
+  return v;
+}
+
+function openEntry(id) {
+  activeInput = INPUTS.find(i=>i.id===id);
+  sheetSel = {};
+  const inp = activeInput;
+  let body = '';
+  if (inp.type==='number') {
+    body = `<input class="big-input" type="number" inputmode="decimal" step="${inp.step}" id="entry-val" placeholder="${inp.placeholder}">
+            <div class="input-unit">${inp.unit}</div>`;
+  } else if (inp.type==='bp') {
+    body = `<div class="dual-wrap">
+              <div><div class="dual-label">Top number</div><input class="big-input" type="number" inputmode="numeric" id="entry-sys" placeholder="130"></div>
+              <div><div class="dual-label">Bottom number</div><input class="big-input" type="number" inputmode="numeric" id="entry-dia" placeholder="80"></div>
+            </div>
+            <div class="input-unit">mmHg</div>`;
+  } else if (inp.type==='scale') {
+    const start = inp.zeroOk ? 0 : 1;
+    let btns = '';
+    for (let n=start; n<=10; n++) btns += `<button class="scale-btn" onclick="pickScale(this,${n})">${n}</button>`;
+    body = `<div class="scale-row">${btns}</div>`;
+  } else if (inp.type==='count') {
+    let btns = '';
+    for (let n=0; n<=6; n++) btns += `<button class="scale-btn" onclick="pickScale(this,${n})">${n}</button>`;
+    body = `<div class="scale-row">${btns}</div><div class="input-unit" style="margin-top:0.8rem;">6 means 6 or more</div>`;
+  } else if (inp.type==='activity') {
+    body = `<div class="sheet-field-label">What did you do?</div>
+            <input class="sheet-text" id="entry-atype" placeholder="e.g. Walking, physio, stationary bike">
+            <div class="sheet-field-label">How hard did it feel?</div>
+            <div class="opt-col">
+              <button class="opt-btn" onclick="pickOpt(this,'intensity','Light')">Light<small>Easy, could chat the whole time</small></button>
+              <button class="opt-btn" onclick="pickOpt(this,'intensity','Moderate')">Moderate<small>Breathing harder, still comfortable</small></button>
+              <button class="opt-btn" onclick="pickOpt(this,'intensity','Hard')">Hard<small>A real effort</small></button>
+            </div>
+            <div class="sheet-field-label">Around what time?</div>
+            <input class="sheet-text" id="entry-atime" placeholder="e.g. 10 in the morning">`;
+  } else if (inp.type==='stress') {
+    let btns = '';
+    for (let n=1; n<=10; n++) btns += `<button class="scale-btn" onclick="pickScale(this,${n})">${n}</button>`;
+    body = `<div class="scale-row">${btns}</div>
+            <div class="sheet-field-label">What caused it?</div>
+            <div class="opt-col">
+              <button class="opt-btn" onclick="pickOpt(this,'source','Travel')">Travel</button>
+              <button class="opt-btn" onclick="pickOpt(this,'source','Hosting')">Hosting or visitors</button>
+              <button class="opt-btn" onclick="pickOpt(this,'source','Conflict')">Conflict</button>
+              <button class="opt-btn" onclick="pickOpt(this,'source','Pain')">Pain</button>
+              <button class="opt-btn" onclick="pickOpt(this,'source','Other')">Other</button>
+            </div>`;
+  } else if (inp.type==='bristol') {
+    body = `<div class="opt-col">` + BRISTOL.map(b =>
+      `<button class="opt-btn" onclick="pickOpt(this,'type',${b.n})">Type ${b.n}<small>${b.d}</small></button>`).join('') + `</div>
+      <div class="sheet-field-label">Did it come with warning?</div>
+      <div class="opt-col">
+        <button class="opt-btn" onclick="pickOpt(this,'warning','With warning')">With warning<small>You had time to get there</small></button>
+        <button class="opt-btn" onclick="pickOpt(this,'warning','No warning')">No warning<small>It came on suddenly</small></button>
+      </div>`;
+  } else if (inp.type==='hydration') {
+    body = `<div class="opt-col">
+              <button class="opt-btn" onclick="pickOpt(this,'tag','usual')">Usual<small>A normal day of water and salt</small></button>
+              <button class="opt-btn" onclick="pickOpt(this,'tag','more')">More than usual</button>
+              <button class="opt-btn" onclick="pickOpt(this,'tag','less')">Less than usual</button>
+            </div>`;
   }
+  document.getElementById('sheet').innerHTML = `
+    <div class="sheet-icon">${inp.icon}</div>
+    <div class="sheet-title">${inp.label}</div>
+    <div class="sheet-help">${inp.help}</div>
+    ${body}
+    <button class="save-btn" onclick="saveEntry()">Save ✓</button>
+    <button class="cancel-btn" onclick="closeSheet()">Cancel</button>
+    <div class="saved-flash" id="saved-flash">Saved 🌿</div>`;
+  document.getElementById('overlay').classList.add('open');
+  const first = document.getElementById('entry-val');
+  if (first) setTimeout(()=>first.focus(), 250);
 }
 
-// Login removed — app opens directly for Valerie
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('topbar-user').textContent = 'Valerie';
-  initApp();
-});
-
-async function initApp() {
-  // Days on protocol — calculated live from March 7 2026
-  const today = new Date();
-  const days = Math.floor((today - PROTOCOL_START) / (1000 * 60 * 60 * 24));
-  document.getElementById('days-count').textContent = days;
-
-  const h = today.getHours();
-  const tod = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('hero-time').textContent = tod;
-  document.getElementById('hero-name').textContent = 'Valerie.';
-  const msgs = [
-    "Your body came through surgery performing at its best. Rest. Trust what you have built.",
-    "Off every medication. Every single one. That is not luck — that is " + days + " days of right decisions.",
-    "The protocol holds. Italy proved it. Surgery proved it. Your biology is restored.",
-    "One day at a time. The arc is always more important than a single number."
-  ];
-  document.getElementById('hero-msg').textContent = msgs[today.getDay() % msgs.length];
-
-  // Pull latest valid values from hardcoded historical data
-  const lastG  = [...logs].reverse().find(l => l.glucose);
-  const lastBP = [...logs].reverse().find(l => l.sys);
-  const lastW  = [...logs].reverse().find(l => l.weight);
-  const lastP  = [...logs].reverse().find(l => l.pulse);
-  document.getElementById('h-glucose').textContent = lastG  ? lastG.glucose : '—';
-  document.getElementById('h-bp').textContent      = lastBP ? lastBP.sys + '/' + lastBP.dia : '—';
-  document.getElementById('h-weight').textContent  = lastW  ? lastW.weight : '—';
-  document.getElementById('h-pulse').textContent   = lastP  ? lastP.pulse : '—';
-
-  document.getElementById('msg-date').textContent = today.toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  const wdl = document.getElementById('wins-days-line');
-  if(wdl) wdl.textContent = days+' days on protocol · 3 chronic medications eliminated';
-
-  initCharts();
-  initWins();
-  initVerse();
-
-  // Pull live coach message from sheet (non-blocking — updates if available)
-  sheetCall({ action: "get_coach", clientId: currentClientId }).then(r => {
-    if (r.success && r.message) {
-      const msgEl = document.querySelector('.msg-text');
-      if (msgEl) msgEl.textContent = r.message;
-    }
-  });
-
-  // Pull live verse from sheet (non-blocking — falls back to local array)
-  sheetCall({ action: "get_verse", clientId: currentClientId }).then(r => {
-    if (r.success && r.verse) {
-      document.getElementById('verse-text').textContent = r.verse.text;
-      document.getElementById('verse-ref').textContent  = r.verse.reference + ' — NASB';
-    }
-  });
+function pickScale(el, n) {
+  el.parentElement.querySelectorAll('.scale-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  sheetSel.scale = n;
 }
 
+function pickOpt(el, key, val) {
+  el.parentElement.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  sheetSel[key] = val;
+}
+
+function closeSheet() {
+  document.getElementById('overlay').classList.remove('open');
+  activeInput = null;
+}
+
+async function saveEntry() {
+  const inp = activeInput;
+  if (!inp) return;
+  let value = null;
+  if (inp.type==='number') {
+    const v = parseFloat(document.getElementById('entry-val').value);
+    if (isNaN(v)) return;
+    value = v;
+  } else if (inp.type==='bp') {
+    const sys = parseInt(document.getElementById('entry-sys').value);
+    const dia = parseInt(document.getElementById('entry-dia').value);
+    if (isNaN(sys) || isNaN(dia)) return;
+    value = { sys, dia };
+  } else if (inp.type==='scale' || inp.type==='count') {
+    if (sheetSel.scale === undefined) return;
+    value = sheetSel.scale;
+  } else if (inp.type==='activity') {
+    const atype = document.getElementById('entry-atype').value.trim();
+    if (!atype) return;
+    value = { type: atype, intensity: sheetSel.intensity || '', time: document.getElementById('entry-atime').value.trim() };
+  } else if (inp.type==='stress') {
+    if (sheetSel.scale === undefined) return;
+    value = { intensity: sheetSel.scale, source: sheetSel.source || '' };
+  } else if (inp.type==='bristol') {
+    if (sheetSel.type === undefined) return;
+    value = { type: sheetSel.type, warning: sheetSel.warning || '' };
+  } else if (inp.type==='hydration') {
+    if (!sheetSel.tag) return;
+    value = sheetSel.tag;
+  }
+  const t = stamp();
+  const day = loadDay();
+  day[inp.id] = value;
+  saveDay(day);
+  renderTiles();
+  document.getElementById('saved-flash').style.display = 'block';
+  setTimeout(closeSheet, 550);
+  sheetCall({ action:'log_entry', clientId: currentClientId, field: inp.id, value: value, timestamp: t.iso, timeLocal: t.local });
+}
+
+/* ── SUPPLEMENTS ── */
+const SUPPS = [
+  { id:'ala',      name:'Alpha lipoic acid 600mg', dose:'Six 100mg capsules together, with your largest meal' },
+  { id:'florastor',name:'Florastor', dose:'1 capsule with breakfast' },
+  { id:'mag_am',   name:'Magnesium glycinate — morning', dose:'200mg with breakfast' },
+  { id:'mag_pm',   name:'Magnesium glycinate — bedtime', dose:'200mg at bedtime' },
+  { id:'d3',       name:'Vitamin D3', dose:'4000 IU in the morning' },
+  { id:'vitc_am',  name:'Vitamin C — morning', dose:'500mg chewable' },
+  { id:'vitc_pm',  name:'Vitamin C — evening', dose:'500mg chewable' }
+];
+
+const SUPP_GREEN = [
+  { name:'Alpha Lipoic Acid', note:'600mg daily. Six 100mg capsules taken together with the largest meal. Always with food.' },
+  { name:'Florastor (Saccharomyces boulardii)', note:'1 capsule with breakfast daily.' },
+  { name:'Magnesium Glycinate', note:'400mg daily, split as 200mg morning and 200mg bedtime.' },
+  { name:'Vitamin D3', note:'4000 IU in the morning.' },
+  { name:'Vitamin C', note:'500mg chewable, morning and evening.' }
+];
+const SUPP_YELLOW = [
+  { name:'Melatonin', note:'Not currently in use. Situational only if reintroduced, 0.5mg to a maximum of 1mg.' },
+  { name:'Enterogermina', note:'Keep or drop pending observed benefit.' },
+  { name:'Psyllium Husk', note:'Go or no-go decision pending.' },
+  { name:'Ashwagandha', note:'Schedule or hold pending.' },
+  { name:'Whey Protein Isolate', note:'Cleared for trial, not yet started.' },
+  { name:'Vitamin K2 as MK-7', note:'Not yet added. High priority once sequencing allows.' },
+  { name:'Marine Collagen', note:'Not yet added. Queued third in sequence.' },
+  { name:'BPC-157 Oral', note:'Dosing not yet discussed. Pending review.' }
+];
+const SUPP_RED = [
+  { name:'Digestive Enzyme Formula', note:'Do not use.' },
+  { name:'Sublingual Vitamin B12', note:'Stop immediately. Check the label for biotin before discarding.' },
+  { name:'5-HTP', note:'Do not use.' },
+  { name:'Collagen-Biotin Beauty Formula', note:'Do not use.' }
+];
+
+function renderSupps() {
+  const day = loadDay();
+  const taken = day.supps || {};
+  document.getElementById('supp-ticks').innerHTML = SUPPS.map(s => `
+    <div class="supp-tick ${taken[s.id]?'checked':''}" onclick="toggleSuppTick('${s.id}',this)">
+      <div class="supp-tick-box">${taken[s.id]?'✓':''}</div>
+      <div><div class="supp-tick-name">${s.name}</div><div class="supp-tick-dose">${s.dose}</div></div>
+    </div>`).join('');
+  document.getElementById('supp-green').innerHTML  = SUPP_GREEN.map(tierItem).join('');
+  document.getElementById('supp-yellow').innerHTML = SUPP_YELLOW.map(tierItem).join('');
+  document.getElementById('supp-red').innerHTML    = SUPP_RED.map(tierItem).join('');
+}
+
+function tierItem(x) {
+  return `<div class="tier-item"><div class="tier-item-name">${x.name}</div><div class="tier-item-note">${x.note}</div></div>`;
+}
+
+function toggleSuppTick(id, el) {
+  const day = loadDay();
+  day.supps = day.supps || {};
+  const nowOn = !day.supps[id];
+  day.supps[id] = nowOn;
+  saveDay(day);
+  el.classList.toggle('checked', nowOn);
+  el.querySelector('.supp-tick-box').textContent = nowOn ? '✓' : '';
+  const t = stamp();
+  const s = SUPPS.find(x=>x.id===id);
+  sheetCall({ action:'log_supplement', clientId: currentClientId, supplement: s.name, taken: nowOn, timestamp: t.iso, timeLocal: t.local });
+}
+
+function toggleTier(id, btn) {
+  document.getElementById(id).classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+/* ── FOOD ── */
+const FOOD_GREEN = ['Beef','Lamb','Pork','Ham','Chicken skin-on','Turkey','Bacon','Organ meats','Eggs any style','Salmon','Mackerel','Sardines','Herring','White fish','Shellfish','Butter','Ghee','Tallow','Duck fat','Olive oil','Avocado oil','Coconut oil','MCT oil','Heavy cream','Parmesan','Aged cheddar','Gruyere','Gouda','Manchego','Spinach','Zucchini','Green beans','Carrots','Squash','Peppers','Asparagus','Avocado','Macadamia','Pecans','Walnuts','Raspberries','Strawberries','Blueberries','Fresh orange','Water with Redmond salt','Coffee with heavy cream','Green tea','Black tea','Redmond salt','Herbs and spices','Plain vinegars','Mustard','Olive oil and vinegar dressing'];
+const FOOD_YELLOW = ['Mozzarella','Burrata','Ricotta','Cottage cheese','Cream cheese','Fluid milk','Raw vegetables and salads','Onion and garlic in quantity','Large cruciferous loads','Almonds','Hazelnuts','Cashews','Pistachios','Chia','Ground flax','Sourdough','White rice small portions','Potato cooked then cooled','One beer occasionally','Dry wine','Spirits'];
+const FOOD_RED = ['Canola oil','Soybean oil','Corn oil','Sunflower oil','Safflower oil','Grapeseed oil','Apple','Pear','Mango','Grapes','Watermelon','Cherries','Dried fruit','Peanuts','Peanut butter','Legumes','Bean soup any source','Added sugar','Refined flour with no ferment','Diet pop','Artificial sweeteners','Sugar alcohols','Honey','Concentrated balsamic glaze'];
+
+function renderFoodLists() {
+  const chip = f => `<span class="food-chip">${f}</span>`;
+  document.getElementById('food-green').innerHTML  = `<div style="padding:0.3rem 0.2rem 0.8rem;">${FOOD_GREEN.map(chip).join('')}</div>`;
+  document.getElementById('food-yellow').innerHTML = `<div style="padding:0.3rem 0.2rem 0.8rem;">${FOOD_YELLOW.map(chip).join('')}</div>`;
+  document.getElementById('food-red').innerHTML    = `<div style="padding:0.3rem 0.2rem 0.8rem;">${FOOD_RED.map(chip).join('')}</div>`;
+}
+
+function searchFood(q) {
+  const out = document.getElementById('food-search-results');
+  q = q.trim().toLowerCase();
+  if (q.length < 2) { out.innerHTML=''; return; }
+  const hits = [];
+  FOOD_GREEN.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'green', label:'Enjoy freely', color:'var(--green)'}); });
+  FOOD_YELLOW.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'yellow', label:'Caution, small amounts', color:'var(--amber)'}); });
+  FOOD_RED.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'red', label:'Avoid', color:'var(--red)'}); });
+  out.innerHTML = hits.length
+    ? hits.slice(0,8).map(h=>`<div class="search-result"><div class="tier-dot" style="background:${h.color};width:20px;height:20px;flex-shrink:0;border-radius:50%;"></div><div>${h.f}<div style="font-size:0.9rem;color:${h.color};font-weight:700;">${h.label}</div></div></div>`).join('')
+    : `<div class="search-result">Not on the list yet. Log it and Christopher will let you know.</div>`;
+}
+
+async function saveFood() {
+  const txt = document.getElementById('food-input').value.trim();
+  if (!txt) return;
+  const t = stamp();
+  document.getElementById('food-input').value = '';
+  document.getElementById('food-hint').textContent = 'Saved 🌿 ' + t.local;
+  sheetCall({ action:'log_food', clientId: currentClientId, food: txt, timestamp: t.iso, timeLocal: t.local });
+  setTimeout(()=>{ document.getElementById('food-hint').textContent = 'Photo button: snap your plate and it saves automatically.'; }, 4000);
+}
+
+function foodPhoto(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function() {
+    const t = stamp();
+    document.getElementById('food-hint').textContent = 'Photo saved 🌿 ' + t.local;
+    sheetCall({ action:'food_photo', clientId: currentClientId, image: reader.result, timestamp: t.iso, timeLocal: t.local });
+    setTimeout(()=>{ document.getElementById('food-hint').textContent = 'Photo button: snap your plate and it saves automatically.'; }, 4000);
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+/* ── VERSES ── */
 const verses = [
   { ref:"Jeremiah 29:11 — NASB", text:"For I know the plans that I have for you, declares the Lord, plans for prosperity and not for disaster, to give you a future and a hope." },
   { ref:"Isaiah 40:31 — NASB",   text:"Yet those who wait for the Lord will gain new strength; they will mount up with wings like eagles, they will run and not get tired, they will walk and not become weary." },
@@ -756,230 +800,20 @@ const verses = [
 ];
 
 function initVerse() {
-  // Rotates daily — different verse each calendar day, cycles through all 10
   const today = new Date();
-  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000*60*60*24));
   const verse = verses[dayOfYear % verses.length];
   document.getElementById('verse-text').textContent = verse.text;
   document.getElementById('verse-ref').textContent = verse.ref;
-}
-
-const logs = [
-  { date:"Mar 7",  glucose:null, sys:145, dia:90,  weight:154.0, pulse:null },
-  { date:"Apr 1",  glucose:null, sys:136, dia:87,  weight:152.0, pulse:null },
-  { date:"Apr 22", glucose:7.1,  sys:134, dia:86,  weight:150.5, pulse:null },
-  { date:"Apr 29", glucose:6.4,  sys:132, dia:84,  weight:149.8, pulse:null },
-  { date:"May 1",  glucose:6.2,  sys:130, dia:83,  weight:149.0, pulse:null },
-  { date:"May 10", glucose:7.1,  sys:129, dia:82,  weight:148.5, pulse:null },
-  { date:"May 20", glucose:6.6,  sys:127, dia:81,  weight:148.0, pulse:null },
-  { date:"May 26", glucose:6.3,  sys:125, dia:80,  weight:147.5, pulse:null },
-  { date:"May 28", glucose:5.7,  sys:122, dia:78,  weight:146.8, pulse:64   },
-  { date:"May 29", glucose:8.0,  sys:128, dia:82,  weight:146.8, pulse:66   },
-  { date:"May 31", glucose:6.3,  sys:122, dia:78,  weight:146.8, pulse:65   },
-  { date:"Jun 2",  glucose:7.7,  sys:132, dia:79,  weight:null,  pulse:65   },
-  { date:"Jun 3",  glucose:null, sys:null,dia:null, weight:null,  pulse:61   },
-  { date:"Jun 8",  glucose:9.1,  sys:138, dia:84,  weight:144.2, pulse:74   },
-  { date:"Jun 10", glucose:8.4,  sys:136, dia:82,  weight:143.8, pulse:72   },
-  { date:"Jun 14", glucose:9.8,  sys:133, dia:80,  weight:143.1, pulse:71   },
-  { date:"Jun 17", glucose:10.3, sys:140, dia:86,  weight:142.5, pulse:78   },
-  { date:"Jun 20", glucose:7.6,  sys:130, dia:79,  weight:142.0, pulse:69   },
-  { date:"Jun 22", glucose:6.8,  sys:127, dia:78,  weight:141.8, pulse:67   },
-  { date:"Jun 25", glucose:9.2,  sys:151, dia:93,  weight:141.6, pulse:82   }
-];
-
-function initCharts() {
-  const bpLogs = logs.filter(l=>l.sys);
-  const wlogs  = logs.filter(l=>l.weight);
-  const sage   = '#2D5A2D';
-  const sageF  = 'rgba(45,90,45,0.09)';
-  const gold   = '#C87830';
-  const goldF  = 'rgba(200,120,48,0.09)';
-  const tk     = '#7A7060';
-  const gr     = 'rgba(45,90,45,0.08)';
-  const copts = (mn,mx,col,fill) => ({
-    responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'rgba(28,28,26,0.92)', titleFont:{family:'DM Sans',size:11}, bodyFont:{family:'DM Sans',size:13,weight:'600'}, padding:10, cornerRadius:8, displayColors:false }},
-    scales:{
-      x:{ grid:{display:false}, ticks:{font:{family:'DM Sans',size:10},color:tk,maxTicksLimit:5}, border:{display:false} },
-      y:{ grid:{color:gr}, ticks:{font:{family:'DM Sans',size:10},color:tk,maxTicksLimit:4}, border:{display:false}, suggestedMin:mn, suggestedMax:mx }
-    },
-    elements:{ line:{tension:0.4}, point:{radius:4,hoverRadius:6,borderWidth:2,backgroundColor:'#fff',borderColor:col} }
-  });
-
-  // ── CGM GLUCOSE DATA ──
-  const glucoseReadings = [
-    { date:'Apr 22', val:7.1  },
-    { date:'Apr 23', val:10.3 },
-    { date:'Apr 23', val:6.6  },
-    { date:'Apr 29', val:6.4  },
-    { date:'May 1',  val:6.2  },
-    { date:'May 10', val:7.1  },
-    { date:'May 20', val:6.6  },
-    { date:'May 26', val:6.3  },
-    { date:'May 28', val:5.7  },
-    { date:'May 29', val:14.1 },
-    { date:'May 29', val:8.0  },
-    { date:'May 31', val:6.3  },
-    { date:'Jun 2',  val:7.7  },
-    { date:'Jun 8',  val:9.1  },
-    { date:'Jun 8',  val:6.4  },
-    { date:'Jun 10', val:8.4  },
-    { date:'Jun 10', val:5.9  },
-    { date:'Jun 14', val:9.8  },
-    { date:'Jun 14', val:6.2  },
-    { date:'Jun 17', val:10.3 },
-    { date:'Jun 17', val:7.1  },
-    { date:'Jun 20', val:8.1  },
-    { date:'Jun 20', val:7.6  },
-    { date:'Jun 22', val:6.8  },
-    { date:'Jun 25', val:9.2  },
-    { date:'Jun 25', val:6.1  }
-  ];
-  const total = glucoseReadings.length;
-  const greenCount = glucoseReadings.filter(r=>r.val < 6.1).length;
-  const amberCount = glucoseReadings.filter(r=>r.val >= 6.1 && r.val <= 7.8).length;
-  const redCount   = glucoseReadings.filter(r=>r.val > 7.8).length;
-  const greenPct = Math.round(greenCount/total*100);
-  const amberPct = Math.round(amberCount/total*100);
-  const redPct   = 100 - greenPct - amberPct;
-  const tirPct   = Math.round((greenCount+amberCount)/total*100);
-  const avg      = (glucoseReadings.reduce((s,r)=>s+r.val,0)/total).toFixed(1);
-
-  // Populate stat tiles
-  if(document.getElementById('p-tir')) document.getElementById('p-tir').textContent = tirPct;
-  if(document.getElementById('p-tir-sub')) document.getElementById('p-tir-sub').textContent = (greenCount+amberCount)+' of '+total+' readings at or below 7.8';
-
-  // Range bar
-  if(document.getElementById('range-green')) document.getElementById('range-green').style.width = greenPct+'%';
-  if(document.getElementById('range-amber')) document.getElementById('range-amber').style.width = amberPct+'%';
-  if(document.getElementById('range-red'))   document.getElementById('range-red').style.width   = redPct+'%';
-  if(document.getElementById('legend-green')) document.getElementById('legend-green').textContent = 'Below 6.1 — '+greenPct+'%';
-  if(document.getElementById('legend-amber')) document.getElementById('legend-amber').textContent = '6.1–7.8 — '+amberPct+'%';
-  if(document.getElementById('legend-red'))   document.getElementById('legend-red').textContent   = 'Above 7.8 — '+redPct+'%';
-
-  // Rolling average
-  if(document.getElementById('p-avg'))   document.getElementById('p-avg').textContent   = avg;
-  if(document.getElementById('p-count')) document.getElementById('p-count').textContent = total;
-
-  // Dot plot — scatter chart, colour each point by zone
-  const dotColors = glucoseReadings.map(r=> r.val < 6.1 ? '#2D7D3A' : r.val <= 7.8 ? '#D4960A' : '#B03030');
-  const dotData   = glucoseReadings.map((r,i)=>({ x:i, y:r.val }));
-  new Chart(document.getElementById('glucoseDotChart'),{
-    type:'scatter',
-    data:{
-      datasets:[{
-        data: dotData,
-        backgroundColor: dotColors,
-        borderColor: dotColors,
-        pointRadius: 7,
-        pointHoverRadius: 9
-      }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{
-          backgroundColor:'rgba(28,28,26,0.92)',
-          titleFont:{family:'DM Sans',size:11},
-          bodyFont:{family:'DM Sans',size:13,weight:'600'},
-          padding:10, cornerRadius:8, displayColors:false,
-          callbacks:{
-            title: ctx => glucoseReadings[ctx[0].dataIndex].date,
-            label: ctx => ctx.parsed.y+' mmol/L'
-          }
-        },
-        annotation:{display:false}
-      },
-      scales:{
-        x:{
-          grid:{display:false},
-          ticks:{
-            callback:(v)=> glucoseReadings[v] ? glucoseReadings[v].date : '',
-            font:{family:'DM Sans',size:9}, color:tk, maxRotation:45
-          },
-          border:{display:false},
-          min:-0.5, max:glucoseReadings.length-0.5
-        },
-        y:{
-          grid:{color:gr},
-          ticks:{font:{family:'DM Sans',size:10},color:tk,maxTicksLimit:5},
-          border:{display:false},
-          suggestedMin:4, suggestedMax:15
-        }
-      }
-    },
-    plugins:[{
-      id:'refLines',
-      afterDraw(chart){
-        const ctx2 = chart.ctx;
-        const yScale = chart.scales.y;
-        const xScale = chart.scales.x;
-        const left = xScale.left;
-        const right = xScale.right;
-        [[6.1,'#2D7D3A'],[7.8,'#D4960A']].forEach(([val,col])=>{
-          const y = yScale.getPixelForValue(val);
-          ctx2.save();
-          ctx2.strokeStyle = col;
-          ctx2.lineWidth = 1.5;
-          ctx2.setLineDash([5,4]);
-          ctx2.beginPath();
-          ctx2.moveTo(left,y);
-          ctx2.lineTo(right,y);
-          ctx2.stroke();
-          ctx2.restore();
-        });
-      }
-    }]
-  });
-
-  // Rolling average line chart — each point is avg of readings up to that index
-  const runningAvgs = glucoseReadings.map((_,i)=>{
-    const slice = glucoseReadings.slice(0,i+1);
-    return parseFloat((slice.reduce((s,r)=>s+r.val,0)/slice.length).toFixed(2));
-  });
-  new Chart(document.getElementById('avgChart'),{
-    type:'line',
-    data:{
-      labels: glucoseReadings.map(r=>r.date),
-      datasets:[{
-        data: runningAvgs,
-        borderColor: sage,
-        backgroundColor: sageF,
-        fill:true,
-        borderWidth:2,
-        pointRadius:3,
-        pointBorderColor:sage,
-        pointBackgroundColor:'#fff',
-        pointBorderWidth:2
-      }]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'rgba(28,28,26,0.92)', titleFont:{family:'DM Sans',size:11}, bodyFont:{family:'DM Sans',size:13,weight:'600'}, padding:10, cornerRadius:8, displayColors:false, callbacks:{ label: ctx=>'Avg: '+ctx.parsed.y+' mmol/L' } }},
-      scales:{
-        x:{ grid:{display:false}, ticks:{font:{family:'DM Sans',size:9},color:tk,maxTicksLimit:5,maxRotation:45}, border:{display:false} },
-        y:{ grid:{color:gr}, ticks:{font:{family:'DM Sans',size:10},color:tk,maxTicksLimit:4}, border:{display:false}, suggestedMin:5, suggestedMax:10 }
-      },
-      elements:{ line:{tension:0.4} }
+  sheetCall({ action:"get_verse", clientId: currentClientId }).then(r => {
+    if (r.success && r.verse) {
+      document.getElementById('verse-text').textContent = r.verse.text;
+      document.getElementById('verse-ref').textContent  = r.verse.reference + ' — NASB';
     }
   });
-
-  // BP and weight charts — unchanged
-  new Chart(document.getElementById('bpChart'),{ type:'line', data:{ labels:bpLogs.map(l=>l.date), datasets:[{ data:bpLogs.map(l=>l.sys), borderColor:sage, backgroundColor:sageF, fill:true, borderWidth:2.5, pointBorderColor:sage }] }, options:copts(115,150,sage,sageF) });
-  new Chart(document.getElementById('diaChart'),{ type:'line', data:{ labels:bpLogs.map(l=>l.date), datasets:[{ data:bpLogs.map(l=>l.dia), borderColor:sage, backgroundColor:sageF, fill:true, borderWidth:2.5, pointBorderColor:sage }] }, options:copts(65,95,sage,sageF) });
-  new Chart(document.getElementById('weightChart'),{ type:'line', data:{ labels:wlogs.map(l=>l.date), datasets:[{ data:wlogs.map(l=>l.weight), borderColor:gold, backgroundColor:goldF, fill:true, borderWidth:2.5, pointBorderColor:gold }] }, options:copts(143,156,gold,goldF) });
-
-  // Sync progress page current values
-  const lastG  = [...logs].reverse().find(l=>l.glucose);
-  const lastBP = [...logs].reverse().find(l=>l.sys);
-  const lw     = [...logs].reverse().find(l=>l.weight);
-  if(document.getElementById('p-glucose')) document.getElementById('p-glucose').textContent = lastG ? lastG.glucose : '—';
-  if(document.getElementById('p-bp'))      document.getElementById('p-bp').textContent      = lastBP ? lastBP.sys : '—';
-  if(document.getElementById('p-dia'))     document.getElementById('p-dia').textContent     = lastBP ? lastBP.dia : '—';
-  if(document.getElementById('p-weight'))  document.getElementById('p-weight').textContent  = lw ? lw.weight : '—';
 }
 
+/* ── WINS ── */
 const wins = [
   { icon:"🦠", title:"Infection protocol completed", desc:"Ivermectin and Albendazole 7-day protocol broke a 22-day unresolved viral and parasitic infection. The rebuild began here.", date:"Mar 2026" },
   { icon:"🧬", title:"A1C dropped from 7.0% to 6.6%", desc:"April 1 lab confirmed — first documented lab improvement. Kidney function clean. TSH normal. The biology was already responding.", date:"Apr 1" },
@@ -1009,110 +843,160 @@ function initWins() {
     </div>`).join('');
 }
 
-function selectTime(el, val) {
-  document.querySelectorAll('.time-chip').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedTime = val;
-}
+/* ── COACH CHAT ── */
+const COACH_FALLBACK = [
+  { from:'coach', date:'Jun 3', text:"Valerie. I need you to stop for a moment and really see what you have done. You came into this on insulin, on BP medication, with your glucose running at 10.3 and your gut in crisis every single day. You just came through a full knee replacement surgery with blood pressure described by your surgical team as perfect and oxygen levels described as amazing. No insulin required overnight. Not one medication. That is your biology, healed, showing up when it mattered most. The protocol did not do that. You did that. Every meal you chose, every morning you logged, every time you picked the right thing when the wrong thing was easier. Keep going." },
+  { from:'coach', date:'May 29', text:"That 14.1 reading is not a failure. It is data. Restaurant gravy is a confirmed spike trigger. Your body processed a significant glucose load and self-corrected to 8.0 by morning, a 5.8 point self-correction overnight without any intervention. That is robust regulation. That is your beta cells working. One meal does not erase what you have built." },
+  { from:'coach', date:'May 26', text:"Off all medications. Every single one. This is not a small thing. Your vascular resistance has normalized without pharmaceutical intervention. Your glucose is self-regulating. Your gut is rebuilding. Today matters." },
+  { from:'coach', date:'May 10', text:"Italy is proving something important. Twelve consecutive days with zero whoosh episodes. Walking daily, eating simply, numbers holding. The protocol travels. Your body has learned a new baseline." }
+];
 
-function toggleSupp(el) {
-  el.classList.toggle('checked');
-  el.querySelector('.supp-box').textContent = el.classList.contains('checked') ? '✓' : '';
-}
-
-async function submitLog() {
-  const glucose = parseFloat(document.getElementById('in-glucose').value) || null;
-  const sys = parseInt(document.getElementById('in-sys').value) || null;
-  const dia = parseInt(document.getElementById('in-dia').value) || null;
-  const weight = parseFloat(document.getElementById('in-weight').value) || null;
-  const pulse = parseInt(document.getElementById('in-pulse').value) || null;
-  const food = document.getElementById('in-food').value.trim();
-  const notes = document.getElementById('in-notes').value.trim();
-
-  if (!glucose && !sys && !weight && !pulse && !food && !notes) return;
-
-  const saveBtn = document.querySelector('.log-submit');
-  saveBtn.textContent = 'Saving…';
-  saveBtn.disabled = true;
-
-  // Save to Google Sheet
-  const today = new Date();
-  await sheetCall({
-    action:     "log_vitals",
-    clientId:   currentClientId,
-    entryDate:  today.toLocaleDateString('en-CA'),
-    timeLabel:  selectedTime,
-    glucose,
-    sys,
-    dia,
-    weight,
-    pulse,
-    food,
-    notes
-  });
-
-  saveBtn.textContent = 'Save This Entry ✓';
-  saveBtn.disabled = false;
-
-  const entry = { time: selectedTime, glucose, sys, dia, weight, pulse, food, notes };
-  todayLogs.unshift(entry);
-
-  document.getElementById('in-glucose').value='';
-  document.getElementById('in-sys').value='';
-  document.getElementById('in-dia').value='';
-  document.getElementById('in-weight').value='';
-  document.getElementById('in-pulse').value='';
-  document.getElementById('in-food').value='';
-  document.getElementById('in-notes').value='';
-
-  let msg = "Logged. Every entry builds the evidence.";
-  if (glucose) {
-    if (glucose < 6.1) msg = "Sub-6.1 blood sugar. A non-diabetic reading. Log it and own it.";
-    else if (glucose < 7.0) msg = "Below 7.0. Your body is doing exactly what we hoped.";
-    else if (glucose >= 8.5) msg = "Higher reading today. Zoom out to your chart — the arc is always the story, not a single point.";
-  }
-  const s = document.getElementById('log-success');
-  document.getElementById('log-success-text').textContent = msg;
-  s.style.display = 'block';
-  setTimeout(()=>s.style.display='none', 3500);
-
-  renderTodayLogs();
-}
-
-function renderTodayLogs() {
-  const el = document.getElementById('log-history-today');
-  if (!todayLogs.length) {
-    el.innerHTML='<div style="font-size:0.95rem;color:var(--muted);font-weight:300;text-align:center;padding:1.2rem;">Nothing logged yet today.</div>';
-    return;
-  }
-  el.innerHTML = todayLogs.map(l=>`
-    <div class="log-history-item">
-      <div class="log-history-date">${new Date().toLocaleDateString('en-CA',{month:'short',day:'numeric'})}</div>
-      <div class="log-history-time">${l.time}</div>
-      <div class="log-history-vals">
-        ${l.glucose ? 'Blood sugar: ' + l.glucose + ' mmol/L' : ''}
-        ${l.glucose && (l.sys || l.weight || l.pulse) ? '<br>' : ''}
-        ${l.sys ? 'BP: ' + l.sys + '/' + l.dia : ''}
-        ${l.sys && (l.weight || l.pulse) ? '<br>' : ''}
-        ${l.weight ? 'Weight: ' + l.weight + ' lb' : ''}
-        ${l.weight && l.pulse ? '<br>' : ''}
-        ${l.pulse ? 'Pulse: ' + l.pulse + ' bpm' : ''}
-      </div>
-      ${l.food || l.notes ? `<div class="log-history-notes">
-        ${l.food ? `<div class="log-history-notes-label">Food</div><div>${l.food}</div>` : ''}
-        ${l.food && l.notes ? '<br>' : ''}
-        ${l.notes ? `<div class="log-history-notes-label" style="margin-top:${l.food?'0.5rem':'0'}">Notes</div><div>${l.notes}</div>` : ''}
-      </div>` : ''}
+function renderChat(msgs) {
+  document.getElementById('chat-thread').innerHTML = msgs.map(m => `
+    <div class="chat-msg ${m.from==='valerie'?'valerie':'coach'}">
+      <div class="chat-bubble">${m.text}</div>
+      <div class="chat-meta">${m.from==='valerie'?'You':'Christopher'} · ${m.date}</div>
     </div>`).join('');
 }
 
-function showPage(name, btn) {
+function initCoach() {
+  renderChat(COACH_FALLBACK);
+  sheetCall({ action:'get_coach', clientId: currentClientId }).then(r => {
+    if (r.success && r.messages && r.messages.length) renderChat(r.messages);
+  });
+}
+
+async function sendReply() {
+  const box = document.getElementById('reply-input');
+  const txt = box.value.trim();
+  if (!txt) return;
+  const t = stamp();
+  const thread = document.getElementById('chat-thread');
+  thread.insertAdjacentHTML('afterbegin', `
+    <div class="chat-msg valerie">
+      <div class="chat-bubble">${txt.replace(/</g,'&lt;')}</div>
+      <div class="chat-meta">You · ${t.local}</div>
+    </div>`);
+  box.value = '';
+  const flash = document.getElementById('reply-sent');
+  flash.style.display = 'block';
+  setTimeout(()=>{ flash.style.display='none'; }, 3500);
+  sheetCall({ action:'send_message', clientId: currentClientId, message: txt, timestamp: t.iso, timeLocal: t.local });
+}
+
+/* ── COACH MODE (Christopher only) ── */
+const coachMode = new URLSearchParams(location.search).get('coach') === 'future1';
+
+function lineChart(canvasId, emptyId, labels, datasets, min, max) {
+  if (!labels.length) return;
+  document.getElementById(emptyId).style.display = 'none';
+  new Chart(document.getElementById(canvasId), {
+    type:'line',
+    data:{ labels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display: datasets.length>1, labels:{font:{family:'DM Sans',size:11}} } },
+      scales:{
+        x:{ grid:{display:false}, ticks:{font:{family:'DM Sans',size:10},color:'#6B6B60',maxTicksLimit:6} },
+        y:{ grid:{color:'rgba(45,90,45,0.08)'}, ticks:{font:{family:'DM Sans',size:10},color:'#6B6B60'}, suggestedMin:min, suggestedMax:max }
+      },
+      elements:{ line:{tension:0.35}, point:{radius:3,hoverRadius:6} }
+    }
+  });
+}
+
+function initCoachView(logsData) {
+  const ds = (rows, key) => rows.filter(r=>r.field===key).map(r=>({ t:(r.timeLocal||'').split(',')[0]||r.timestamp?.slice(5,10)||'', v:r.value }));
+  const sage='#2D5A2D', gold='#C8960A', blue='#4F7EA8', red='#B03030';
+  const g = ds(logsData,'glucose');
+  lineChart('c-glucose','e-glucose', g.map(x=>x.t), [{data:g.map(x=>x.v), borderColor:sage, backgroundColor:'rgba(45,90,45,0.08)', fill:true}], 4, 10);
+  const bp = ds(logsData,'bp');
+  lineChart('c-bp','e-bp', bp.map(x=>x.t), [
+    {label:'Top', data:bp.map(x=>x.v && x.v.sys), borderColor:red},
+    {label:'Bottom', data:bp.map(x=>x.v && x.v.dia), borderColor:blue}
+  ], 60, 160);
+  const w = ds(logsData,'weight');
+  lineChart('c-weight','e-weight', w.map(x=>x.t), [{data:w.map(x=>x.v), borderColor:gold, backgroundColor:'rgba(200,150,10,0.08)', fill:true}], null, null);
+  const p = ds(logsData,'pulse');
+  lineChart('c-pulse','e-pulse', p.map(x=>x.t), [{data:p.map(x=>x.v), borderColor:red}], 50, 90);
+  const s = ds(logsData,'sleephours');
+  lineChart('c-sleep','e-sleep', s.map(x=>x.t), [{data:s.map(x=>x.v), borderColor:blue, backgroundColor:'rgba(79,126,168,0.1)', fill:true}], 0, 10);
+  const kp = ds(logsData,'kneepain'), en = ds(logsData,'energy');
+  const peLabels = (kp.length?kp:en).map(x=>x.t);
+  if (peLabels.length) lineChart('c-painenergy','e-painenergy', peLabels, [
+    {label:'Knee pain', data:kp.map(x=>x.v), borderColor:red},
+    {label:'Energy', data:en.map(x=>x.v), borderColor:sage}
+  ], 0, 10);
+  const recent = [...logsData].reverse().slice(0,25);
+  if (recent.length) {
+    document.getElementById('coach-log-list').innerHTML = recent.map(r=>{
+      const inp = INPUTS.find(i=>i.id===r.field);
+      const label = inp ? inp.icon+' '+inp.label : r.field;
+      let val = r.value;
+      if (val && typeof val === 'object') val = val.sys ? val.sys+'/'+val.dia : (val.type!==undefined ? 'Type '+val.type+' '+(val.warning||'') : (val.intensity!==undefined ? val.intensity+' · '+(val.source||'') : JSON.stringify(val)));
+      return `<div class="coach-log-item"><div><div class="coach-log-field">${label}</div><div class="coach-log-time">${r.timeLocal||''}</div></div><div class="coach-log-val">${val}</div></div>`;
+    }).join('');
+  }
+}
+
+async function sendCoachMsg() {
+  const box = document.getElementById('coach-reply-input');
+  const txt = box.value.trim();
+  if (!txt) return;
+  const t = stamp();
+  document.getElementById('coach-chat-thread').insertAdjacentHTML('afterbegin', `
+    <div class="chat-msg coach"><div class="chat-bubble">${txt.replace(/</g,'&lt;')}</div><div class="chat-meta">You (Coach) · ${t.local}</div></div>`);
+  box.value = '';
+  const flash = document.getElementById('coach-reply-sent');
+  flash.style.display = 'block';
+  setTimeout(()=>{ flash.style.display='none'; }, 3000);
+  sheetCall({ action:'send_coach_message', clientId: currentClientId, message: txt, timestamp: t.iso, timeLocal: t.local });
+}
+
+function initCoachMode() {
+  document.body.classList.add('coach-mode');
+  document.getElementById('coach-chat-thread').innerHTML = '<div class="coach-empty">Loading messages.</div>';
+  sheetCall({ action:'get_coach', clientId: currentClientId, includeClient: true }).then(r => {
+    const thread = document.getElementById('coach-chat-thread');
+    if (r.success && r.messages && r.messages.length) {
+      thread.innerHTML = r.messages.map(m => `
+        <div class="chat-msg ${m.from==='valerie'?'valerie':'coach'}">
+          <div class="chat-bubble">${m.text}</div>
+          <div class="chat-meta">${m.from==='valerie'?'Valerie':'You (Coach)'} · ${m.date}</div>
+        </div>`).join('');
+    } else { thread.innerHTML = '<div class="coach-empty">No messages yet. Backend wiring pending.</div>'; }
+  });
+  sheetCall({ action:'get_logs', clientId: currentClientId }).then(r => {
+    if (r.success && r.logs && r.logs.length) initCoachView(r.logs);
+  });
+}
+
+/* ── NAV ── */
+function showPage(id, btn) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
   btn.classList.add('active');
   window.scrollTo(0,0);
 }
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', function() {
+  const today = new Date();
+  const days = Math.floor((today - PROTOCOL_START) / (1000*60*60*24));
+  document.getElementById('days-count').textContent = days;
+  document.getElementById('wins-days-line').textContent = days + ' days on protocol · 3 chronic medications eliminated';
+  const h = today.getHours();
+  document.getElementById('hero-time').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('msg-date').textContent = today.toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  initVerse();
+  renderTiles();
+  renderSupps();
+  renderFoodLists();
+  initWins();
+  if (coachMode) { initCoachMode(); return; }
+  initCoach();
+});
 </script>
 </body>
 </html>
