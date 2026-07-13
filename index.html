@@ -120,6 +120,11 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .tier-item { background:var(--surface); border-radius:14px; padding:1.1rem 1.3rem; margin-bottom:0.6rem; box-shadow:0 1px 6px rgba(0,0,0,0.04); }
 .tier-item-name { font-size:1.1rem; font-weight:700; }
 .tier-item-note { font-size:0.95rem; color:var(--muted); margin-top:0.2rem; line-height:1.45; }
+.mag-row { display:flex; gap:0.6rem; width:100%; margin-top:0.9rem; padding-left:3.6rem; }
+.mag-box { flex:1; min-height:64px; border-radius:14px; border:3px solid #C9C4B5; background:var(--surface2); display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:1.4rem; color:var(--green); font-weight:700; cursor:pointer; }
+.mag-box.on { border-color:var(--green); background:var(--green-soft); }
+.mag-mg { font-size:0.8rem; color:var(--muted); font-weight:600; margin-top:2px; }
+.mag-box.on .mag-mg { color:var(--green); }
 
 /* ── FOOD ── */
 .food-entry-card { background:var(--surface); border-radius:var(--radius); padding:1.5rem 1.4rem; margin-bottom:1rem; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
@@ -129,6 +134,11 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .food-save { flex:1; padding:1.1rem; border:none; border-radius:16px; background:var(--sage); color:#fff; font-size:1.2rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; }
 .food-photo { flex-shrink:0; width:74px; border:3px solid var(--sage); border-radius:16px; background:var(--sage-soft); font-size:1.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .food-hint { font-size:0.95rem; color:var(--muted); text-align:center; margin-top:0.8rem; }
+.food-logged { background:var(--surface); border-radius:16px; padding:1.1rem 1.3rem; margin-bottom:0.7rem; display:flex; align-items:center; gap:1rem; box-shadow:0 1px 6px rgba(0,0,0,0.05); border-left:4px solid var(--sage); }
+.food-logged-body { flex:1; }
+.food-logged-text { font-size:1.1rem; font-weight:600; line-height:1.4; }
+.food-logged-time { font-size:0.85rem; color:var(--sage); font-weight:600; margin-top:0.3rem; }
+.food-logged-edit { flex-shrink:0; border:2px solid var(--sage); background:var(--sage-soft); color:var(--sage); border-radius:12px; padding:0.6rem 1rem; font-size:1rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; }
 .search-wrap { position:relative; margin-bottom:1rem; }
 .search-input { width:100%; font-family:'DM Sans',sans-serif; font-size:1.15rem; padding:1rem 1.1rem 1rem 3rem; border-radius:16px; border:3px solid #D8D2C2; background:var(--surface); outline:none; }
 .search-input:focus { border-color:var(--sage); }
@@ -175,7 +185,29 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .msg-history-item { background:var(--surface); border-radius:14px; padding:1.1rem 1.3rem; margin-bottom:0.6rem; }
 .msg-history-date { font-size:0.85rem; color:var(--gold); font-weight:700; margin-bottom:0.3rem; }
 .msg-history-text { font-size:1rem; line-height:1.6; font-weight:300; }
-/* chat */
+/* iMessage-style chat */
+.im-header { display:flex; align-items:center; gap:0.8rem; padding:0.4rem 0.2rem 1rem; border-bottom:1px solid #E8E3D6; margin-bottom:0.8rem; }
+.im-avatar { width:52px; height:52px; border-radius:50%; background:var(--sage); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; }
+.im-name { font-size:1.3rem; font-weight:700; }
+.im-status { font-size:0.9rem; color:var(--muted); }
+.im-thread { display:flex; flex-direction:column; gap:0.4rem; min-height:40vh; padding-bottom:1rem; }
+.im-row { display:flex; flex-direction:column; max-width:80%; }
+.im-row.them { align-self:flex-start; align-items:flex-start; }
+.im-row.me { align-self:flex-end; align-items:flex-end; }
+.im-bubble { padding:0.75rem 1.05rem; border-radius:22px; font-size:1.12rem; line-height:1.45; word-wrap:break-word; }
+.im-row.them .im-bubble { background:#E9E5DB; color:var(--ink); border-bottom-left-radius:7px; }
+.im-row.me .im-bubble { background:var(--luff2); color:#fff; border-bottom-right-radius:7px; }
+.im-time { font-size:0.72rem; color:var(--muted); margin:0.15rem 0.6rem 0.3rem; }
+.im-composer { position:sticky; bottom:0; display:flex; align-items:flex-end; gap:0.6rem; padding:0.7rem 0; background:var(--bg); }
+.im-input { flex:1; font-family:'DM Sans',sans-serif; font-size:1.12rem; padding:0.7rem 1.1rem; border-radius:22px; border:2px solid #D8D2C2; background:var(--surface); outline:none; resize:none; max-height:120px; line-height:1.4; }
+.im-input:focus { border-color:var(--luff2); }
+.im-send { flex-shrink:0; width:46px; height:46px; border-radius:50%; border:none; background:var(--luff2); color:#fff; font-size:1.4rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.im-empty { text-align:center; color:var(--muted); font-size:1rem; padding:2rem 1rem; font-weight:300; }
+/* nav unread badge */
+.nav-btn { position:relative; }
+.nav-badge { position:absolute; top:4px; right:calc(50% - 22px); min-width:12px; height:12px; border-radius:50%; background:#E5484D; border:2px solid var(--surface); display:none; }
+.nav-badge.show { display:block; }
+/* legacy chat (coach dashboard) */
 .chat-thread { margin-top:1rem; }
 .chat-msg { max-width:88%; margin-bottom:0.8rem; }
 .chat-msg.coach { margin-right:auto; }
@@ -290,8 +322,11 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
         <label class="food-photo" for="food-cam">📷</label>
         <input type="file" id="food-cam" accept="image/*" capture="environment" style="display:none" onchange="foodPhoto(this)">
       </div>
-      <div class="food-hint" id="food-hint">Photo button: snap your plate and it saves automatically.</div>
+      <div class="food-hint" id="food-hint">Your entries stay below so you can see everything you logged today.</div>
     </div>
+
+    <div class="section-label" id="food-today-label" style="display:none;">Logged today</div>
+    <div id="food-today"></div>
 
     <div class="section-label">Have a question about a food?</div>
     <div class="search-wrap">
@@ -343,6 +378,7 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
     <div class="baseline-stat"><span class="baseline-stat-label">Blood sugar</span><span class="baseline-stat-value">A1C 7.0%</span></div>
     <div class="baseline-stat"><span class="baseline-stat-label">Blood pressure</span><span class="baseline-stat-value">145/90</span></div>
     <div class="baseline-stat"><span class="baseline-stat-label">Daily insulin</span><span class="baseline-stat-value">23 units</span></div>
+    <div class="baseline-stat"><span class="baseline-stat-label">Metformin</span><span class="baseline-stat-value">Daily, since discontinued</span></div>
     <div class="baseline-stat"><span class="baseline-stat-label">BP medication</span><span class="baseline-stat-value">Daily (Irbesartan)</span></div>
     <div class="baseline-stat"><span class="baseline-stat-label">Gut episodes per day</span><span class="baseline-stat-value">3–6 explosive</span></div>
     <div class="baseline-stat"><span class="baseline-stat-label">Overnight urination</span><span class="baseline-stat-value">3–4x per night</span></div>
@@ -363,40 +399,14 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
 
   <!-- ══ COACH ══ -->
   <div class="page" id="page-message">
-    <div class="page-title">Coach <em>chat</em></div>
-    <div class="msg-date" id="msg-date"></div>
-
-    <button class="tier-btn tier-green" onclick="toggleTier('protocol-wrap',this)" style="margin-bottom:0.9rem;">
-      <div class="tier-dot"></div>
-      <div><div class="tier-btn-title">Today's plan</div><div class="tier-btn-sub">Your daily protocol, tap to open</div></div>
-      <div class="tier-arrow">›</div>
-    </button>
-    <div class="tier-list" id="protocol-wrap">
-    <div class="protocol-card" style="margin-bottom:1rem;">
-      <div class="protocol-header">
-        <div class="protocol-title">Daily protocol — what to do today</div>
-        <div class="protocol-sub">Updated July 2026</div>
-      </div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Morning with breakfast:</strong> Florastor 1 capsule · Vitamin C 500mg · Vitamin D3 4000 IU · Magnesium glycinate 200mg</div></div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Largest meal:</strong> Alpha lipoic acid 600mg, six 100mg capsules together, always with food</div></div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Evening:</strong> Vitamin C 500mg · Magnesium glycinate 200mg at bedtime. The magnesium is driving your BP into the 120s. Do not skip it.</div></div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Eat:</strong> Fatty ruminant meat, eggs, butter, ghee, bone broth (Bonafide Provisions or homemade only), wild salmon, hard aged cheese, heavy cream in coffee. Animal fat is medicine right now.</div></div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Absolute no:</strong> Honey, balsamic glaze, bean soup, diet pop, seed oils, legumes, fermented foods, dates, raw salads, restaurant gravy. These are confirmed triggers with measured spike data.</div></div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Movement:</strong> Physiotherapy governs all movement post-surgery. No independent exercise until cleared. Walking resumes when PT approves — even 10 minutes lowers your blood sugar and BP measurably.</div></div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Log daily:</strong> Tap through your tiles on the Home page each morning. If a reading looks high, remember the arc is always the story, never a single number.</div></div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>Alice's restaurant Fridays:</strong> Avoid gravy, mashed potatoes with gravy, and anything sauce-heavy. Protein and vegetables with butter is safe. Log blood sugar the next morning — it tells the full story.</div></div>
-      <div class="protocol-item"><div class="protocol-bullet"></div><div class="protocol-text"><strong>K2 coming soon:</strong> Vitamin K2 as MK-7 will be added once sequencing allows. Your D3 needs K2 to direct calcium into bone and away from arteries. This is the next priority addition.</div></div>
+    <div class="im-header">
+      <div class="im-avatar">CH</div>
+      <div><div class="im-name">Christopher</div><div class="im-status">Your coach</div></div>
     </div>
-    </div>
-
-    <div class="section-label">Messages with Christopher</div>
-    <button class="reply-send" style="margin:0 0 0.8rem;background:var(--luff1);" onclick="refreshChat(this)">See new messages ⟳</button>
-    <div class="chat-thread" id="chat-thread"></div>
-
-    <div class="reply-card">
-      <textarea class="reply-box" id="reply-input" placeholder="Write to Christopher here. Type it or use the microphone on your keyboard."></textarea>
-      <button class="reply-send" onclick="sendReply()">Send to Christopher ✓</button>
-      <div class="reply-sent" id="reply-sent">Sent 🌿 Christopher will see this.</div>
+    <div class="im-thread" id="chat-thread"></div>
+    <div class="im-composer">
+      <textarea class="im-input" id="reply-input" rows="1" placeholder="Message" oninput="autoGrow(this)"></textarea>
+      <button class="im-send" onclick="sendReply()" aria-label="Send">\u2191</button>
     </div>
   </div>
 
@@ -440,7 +450,7 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
     <button class="nav-btn" onclick="showPage('supps',this)"><div class="nav-icon">💊</div><div class="nav-label">Supplements</div></button>
     <button class="nav-btn" onclick="showPage('food',this)"><div class="nav-icon">🍽️</div><div class="nav-label">Food</div></button>
     <button class="nav-btn" onclick="showPage('wins',this)"><div class="nav-icon">🏆</div><div class="nav-label">Wins</div></button>
-    <button class="nav-btn" onclick="showPage('message',this)"><div class="nav-icon">💬</div><div class="nav-label">Coach</div></button>
+    <button class="nav-btn" onclick="showPage('message',this)"><span class="nav-badge" id="coach-badge"></span><div class="nav-icon">💬</div><div class="nav-label">Coach</div></button>
   </div>
 
   <!-- ══ ENTRY SHEET ══ -->
@@ -678,18 +688,21 @@ async function saveEntry() {
 const SUPPS = [
   { id:'ala',      name:'Alpha lipoic acid 600mg', dose:'Six 100mg capsules together, with your largest meal' },
   { id:'florastor',name:'Florastor', dose:'1 capsule with breakfast' },
-  { id:'mag_am',   name:'Magnesium glycinate — morning', dose:'200mg with breakfast' },
-  { id:'mag_pm',   name:'Magnesium glycinate — bedtime', dose:'200mg at bedtime' },
-  { id:'d3',       name:'Vitamin D3', dose:'4000 IU in the morning' },
+  { id:'d3',       name:'Vitamin D3', dose:'Four 1000 IU capsules in the morning (4000 IU)' },
+  { id:'k2',       name:'Vitamin K2 (MK-7)', dose:'Two 100mcg capsules (200mcg), with D3 at your largest meal' },
   { id:'vitc_am',  name:'Vitamin C — morning', dose:'500mg chewable' },
   { id:'vitc_pm',  name:'Vitamin C — evening', dose:'500mg chewable' }
 ];
 
+// Magnesium is a separate count tile: each tap logs one 200mg pill (1=200, 2=400, 3=600)
+const MAG = { id:'mag_pm', name:'Magnesium glycinate — bedtime', pill:200, max:3 };
+
 const SUPP_GREEN = [
   { name:'Alpha Lipoic Acid', note:'600mg daily. Six 100mg capsules taken together with the largest meal. Always with food.' },
   { name:'Florastor (Saccharomyces boulardii)', note:'1 capsule with breakfast daily.' },
-  { name:'Magnesium Glycinate', note:'400mg daily, split as 200mg morning and 200mg bedtime.' },
-  { name:'Vitamin D3', note:'4000 IU in the morning.' },
+  { name:'Magnesium Glycinate', note:'Taken at bedtime. Phasing up by comfort using 200mg pills: start at 200mg, building toward 400mg, and eventually 600mg. The magnesium is driving your BP into the 120s.' },
+  { name:'Vitamin D3', note:'4000 IU in the morning. Four 1000 IU capsules.' },
+  { name:'Vitamin K2 as MK-7', note:'200mcg daily, two 100mcg capsules, taken with D3 at the largest meal. Directs calcium into bone and away from arteries. Fat-soluble, always take with a fatty meal.' },
   { name:'Vitamin C', note:'500mg chewable, morning and evening.' }
 ];
 const SUPP_YELLOW = [
@@ -698,8 +711,8 @@ const SUPP_YELLOW = [
   { name:'Psyllium Husk', note:'Go or no-go decision pending.' },
   { name:'Ashwagandha', note:'Schedule or hold pending.' },
   { name:'Whey Protein Isolate', note:'Cleared for trial, not yet started.' },
-  { name:'Vitamin K2 as MK-7', note:'Not yet added. High priority once sequencing allows.' },
-  { name:'Marine Collagen', note:'Not yet added. Queued third in sequence.' },
+  { name:'Creatine', note:'Under review. Being considered for muscle rebuilding support.' },
+  { name:'Marine Collagen', note:'Not yet added. Queued in sequence.' },
   { name:'BPC-157 Oral', note:'Dosing not yet discussed. Pending review.' }
 ];
 const SUPP_RED = [
@@ -712,14 +725,41 @@ const SUPP_RED = [
 function renderSupps() {
   const day = loadDay();
   const taken = day.supps || {};
-  document.getElementById('supp-ticks').innerHTML = SUPPS.map(s => `
+  const magCount = day.magCount || 0;
+  let html = SUPPS.map(s => `
     <div class="supp-tick ${taken[s.id]?'checked':''}" onclick="toggleSuppTick('${s.id}',this)">
       <div class="supp-tick-box">${taken[s.id]?'✓':''}</div>
       <div><div class="supp-tick-name">${s.name}</div><div class="supp-tick-dose">${s.dose}</div></div>
     </div>`).join('');
+  // Magnesium counter tile
+  let boxes = '';
+  for (let n=1; n<=MAG.max; n++) {
+    const on = magCount >= n;
+    boxes += `<div class="mag-box ${on?'on':''}" onclick="setMag(${n},event)">${on?'\u2713':''}<span class="mag-mg">${n*MAG.pill}mg</span></div>`;
+  }
+  html += `
+    <div class="supp-tick ${magCount>0?'checked':''}" style="flex-wrap:wrap;">
+      <div style="flex:1 1 100%;display:flex;align-items:center;gap:1rem;">
+        <div class="supp-tick-box">${magCount>0?'\u2713':''}</div>
+        <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">Tap how many 200mg pills you took (${magCount>0?magCount*MAG.pill+'mg tonight':'none yet'})</div></div>
+      </div>
+      <div class="mag-row">${boxes}</div>
+    </div>`;
+  document.getElementById('supp-ticks').innerHTML = html;
   document.getElementById('supp-green').innerHTML  = SUPP_GREEN.map(tierItem).join('');
   document.getElementById('supp-yellow').innerHTML = SUPP_YELLOW.map(tierItem).join('');
   document.getElementById('supp-red').innerHTML    = SUPP_RED.map(tierItem).join('');
+}
+
+function setMag(n, ev) {
+  if (ev) ev.stopPropagation();
+  const day = loadDay();
+  // tapping the same count again clears back one; tapping a higher box sets to that count
+  day.magCount = (day.magCount === n) ? n-1 : n;
+  saveDay(day);
+  renderSupps();
+  const t = stamp();
+  sheetCall({ action:'log_supplement', clientId: currentClientId, supplement: 'Magnesium glycinate bedtime', taken: day.magCount>0, note: day.magCount*MAG.pill+'mg ('+day.magCount+' pills)', timestamp: t.iso, timeLocal: t.local });
 }
 
 function tierItem(x) {
@@ -769,14 +809,48 @@ function searchFood(q) {
     : `<div class="search-result">Not on the list yet. Log it and Christopher will let you know.</div>`;
 }
 
+function renderFoodToday() {
+  const day = loadDay();
+  const list = day.foodLog || [];
+  const label = document.getElementById('food-today-label');
+  const wrap = document.getElementById('food-today');
+  if (!list.length) { label.style.display = 'none'; wrap.innerHTML = ''; return; }
+  label.style.display = 'block';
+  wrap.innerHTML = list.map((f, i) => `
+    <div class="food-logged">
+      <div class="food-logged-body">
+        <div class="food-logged-text">${f.text.replace(/</g,'&lt;')}</div>
+        <div class="food-logged-time">Sent to Christopher \u2713 \u00b7 ${f.time}</div>
+      </div>
+      <button class="food-logged-edit" onclick="editFood(${i})">Edit</button>
+    </div>`).join('');
+}
+
 async function saveFood() {
   const txt = document.getElementById('food-input').value.trim();
   if (!txt) return;
   const t = stamp();
+  const day = loadDay();
+  day.foodLog = day.foodLog || [];
+  day.foodLog.push({ text: txt, time: t.local });
+  saveDay(day);
   document.getElementById('food-input').value = '';
-  document.getElementById('food-hint').textContent = 'Saved 🌿 ' + t.local;
+  document.getElementById('food-hint').textContent = 'Sent to Christopher \ud83c\udf3f ' + t.local;
+  renderFoodToday();
   sheetCall({ action:'log_food', clientId: currentClientId, food: txt, timestamp: t.iso, timeLocal: t.local });
-  setTimeout(()=>{ document.getElementById('food-hint').textContent = 'Photo button: snap your plate and it saves automatically.'; }, 4000);
+  setTimeout(()=>{ document.getElementById('food-hint').textContent = 'Your entries stay below so you can see everything you logged today.'; }, 4000);
+}
+
+function editFood(i) {
+  const day = loadDay();
+  const item = (day.foodLog || [])[i];
+  if (!item) return;
+  document.getElementById('food-input').value = item.text;
+  day.foodLog.splice(i, 1);
+  saveDay(day);
+  renderFoodToday();
+  document.getElementById('food-input').focus();
+  document.getElementById('food-hint').textContent = 'Edit your entry and tap Save again.';
 }
 
 function foodPhoto(input) {
@@ -831,9 +905,9 @@ const wins = [
   { icon:"⚡", title:"Beta cell function confirmed intact", desc:"Overnight carb tolerance test — blood sugar 10.3 to 6.6 without intervention. Your pancreas is working. Insulin signaling intact.", date:"Apr 23" },
   { icon:"📉", title:"Blood sugar hit 6.4", desc:"First time reaching this level. The floor keeps moving in the right direction.", date:"Apr 29" },
   { icon:"⚖️", title:"Under 150 lb for the first time", desc:"Weight moving steadily and sustainably while rebuilding lean tissue — not stripping it.", date:"May 1" },
-  { icon:"🌿", title:"All whoosh triggers identified and removed", desc:"Three confirmed dietary and supplement triggers permanently eliminated. The gut pattern has a root cause and it is being resolved.", date:"May 2–3" },
+  { icon:"🌿", title:"Whoosh triggers identified and reduced", desc:"Three confirmed dietary and supplement triggers pinpointed and pulled. Episodes dropped sharply. The full root cause was later traced to autonomic neuropathy, which became the real target.", date:"May 2–3" },
   { icon:"💊", title:"Off all blood pressure medication", desc:"Irbesartan gone. Vascular resistance normalized at root. No pharmaceutical support required.", date:"May 2–3" },
-  { icon:"✈️", title:"Italy — 12 days, zero episodes", desc:"Protocol holds under real-world travel and food variability. Walking daily, eating simply, numbers steady.", date:"May 10–22" },
+  { icon:"✈️", title:"Italy — entire trip, zero whooshes", desc:"Not a single whoosh episode the whole trip, the longest stretch in 20 years. Protocol holds under real-world travel and food variability. Walking daily, eating simply, numbers steady.", date:"May 10–22" },
   { icon:"✅", title:"Off every medication — fully confirmed", desc:"Insulin. BP medication. Everything. Autonomous metabolic state. This is what healing looks like.", date:"May 26" },
   { icon:"🌟", title:"Blood sugar hit 5.7 mmol/L", desc:"Fully non-diabetic reading. Second occurrence logged. Your pancreas is doing exactly what a healthy pancreas does.", date:"May 28" },
   { icon:"❤️", title:"Surgery BP called perfect by surgical team", desc:"Knee replacement June 2. BP perfect throughout the procedure. Oxygen levels outstanding. No insulin required post-operatively.", date:"Jun 2" },
@@ -852,35 +926,47 @@ function initWins() {
 }
 
 /* ── COACH CHAT ── */
-const COACH_FALLBACK = [
-  { from:'coach', date:'Jun 3', text:"Valerie. I need you to stop for a moment and really see what you have done. You came into this on insulin, on BP medication, with your glucose running at 10.3 and your gut in crisis every single day. You just came through a full knee replacement surgery with blood pressure described by your surgical team as perfect and oxygen levels described as amazing. No insulin required overnight. Not one medication. That is your biology, healed, showing up when it mattered most. The protocol did not do that. You did that. Every meal you chose, every morning you logged, every time you picked the right thing when the wrong thing was easier. Keep going." },
-  { from:'coach', date:'May 29', text:"That 14.1 reading is not a failure. It is data. Restaurant gravy is a confirmed spike trigger. Your body processed a significant glucose load and self-corrected to 8.0 by morning, a 5.8 point self-correction overnight without any intervention. That is robust regulation. That is your beta cells working. One meal does not erase what you have built." },
-  { from:'coach', date:'May 26', text:"Off all medications. Every single one. This is not a small thing. Your vascular resistance has normalized without pharmaceutical intervention. Your glucose is self-regulating. Your gut is rebuilding. Today matters." },
-  { from:'coach', date:'May 10', text:"Italy is proving something important. Twelve consecutive days with zero whoosh episodes. Walking daily, eating simply, numbers holding. The protocol travels. Your body has learned a new baseline." }
-];
+let lastMsgCount = 0;
+
+function autoGrow(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
 
 function renderChat(msgs) {
-  document.getElementById('chat-thread').innerHTML = msgs.map(m => `
-    <div class="chat-msg ${m.from==='valerie'?'valerie':'coach'}">
-      <div class="chat-bubble">${m.text}</div>
-      <div class="chat-meta">${m.from==='valerie'?'You':'Christopher'} · ${m.date}</div>
-    </div>`).join('');
+  const thread = document.getElementById('chat-thread');
+  if (!msgs.length) { thread.innerHTML = '<div class="im-empty">No messages yet. Christopher will be in touch, and you can write to him any time below.</div>'; return; }
+  // oldest at top, newest at bottom (iMessage order)
+  thread.innerHTML = msgs.map(m => {
+    const mine = m.from === 'valerie';
+    return `<div class="im-row ${mine?'me':'them'}">
+      <div class="im-bubble">${(m.text||'').replace(/</g,'&lt;')}</div>
+      <div class="im-time">${m.date||''}</div>
+    </div>`;
+  }).join('');
+  thread.scrollIntoView(false);
+  window.scrollTo(0, document.body.scrollHeight);
 }
 
 function fetchCoachMsgs() {
   return sheetCall({ action:'get_coach', clientId: currentClientId }).then(r => {
-    if (r.success && r.messages && r.messages.length) renderChat(r.messages);
+    if (r.success && r.messages) {
+      const ordered = [...r.messages].reverse(); // backend gives newest-first, flip to oldest-first
+      renderChat(ordered);
+      // unread badge: new coach messages since last look, only when not on the Coach tab
+      const coachMsgs = ordered.filter(m => m.from === 'coach').length;
+      const onCoachTab = document.getElementById('page-message').classList.contains('active');
+      if (ordered.length > lastMsgCount && !onCoachTab) setCoachBadge(true);
+      lastMsgCount = ordered.length;
+    }
     return r;
   });
 }
 
-function refreshChat(btn) {
-  if (btn) btn.textContent = 'Checking…';
-  fetchCoachMsgs().then(()=>{ if (btn) { btn.textContent = 'Up to date ✓'; setTimeout(()=>{ btn.textContent = 'See new messages ⟳'; }, 2500); } });
+function setCoachBadge(show) {
+  const b = document.getElementById('coach-badge');
+  if (b) b.classList.toggle('show', show);
 }
 
 function initCoach() {
-  renderChat(COACH_FALLBACK);
+  renderChat([]);
   fetchCoachMsgs();
   setInterval(fetchCoachMsgs, 45000);
 }
@@ -891,15 +977,17 @@ async function sendReply() {
   if (!txt) return;
   const t = stamp();
   const thread = document.getElementById('chat-thread');
-  thread.insertAdjacentHTML('afterbegin', `
-    <div class="chat-msg valerie">
-      <div class="chat-bubble">${txt.replace(/</g,'&lt;')}</div>
-      <div class="chat-meta">You · ${t.local}</div>
+  const empty = thread.querySelector('.im-empty');
+  if (empty) thread.innerHTML = '';
+  thread.insertAdjacentHTML('beforeend', `
+    <div class="im-row me">
+      <div class="im-bubble">${txt.replace(/</g,'&lt;')}</div>
+      <div class="im-time">${t.local}</div>
     </div>`);
+  lastMsgCount++;
   box.value = '';
-  const flash = document.getElementById('reply-sent');
-  flash.style.display = 'block';
-  setTimeout(()=>{ flash.style.display='none'; }, 3500);
+  box.style.height = 'auto';
+  window.scrollTo(0, document.body.scrollHeight);
   sheetCall({ action:'send_message', clientId: currentClientId, message: txt, timestamp: t.iso, timeLocal: t.local });
 }
 
@@ -963,25 +1051,38 @@ async function sendCoachMsg() {
   const txt = box.value.trim();
   if (!txt) return;
   const t = stamp();
-  document.getElementById('coach-chat-thread').insertAdjacentHTML('afterbegin', `
-    <div class="chat-msg coach"><div class="chat-bubble">${txt.replace(/</g,'&lt;')}</div><div class="chat-meta">You (Coach) · ${t.local}</div></div>`);
+  const thread = document.getElementById('coach-chat-thread');
+  const empty = thread.querySelector('.im-empty');
+  if (empty) thread.innerHTML = '';
+  thread.insertAdjacentHTML('beforeend', `
+    <div class="im-row me"><div class="im-bubble">${txt.replace(/</g,'&lt;')}</div><div class="im-time">You \u00b7 ${t.local}</div></div>`);
+  lastCoachMsgCount++;
   box.value = '';
   const flash = document.getElementById('coach-reply-sent');
-  flash.style.display = 'block';
-  setTimeout(()=>{ flash.style.display='none'; }, 3000);
+  if (flash) { flash.style.display = 'block'; setTimeout(()=>{ flash.style.display='none'; }, 3000); }
+  window.scrollTo(0, document.body.scrollHeight);
   sheetCall({ action:'send_coach_message', clientId: currentClientId, message: txt, timestamp: t.iso, timeLocal: t.local });
 }
 
+let lastCoachMsgCount = 0;
 function loadCoachChat() {
   return sheetCall({ action:'get_coach', clientId: currentClientId, includeClient: true }).then(r => {
     const thread = document.getElementById('coach-chat-thread');
     if (r.success && r.messages && r.messages.length) {
-      thread.innerHTML = r.messages.map(m => `
-        <div class="chat-msg ${m.from==='valerie'?'valerie':'coach'}">
-          <div class="chat-bubble">${m.text}</div>
-          <div class="chat-meta">${m.from==='valerie'?'Valerie':'You (Coach)'} · ${m.date}</div>
-        </div>`).join('');
-    } else { thread.innerHTML = '<div class="coach-empty">No messages yet.</div>'; }
+      const ordered = [...r.messages].reverse(); // oldest-first for iMessage
+      thread.innerHTML = ordered.map(m => {
+        const mine = m.from === 'coach'; // coach's own messages on the right
+        return `<div class="im-row ${mine?'me':'them'}">
+          <div class="im-bubble">${(m.text||'').replace(/</g,'&lt;')}</div>
+          <div class="im-time">${mine?'You':'Valerie'} \u00b7 ${m.date||''}</div>
+        </div>`;
+      }).join('');
+      const badge = document.getElementById('coach-dash-badge');
+      const fromValerie = ordered.filter(m => m.from === 'valerie').length;
+      if (ordered.length > lastCoachMsgCount && lastCoachMsgCount > 0 && badge) badge.classList.add('show');
+      lastCoachMsgCount = ordered.length;
+      thread.scrollIntoView(false);
+    } else { thread.innerHTML = '<div class="im-empty">No messages yet. Send Valerie the first message below.</div>'; }
     return r;
   });
 }
@@ -1023,6 +1124,10 @@ function showPage(id, btn) {
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   window.scrollTo(0,0);
+  if (id === 'message') {
+    setCoachBadge(false);
+    if (typeof fetchCoachMsgs === 'function') fetchCoachMsgs();
+  }
 }
 
 /* ── INIT ── */
@@ -1038,6 +1143,7 @@ document.addEventListener('DOMContentLoaded', function() {
   renderTiles();
   renderSupps();
   renderFoodLists();
+  renderFoodToday();
   initWins();
   if (coachMode) { initCoachMode(); return; }
   initCoach();
