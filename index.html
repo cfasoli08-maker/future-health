@@ -390,6 +390,7 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
     </div>
 
     <div class="section-label">Messages with Christopher</div>
+    <button class="reply-send" style="margin:0 0 0.8rem;background:var(--luff1);" onclick="refreshChat(this)">See new messages ⟳</button>
     <div class="chat-thread" id="chat-thread"></div>
 
     <div class="reply-card">
@@ -405,6 +406,7 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
       <div class="coach-banner-label">Coach view · Christopher only</div>
       <div class="coach-banner-title">Valerie — Client Dashboard</div>
     </div>
+    <button class="reply-send" style="margin:0 0 1rem;background:var(--luff1);" onclick="coachRefresh(this)">Refresh dashboard ⟳</button>
 
     <div class="section-label" style="margin-top:0.5rem;">Chat with Valerie</div>
     <div class="chat-thread" id="coach-chat-thread"></div>
@@ -424,6 +426,12 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
 
     <div class="section-label">Latest entries</div>
     <div id="coach-log-list"><div class="coach-empty">Entries appear here as Valerie logs them.</div></div>
+
+    <div class="section-label">Food diary</div>
+    <div id="coach-food-list"><div class="coach-empty">Food entries appear here.</div></div>
+
+    <div class="section-label">Supplements log</div>
+    <div id="coach-supp-list"><div class="coach-empty">Supplement ticks appear here.</div></div>
   </div>
 
   <!-- ══ NAV ══ -->
@@ -859,11 +867,22 @@ function renderChat(msgs) {
     </div>`).join('');
 }
 
+function fetchCoachMsgs() {
+  return sheetCall({ action:'get_coach', clientId: currentClientId }).then(r => {
+    if (r.success && r.messages && r.messages.length) renderChat(r.messages);
+    return r;
+  });
+}
+
+function refreshChat(btn) {
+  if (btn) btn.textContent = 'Checking…';
+  fetchCoachMsgs().then(()=>{ if (btn) { btn.textContent = 'Up to date ✓'; setTimeout(()=>{ btn.textContent = 'See new messages ⟳'; }, 2500); } });
+}
+
 function initCoach() {
   renderChat(COACH_FALLBACK);
-  sheetCall({ action:'get_coach', clientId: currentClientId }).then(r => {
-    if (r.success && r.messages && r.messages.length) renderChat(r.messages);
-  });
+  fetchCoachMsgs();
+  setInterval(fetchCoachMsgs, 45000);
 }
 
 async function sendReply() {
@@ -953,10 +972,8 @@ async function sendCoachMsg() {
   sheetCall({ action:'send_coach_message', clientId: currentClientId, message: txt, timestamp: t.iso, timeLocal: t.local });
 }
 
-function initCoachMode() {
-  document.body.classList.add('coach-mode');
-  document.getElementById('coach-chat-thread').innerHTML = '<div class="coach-empty">Loading messages.</div>';
-  sheetCall({ action:'get_coach', clientId: currentClientId, includeClient: true }).then(r => {
+function loadCoachChat() {
+  return sheetCall({ action:'get_coach', clientId: currentClientId, includeClient: true }).then(r => {
     const thread = document.getElementById('coach-chat-thread');
     if (r.success && r.messages && r.messages.length) {
       thread.innerHTML = r.messages.map(m => `
@@ -964,11 +981,39 @@ function initCoachMode() {
           <div class="chat-bubble">${m.text}</div>
           <div class="chat-meta">${m.from==='valerie'?'Valerie':'You (Coach)'} · ${m.date}</div>
         </div>`).join('');
-    } else { thread.innerHTML = '<div class="coach-empty">No messages yet. Backend wiring pending.</div>'; }
+    } else { thread.innerHTML = '<div class="coach-empty">No messages yet.</div>'; }
+    return r;
   });
-  sheetCall({ action:'get_logs', clientId: currentClientId }).then(r => {
-    if (r.success && r.logs && r.logs.length) initCoachView(r.logs);
+}
+
+function loadCoachLogs() {
+  return sheetCall({ action:'get_logs', clientId: currentClientId }).then(r => {
+    if (r.success) {
+      if (r.logs && r.logs.length) initCoachView(r.logs);
+      if (r.food && r.food.length) {
+        document.getElementById('coach-food-list').innerHTML = [...r.food].reverse().slice(0,20).map(f =>
+          `<div class="coach-log-item"><div><div class="coach-log-field">${String(f.food).replace(/</g,'&lt;')}</div><div class="coach-log-time">${f.timeLocal||''}</div></div></div>`).join('');
+      }
+      if (r.supps && r.supps.length) {
+        document.getElementById('coach-supp-list').innerHTML = [...r.supps].reverse().slice(0,20).map(s =>
+          `<div class="coach-log-item"><div><div class="coach-log-field">${s.taken==='YES'?'\u2705':'\u25fb'} ${s.supplement}</div><div class="coach-log-time">${s.timeLocal||''}</div></div></div>`).join('');
+      }
+    }
+    return r;
   });
+}
+
+function coachRefresh(btn) {
+  if (btn) btn.textContent = 'Refreshing\u2026';
+  Promise.all([loadCoachChat(), loadCoachLogs()]).then(()=>{ if (btn) { btn.textContent = 'Up to date \u2713'; setTimeout(()=>{ btn.textContent = 'Refresh dashboard \u27f3'; }, 2500); } });
+}
+
+function initCoachMode() {
+  document.body.classList.add('coach-mode');
+  document.getElementById('coach-chat-thread').innerHTML = '<div class="coach-empty">Loading messages.</div>';
+  loadCoachChat();
+  loadCoachLogs();
+  setInterval(loadCoachChat, 45000);
 }
 
 /* ── NAV ── */
