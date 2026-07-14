@@ -133,6 +133,13 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .food-btn-row { display:flex; gap:0.8rem; margin-top:1rem; }
 .food-save { flex:1; padding:1.1rem; border:none; border-radius:16px; background:var(--sage); color:#fff; font-size:1.2rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; }
 .food-photo { flex-shrink:0; width:74px; border:3px solid var(--sage); border-radius:16px; background:var(--sage-soft); font-size:1.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.today-readings { background:var(--surface2); border-radius:14px; padding:0.9rem 1.1rem; margin:0 0 1rem; }
+.today-readings-label { font-size:0.9rem; color:var(--muted); margin-bottom:0.6rem; line-height:1.4; }
+.today-reading { display:flex; justify-content:space-between; align-items:center; padding:0.45rem 0; border-top:1px solid #E4DFD1; }
+.today-reading:first-of-type { border-top:none; }
+.today-reading-val { font-size:1.2rem; font-weight:700; color:var(--ink); }
+.today-reading-time { font-size:0.95rem; color:var(--sage); font-weight:600; }
+.today-readings-hint { font-size:0.95rem; color:var(--muted); margin:0 0 1rem; line-height:1.45; text-align:center; }
 .food-hint { font-size:0.95rem; color:var(--muted); text-align:center; margin-top:0.8rem; }
 .food-logged { background:var(--surface); border-radius:16px; padding:1.1rem 1.3rem; margin-bottom:0.7rem; display:flex; align-items:center; gap:1rem; box-shadow:0 1px 6px rgba(0,0,0,0.05); border-left:4px solid var(--sage); }
 .food-logged-body { flex:1; }
@@ -515,6 +522,10 @@ const INPUTS = [
     help:'Compared to a normal day, how much water and salt did you have today?' }
 ];
 
+// Metrics Valerie measures more than once a day. These keep every reading with its time instead of overwriting.
+const MULTI_READ = ['glucose','pulse','bp'];
+function timeOnly(){ return new Date().toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}); }
+
 const BRISTOL = [
   { n:1, d:'Hard little lumps, like nuts. Hard to pass.' },
   { n:2, d:'Lumpy and sausage-shaped.' },
@@ -533,11 +544,21 @@ function renderTiles() {
   document.getElementById('tiles').innerHTML = INPUTS.map(inp => {
     const v = day[inp.id];
     const done = v !== undefined && v !== null;
+    const multi = MULTI_READ.indexOf(inp.id) > -1;
+    const log = day[inp.id+'_log'];
+    let sub;
+    if (done && multi && log && log.length) {
+      sub = log.length + ' reading' + (log.length>1?'s':'') + ' today, tap to add another';
+    } else if (done) {
+      sub = 'Done for today ✓ tap to change';
+    } else {
+      sub = inp.sub;
+    }
     return `<div class="tile ${done?'done':''}" id="tile-${inp.id}" onclick="openEntry('${inp.id}')">
       <div class="tile-icon">${inp.icon}</div>
       <div class="tile-body">
         <div class="tile-label">${inp.label}</div>
-        <div class="tile-sub">${done ? 'Done for today ✓ tap to change' : inp.sub}</div>
+        <div class="tile-sub">${sub}</div>
       </div>
       ${done ? `<div class="tile-value">${displayVal(inp,v)}</div>` : '<div class="tile-check">✓</div>'}
     </div>`;
@@ -614,10 +635,21 @@ function openEntry(id) {
               <button class="opt-btn" onclick="pickOpt(this,'tag','less')">Less than usual</button>
             </div>`;
   }
+  let priorReadings = '';
+  if (MULTI_READ.indexOf(inp.id) > -1) {
+    const log = (loadDay()[inp.id+'_log']) || [];
+    if (log.length) {
+      priorReadings = `<div class="today-readings"><div class="today-readings-label">Today so far. A new entry adds to this list, it does not replace it.</div>` +
+        log.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${r.t}</span></div>`).join('') + `</div>`;
+    } else {
+      priorReadings = `<div class="today-readings-hint">You can log this as many times a day as you like. Each reading is saved with its own time.</div>`;
+    }
+  }
   document.getElementById('sheet').innerHTML = `
     <div class="sheet-icon">${inp.icon}</div>
     <div class="sheet-title">${inp.label}</div>
     <div class="sheet-help">${inp.help}</div>
+    ${priorReadings}
     ${body}
     <button class="save-btn" onclick="saveEntry()">Save ✓</button>
     <button class="cancel-btn" onclick="closeSheet()">Cancel</button>
@@ -677,6 +709,10 @@ async function saveEntry() {
   const t = stamp();
   const day = loadDay();
   day[inp.id] = value;
+  if (MULTI_READ.indexOf(inp.id) > -1) {
+    day[inp.id+'_log'] = day[inp.id+'_log'] || [];
+    day[inp.id+'_log'].push({ v: value, t: timeOnly(), disp: displayVal(inp, value) });
+  }
   saveDay(day);
   renderTiles();
   document.getElementById('saved-flash').style.display = 'block';
