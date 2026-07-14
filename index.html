@@ -406,7 +406,7 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
     <div class="im-thread" id="chat-thread"></div>
     <div class="im-composer">
       <textarea class="im-input" id="reply-input" rows="1" placeholder="Message" oninput="autoGrow(this)"></textarea>
-      <button class="im-send" onclick="sendReply()" aria-label="Send">\u2191</button>
+      <button class="im-send" onclick="sendReply()" aria-label="Send">↑</button>
     </div>
   </div>
 
@@ -735,12 +735,12 @@ function renderSupps() {
   let boxes = '';
   for (let n=1; n<=MAG.max; n++) {
     const on = magCount >= n;
-    boxes += `<div class="mag-box ${on?'on':''}" onclick="setMag(${n},event)">${on?'\u2713':''}<span class="mag-mg">${n*MAG.pill}mg</span></div>`;
+    boxes += `<div class="mag-box ${on?'on':''}" onclick="setMag(${n},event)">${on?'✓':''}<span class="mag-mg">${n*MAG.pill}mg</span></div>`;
   }
   html += `
     <div class="supp-tick ${magCount>0?'checked':''}" style="flex-wrap:wrap;">
       <div style="flex:1 1 100%;display:flex;align-items:center;gap:1rem;">
-        <div class="supp-tick-box">${magCount>0?'\u2713':''}</div>
+        <div class="supp-tick-box">${magCount>0?'✓':''}</div>
         <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">Tap how many 200mg pills you took (${magCount>0?magCount*MAG.pill+'mg tonight':'none yet'})</div></div>
       </div>
       <div class="mag-row">${boxes}</div>
@@ -820,7 +820,7 @@ function renderFoodToday() {
     <div class="food-logged">
       <div class="food-logged-body">
         <div class="food-logged-text">${f.text.replace(/</g,'&lt;')}</div>
-        <div class="food-logged-time">Sent to Christopher \u2713 \u00b7 ${f.time}</div>
+        <div class="food-logged-time">Sent to Christopher ✓ · ${f.time}</div>
       </div>
       <button class="food-logged-edit" onclick="editFood(${i})">Edit</button>
     </div>`).join('');
@@ -835,7 +835,7 @@ async function saveFood() {
   day.foodLog.push({ text: txt, time: t.local });
   saveDay(day);
   document.getElementById('food-input').value = '';
-  document.getElementById('food-hint').textContent = 'Sent to Christopher \ud83c\udf3f ' + t.local;
+  document.getElementById('food-hint').textContent = 'Sent to Christopher 🌿 ' + t.local;
   renderFoodToday();
   sheetCall({ action:'log_food', clientId: currentClientId, food: txt, timestamp: t.iso, timeLocal: t.local });
   setTimeout(()=>{ document.getElementById('food-hint').textContent = 'Your entries stay below so you can see everything you logged today.'; }, 4000);
@@ -1055,7 +1055,7 @@ async function sendCoachMsg() {
   const empty = thread.querySelector('.im-empty');
   if (empty) thread.innerHTML = '';
   thread.insertAdjacentHTML('beforeend', `
-    <div class="im-row me"><div class="im-bubble">${txt.replace(/</g,'&lt;')}</div><div class="im-time">You \u00b7 ${t.local}</div></div>`);
+    <div class="im-row me"><div class="im-bubble">${txt.replace(/</g,'&lt;')}</div><div class="im-time">You · ${t.local}</div></div>`);
   lastCoachMsgCount++;
   box.value = '';
   const flash = document.getElementById('coach-reply-sent');
@@ -1074,7 +1074,7 @@ function loadCoachChat() {
         const mine = m.from === 'coach'; // coach's own messages on the right
         return `<div class="im-row ${mine?'me':'them'}">
           <div class="im-bubble">${(m.text||'').replace(/</g,'&lt;')}</div>
-          <div class="im-time">${mine?'You':'Valerie'} \u00b7 ${m.date||''}</div>
+          <div class="im-time">${mine?'You':'Valerie'} · ${m.date||''}</div>
         </div>`;
       }).join('');
       const badge = document.getElementById('coach-dash-badge');
@@ -1106,7 +1106,7 @@ function loadCoachLogs() {
 
 function coachRefresh(btn) {
   if (btn) btn.textContent = 'Refreshing\u2026';
-  Promise.all([loadCoachChat(), loadCoachLogs()]).then(()=>{ if (btn) { btn.textContent = 'Up to date \u2713'; setTimeout(()=>{ btn.textContent = 'Refresh dashboard \u27f3'; }, 2500); } });
+  Promise.all([loadCoachChat(), loadCoachLogs()]).then(()=>{ if (btn) { btn.textContent = 'Up to date ✓'; setTimeout(()=>{ btn.textContent = 'Refresh dashboard ⟳'; }, 2500); } });
 }
 
 function initCoachMode() {
@@ -1138,7 +1138,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('wins-days-line').textContent = days + ' days on protocol · 3 chronic medications eliminated';
   const h = today.getHours();
   document.getElementById('hero-time').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('msg-date').textContent = today.toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   initVerse();
   renderTiles();
   renderSupps();
