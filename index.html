@@ -62,6 +62,29 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .tile-label { font-size:1.25rem; font-weight:700; line-height:1.25; }
 .tile-sub { font-size:0.95rem; color:var(--muted); font-weight:400; margin-top:0.15rem; }
 .tile-value { font-family:'Oswald',sans-serif; font-size:2rem; font-weight:600; color:var(--luff1); flex-shrink:0; text-align:right; line-height:1.1; }
+.session { border-radius:var(--radius); margin-bottom:1rem; border:3px solid; overflow:hidden; }
+.session-head { display:flex; justify-content:space-between; align-items:center; padding:1.2rem 1.4rem; cursor:pointer; }
+.session-name { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:600; }
+.session-right { display:flex; align-items:center; gap:0.7rem; }
+.session-count { font-size:0.9rem; font-weight:600; opacity:0.85; }
+.session-caret { font-size:1.1rem; }
+.session-body { padding:0.3rem 0.9rem 1rem; }
+.session-morning { border-color:var(--green); background:var(--green-soft); }
+.session-morning .session-name, .session-morning .session-count, .session-morning .session-caret { color:var(--green); }
+.session-noon { border-color:var(--gold); background:var(--gold-soft); }
+.session-noon .session-name, .session-noon .session-count, .session-noon .session-caret { color:var(--gold); }
+.session-night { border-color:var(--luff2); background:var(--luff-soft); }
+.session-night .session-name, .session-night .session-count, .session-night .session-caret { color:var(--luff1); }
+.tile-multi { flex-direction:column; align-items:stretch; }
+.tile-head { display:flex; align-items:center; gap:1.1rem; }
+.tile-stack { margin-top:0.9rem; border-top:1px solid rgba(0,0,0,0.08); padding-top:0.5rem; }
+.tile-stack-row { display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0; border-bottom:1px solid rgba(0,0,0,0.05); }
+.tile-stack-row:last-child { border-bottom:none; }
+.tile-stack-val { font-family:'Oswald',sans-serif; font-size:1.3rem; font-weight:600; color:var(--ink); }
+.tile-stack-when { font-size:0.9rem; color:var(--sage); font-weight:600; text-align:right; }
+.topbar-right { display:flex; align-items:center; gap:0.7rem; }
+.refresh-btn { display:inline-flex; align-items:center; gap:0.25rem; border:2px solid var(--sage); background:var(--surface); color:var(--sage); border-radius:20px; padding:0.32rem 0.7rem; font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; line-height:1; }
+.refresh-btn.refreshing { background:var(--luff2); color:#fff; border-color:var(--luff2); }
 .tile.done .tile-check { display:block; }
 .tile-check { display:none; font-size:1.5rem; color:var(--luff1); flex-shrink:0; }
 
@@ -262,7 +285,10 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
 
   <div class="topbar">
     <div class="topbar-brand">Future Health</div>
-    <div class="topbar-user" id="topbar-user">Valerie</div>
+    <div class="topbar-right">
+      <button class="refresh-btn" id="refresh-btn" onclick="doRefresh()" aria-label="Refresh">↻ <span>refresh</span></button>
+      <div class="topbar-user" id="topbar-user">Valerie</div>
+    </div>
   </div>
 
   <!-- ══ HOME / LOG ══ -->
@@ -284,8 +310,8 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
       <div class="days-sub">Since March 7, 2026</div>
     </div>
 
-    <div class="section-label">Today's log · tap each tile to enter</div>
-    <div id="tiles"></div>
+    <div class="section-label">Today's log · tap a time of day to open it</div>
+    <div id="sessions"></div>
   </div>
 
   <!-- ══ SUPPLEMENTS ══ -->
@@ -489,6 +515,7 @@ function stamp() {
 const dayKey = () => 'fh_' + new Date().toISOString().slice(0,10);
 function loadDay() { try { return JSON.parse(localStorage.getItem(dayKey())) || {}; } catch(e){ return {}; } }
 function saveDay(state) { localStorage.setItem(dayKey(), JSON.stringify(state)); }
+function doRefresh(){ const b=document.getElementById('refresh-btn'); if(b){ b.classList.add('refreshing'); b.innerHTML='↻ <span>refreshing</span>'; } setTimeout(function(){ location.reload(); }, 500); }
 
 /* ── DAILY INPUT TILES ── */
 const INPUTS = [
@@ -525,6 +552,7 @@ const INPUTS = [
 // Metrics Valerie measures more than once a day. These keep every reading with its time instead of overwriting.
 const MULTI_READ = ['glucose','pulse','bp'];
 function timeOnly(){ return new Date().toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}); }
+function stampFull(){ const n=new Date(); return n.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}) + ', ' + n.toLocaleDateString('en-CA',{month:'long',day:'numeric',year:'numeric'}); }
 
 const BRISTOL = [
   { n:1, d:'Hard little lumps, like nuts. Hard to pass.' },
@@ -537,33 +565,64 @@ const BRISTOL = [
 ];
 
 let activeInput = null;
+let activeSession = 'morning';
 let sheetSel = {};
 
-function renderTiles() {
-  const day = loadDay();
-  document.getElementById('tiles').innerHTML = INPUTS.map(inp => {
-    const v = day[inp.id];
-    const done = v !== undefined && v !== null;
-    const multi = MULTI_READ.indexOf(inp.id) > -1;
-    const log = day[inp.id+'_log'];
-    let sub;
-    if (done && multi && log && log.length) {
-      sub = log.length + ' reading' + (log.length>1?'s':'') + ' today, tap to add another';
-    } else if (done) {
-      sub = 'Done for today ✓ tap to change';
-    } else {
-      sub = inp.sub;
-    }
-    return `<div class="tile ${done?'done':''}" id="tile-${inp.id}" onclick="openEntry('${inp.id}')">
-      <div class="tile-icon">${inp.icon}</div>
-      <div class="tile-body">
-        <div class="tile-label">${inp.label}</div>
-        <div class="tile-sub">${sub}</div>
+// Repeatable metrics logged morning, noon, and night. The rest are morning-only, once a day.
+const REPEATABLE_IDS = ['glucose','pulse','bp','kneepain','fibropain','energy','activity','stress','bowel','hydration'];
+const SESSIONS = [
+  { id:'morning', label:'Morning', metrics: INPUTS.map(i=>i.id) },
+  { id:'noon',    label:'Noon',    metrics: REPEATABLE_IDS },
+  { id:'night',   label:'Night',   metrics: REPEATABLE_IDS }
+];
+let sessionOpen = { morning:true, noon:false, night:false };
+
+function sessionReadings(day, sid, mid){ return (day[sid] && day[sid][mid]) ? day[sid][mid] : []; }
+function toggleSession(id){ sessionOpen[id] = !sessionOpen[id]; renderSessions(); }
+
+function tileHtml(day, sid, mid){
+  const inp = INPUTS.find(i=>i.id===mid);
+  const log = sessionReadings(day, sid, mid);
+  const done = log.length > 0;
+  const repeatable = REPEATABLE_IDS.indexOf(mid) > -1;
+  let stack = '';
+  if (done) {
+    stack = '<div class="tile-stack">' + log.map(r =>
+      `<div class="tile-stack-row"><span class="tile-stack-val">${r.disp}</span><span class="tile-stack-when">${r.when || r.t || ''}</span></div>`).join('') + '</div>';
+  }
+  const sub = done ? (repeatable ? log.length + ' logged, tap to add another' : 'Logged ✓ tap to change') : inp.sub;
+  return `<div class="tile ${done?'done tile-multi':''}" onclick="openEntry('${mid}','${sid}')">
+      <div class="tile-head">
+        <div class="tile-icon">${inp.icon}</div>
+        <div class="tile-body"><div class="tile-label">${inp.label}</div><div class="tile-sub">${sub}</div></div>
+        ${done ? '' : '<div class="tile-check">✓</div>'}
       </div>
-      ${done ? `<div class="tile-value">${displayVal(inp,v)}</div>` : '<div class="tile-check">✓</div>'}
+      ${stack}
+    </div>`;
+}
+
+function sessionCount(day, s){
+  return s.metrics.reduce((a,mid)=> a + sessionReadings(day, s.id, mid).length, 0);
+}
+
+function renderSessions(){
+  const day = loadDay();
+  const wrap = document.getElementById('sessions');
+  if (!wrap) return;
+  wrap.innerHTML = SESSIONS.map(s => {
+    const open = sessionOpen[s.id];
+    const count = sessionCount(day, s);
+    const tiles = s.metrics.map(mid => tileHtml(day, s.id, mid)).join('');
+    return `<div class="session session-${s.id} ${open?'open':''}">
+      <div class="session-head" onclick="toggleSession('${s.id}')">
+        <div class="session-name">${s.label}</div>
+        <div class="session-right">${count>0?`<span class="session-count">${count} logged</span>`:''}<span class="session-caret">${open?'▾':'▸'}</span></div>
+      </div>
+      <div class="session-body"${open?'':' style="display:none"'}>${tiles}</div>
     </div>`;
   }).join('');
 }
+function renderTiles(){ renderSessions(); }
 
 function displayVal(inp, v) {
   if (inp.type==='bp') return v.sys + '/' + v.dia;
@@ -574,8 +633,9 @@ function displayVal(inp, v) {
   return v;
 }
 
-function openEntry(id) {
+function openEntry(id, session) {
   activeInput = INPUTS.find(i=>i.id===id);
+  activeSession = session || 'morning';
   sheetSel = {};
   const inp = activeInput;
   let body = '';
@@ -636,14 +696,14 @@ function openEntry(id) {
             </div>`;
   }
   let priorReadings = '';
-  if (MULTI_READ.indexOf(inp.id) > -1) {
-    const log = (loadDay()[inp.id+'_log']) || [];
-    if (log.length) {
-      priorReadings = `<div class="today-readings"><div class="today-readings-label">Today so far. A new entry adds to this list, it does not replace it.</div>` +
-        log.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${r.t}</span></div>`).join('') + `</div>`;
-    } else {
-      priorReadings = `<div class="today-readings-hint">You can log this as many times a day as you like. Each reading is saved with its own time.</div>`;
-    }
+  const repeatable = REPEATABLE_IDS.indexOf(inp.id) > -1;
+  const sessLog = sessionReadings(loadDay(), activeSession, inp.id);
+  const sessName = activeSession.charAt(0).toUpperCase()+activeSession.slice(1);
+  if (sessLog.length) {
+    priorReadings = `<div class="today-readings"><div class="today-readings-label">${sessName} so far${repeatable?'. A new entry adds to this list, it does not replace it.':''}</div>` +
+      sessLog.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${r.when || r.t || ''}</span></div>`).join('') + `</div>`;
+  } else if (repeatable) {
+    priorReadings = `<div class="today-readings-hint">You can log this as many times this ${activeSession} as you like. Each reading is saved with its own date and time.</div>`;
   }
   document.getElementById('sheet').innerHTML = `
     <div class="sheet-icon">${inp.icon}</div>
@@ -708,16 +768,19 @@ async function saveEntry() {
   }
   const t = stamp();
   const day = loadDay();
-  day[inp.id] = value;
-  if (MULTI_READ.indexOf(inp.id) > -1) {
-    day[inp.id+'_log'] = day[inp.id+'_log'] || [];
-    day[inp.id+'_log'].push({ v: value, t: timeOnly(), disp: displayVal(inp, value) });
+  day[activeSession] = day[activeSession] || {};
+  const entry = { disp: displayVal(inp, value), when: stampFull() };
+  if (REPEATABLE_IDS.indexOf(inp.id) > -1) {
+    day[activeSession][inp.id] = day[activeSession][inp.id] || [];
+    day[activeSession][inp.id].push(entry);
+  } else {
+    day[activeSession][inp.id] = [entry];
   }
   saveDay(day);
-  renderTiles();
+  renderSessions();
   document.getElementById('saved-flash').style.display = 'block';
   setTimeout(closeSheet, 550);
-  sheetCall({ action:'log_entry', clientId: currentClientId, field: inp.id, value: value, timestamp: t.iso, timeLocal: t.local });
+  sheetCall({ action:'log_entry', clientId: currentClientId, field: inp.id, session: activeSession, value: value, timestamp: t.iso, timeLocal: t.local });
 }
 
 /* ── SUPPLEMENTS ── */
