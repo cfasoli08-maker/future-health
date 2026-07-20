@@ -278,6 +278,35 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
 .coach-log-field { font-size:1rem; font-weight:700; }
 .coach-log-time { font-size:0.82rem; color:var(--muted); }
 .coach-log-val { font-family:'Oswald',sans-serif; font-size:1.15rem; font-weight:600; color:var(--sage); text-align:right; }
+
+/* ── WHOOSH ── */
+.whoosh-card { background:var(--surface); border:2px solid var(--gold); border-radius:18px; padding:1rem 1.1rem; margin-top:1.2rem; }
+.whoosh-head { display:flex; justify-content:space-between; align-items:center; gap:0.8rem; }
+.whoosh-title { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:700; color:var(--gold); }
+.whoosh-sub { font-size:0.82rem; color:var(--muted); margin-top:0.1rem; }
+.whoosh-btn { flex-shrink:0; border:none; border-radius:14px; background:var(--gold); color:#fff; font-family:'DM Sans',sans-serif; font-weight:700; font-size:0.9rem; padding:0.7rem 1rem; cursor:pointer; }
+.whoosh-empty { font-size:0.85rem; color:var(--muted); margin-top:0.6rem; }
+.whoosh-row { display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0; border-bottom:1px solid rgba(0,0,0,0.06); font-size:0.9rem; }
+.whoosh-row:last-child { border-bottom:none; }
+.whoosh-time { color:var(--gold); font-weight:600; }
+.whoosh-note { color:var(--ink); text-align:right; margin-left:0.8rem; }
+
+/* ── CANCEL A LOGGED ENTRY ── */
+.tile-stack-cancel { color:var(--muted); font-weight:700; margin-left:0.6rem; cursor:pointer; padding:0 0.3rem; }
+.tile-stack-cancel:hover { color:#b23; }
+
+/* ── WEEKLY UPDATES ── */
+.updates-wrap { margin-bottom:0.4rem; }
+.update-latest { background:var(--sage-soft); border-radius:16px; padding:1rem 1.1rem; }
+.update-title { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:700; color:var(--sage); }
+.update-date { font-size:0.78rem; color:var(--muted); margin:0.15rem 0 0.6rem; }
+.update-body { font-size:0.95rem; line-height:1.5; }
+.update-archive-label { font-size:0.85rem; color:var(--sage); font-weight:600; cursor:pointer; margin:0.8rem 0 0.4rem; }
+.update-archive { display:none; }
+.update-archive.open { display:block; }
+.update-old { border-top:1px solid rgba(0,0,0,0.08); padding:0.7rem 0; }
+.update-old-title { font-size:0.85rem; font-weight:700; color:var(--muted); }
+.update-old-body { font-size:0.9rem; margin-top:0.3rem; line-height:1.5; }
 </style>
 </head>
 <body>
@@ -308,6 +337,14 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
       <div class="days-number" id="days-count">—</div>
       <div class="days-label">Days on protocol</div>
       <div class="days-sub">Since March 7, 2026</div>
+    </div>
+
+    <div class="whoosh-card" id="whoosh-card">
+      <div class="whoosh-head">
+        <div><div class="whoosh-title">💨 Whoosh</div><div class="whoosh-sub">Tap any time it happens, log as many as you like</div></div>
+        <button class="whoosh-btn" onclick="openWhoosh()">Log a whoosh</button>
+      </div>
+      <div id="whoosh-list"></div>
     </div>
 
     <div class="section-label">Today's log · tap a time of day to open it</div>
@@ -432,6 +469,9 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
 
   <!-- ══ COACH ══ -->
   <div class="page" id="page-message">
+    <div class="section-label" style="margin-top:0;">Updates</div>
+    <div id="updates-wrap" class="updates-wrap"></div>
+    <div class="section-label">Chat</div>
     <div class="im-header">
       <div class="im-avatar">CH</div>
       <div><div class="im-name">Christopher</div><div class="im-status">Your coach</div></div>
@@ -458,6 +498,16 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
       <button class="reply-send" onclick="sendCoachMsg()">Send to Valerie ✓</button>
       <div class="reply-sent" id="coach-reply-sent">Sent 🌿</div>
     </div>
+
+    <div class="section-label">Weekly Update to Valerie</div>
+    <div class="reply-card">
+      <input class="reply-box" id="update-title-input" style="min-height:auto;margin-bottom:0.5rem;" placeholder="Title, e.g. Week of July 13">
+      <textarea class="reply-box" id="update-body-input" placeholder="What changed, what moved to green, milestones, encouragement."></textarea>
+      <button class="reply-send" onclick="publishUpdate()">Publish update ✓</button>
+      <div class="reply-sent" id="update-published-flash">Published 🌿</div>
+    </div>
+    <div class="section-label">Past updates</div>
+    <div id="coach-updates-list"><div class="coach-empty">No updates published yet.</div></div>
 
     <div class="section-label">Trends</div>
     <div class="coach-chart-card"><div class="coach-chart-title">🩸 Blood sugar (mmol/L)</div><div class="coach-chart-wrap"><canvas id="c-glucose"></canvas></div><div class="coach-empty" id="e-glucose">Waiting for logged data.</div></div>
@@ -508,7 +558,8 @@ async function sheetCall(payload) {
 
 function stamp() {
   const now = new Date();
-  return { iso: now.toISOString(), local: now.toLocaleString('en-CA',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) };
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return { iso: now.toISOString(), local: now.toLocaleString('en-CA',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}), tz: tz };
 }
 
 /* ── LOCAL DAY STATE ── */
@@ -587,8 +638,8 @@ function tileHtml(day, sid, mid){
   const repeatable = REPEATABLE_IDS.indexOf(mid) > -1;
   let stack = '';
   if (done) {
-    stack = '<div class="tile-stack">' + log.map(r =>
-      `<div class="tile-stack-row"><span class="tile-stack-val">${r.disp}</span><span class="tile-stack-when">${r.when || r.t || ''}</span></div>`).join('') + '</div>';
+    stack = '<div class="tile-stack">' + log.map((r,ri) =>
+      `<div class="tile-stack-row"><span class="tile-stack-val">${r.disp}</span><span class="tile-stack-when">${r.when || r.t || ''}</span><span class="tile-stack-cancel" onclick="event.stopPropagation();cancelEntry('${sid}','${mid}',${ri})" title="Cancel this entry">✕</span></div>`).join('') + '</div>';
   }
   const sub = done ? (repeatable ? log.length + ' logged, tap to add another' : 'Logged ✓ tap to change') : inp.sub;
   return `<div class="tile ${done?'done tile-multi':''}" onclick="openEntry('${mid}','${sid}')">
@@ -769,7 +820,7 @@ async function saveEntry() {
   const t = stamp();
   const day = loadDay();
   day[activeSession] = day[activeSession] || {};
-  const entry = { disp: displayVal(inp, value), when: stampFull() };
+  const entry = { disp: displayVal(inp, value), when: stampFull(), iso: t.iso };
   if (REPEATABLE_IDS.indexOf(inp.id) > -1) {
     day[activeSession][inp.id] = day[activeSession][inp.id] || [];
     day[activeSession][inp.id].push(entry);
@@ -781,6 +832,69 @@ async function saveEntry() {
   document.getElementById('saved-flash').style.display = 'block';
   setTimeout(closeSheet, 550);
   sheetCall({ action:'log_entry', clientId: currentClientId, field: inp.id, session: activeSession, value: value, timestamp: t.iso, timeLocal: t.local });
+}
+
+/* ── CANCEL A LOGGED ENTRY ── Valerie can undo a mistaken tap, no going back needed */
+async function cancelEntry(sid, mid, idx) {
+  const day = loadDay();
+  const log = sessionReadings(day, sid, mid);
+  const entry = log[idx];
+  if (!entry) return;
+  log.splice(idx, 1);
+  if (log.length) { day[sid][mid] = log; } else { delete day[sid][mid]; }
+  saveDay(day);
+  renderSessions();
+  if (entry.iso) {
+    sheetCall({ action:'delete_entry', clientId: currentClientId, sheet: 'Daily Log', timestamp: entry.iso });
+  }
+}
+
+/* ── WHOOSH LOG ── standalone, not tied to morning/noon/night, can log many times a day */
+function openWhoosh() {
+  const note = prompt("Anything to note about this whoosh? (optional, tap OK to leave blank)", "");
+  if (note === null) return;
+  logWhoosh(note.trim());
+}
+async function logWhoosh(note) {
+  const t = stamp();
+  const listEl = document.getElementById('whoosh-list');
+  const today = new Date().toDateString();
+  window.__whooshToday = window.__whooshToday || [];
+  window.__whooshToday.unshift({ timeLocal: t.local, note: note, _day: today });
+  renderWhooshList();
+  const r = await sheetCall({ action:'log_whoosh', clientId: currentClientId, note: note, timestamp: t.iso, timeLocal: t.local });
+  return r;
+}
+function renderWhooshList() {
+  const el = document.getElementById('whoosh-list');
+  if (!el) return;
+  const items = (window.__whooshToday || []);
+  if (!items.length) { el.innerHTML = '<div class="whoosh-empty">None logged yet today.</div>'; return; }
+  el.innerHTML = items.map(w => `<div class="whoosh-row"><span class="whoosh-time">${w.timeLocal}</span>${w.note ? `<span class="whoosh-note">${w.note.replace(/</g,'&lt;')}</span>` : ''}</div>`).join('');
+}
+async function fetchWhooshesToday() {
+  const r = await sheetCall({ action:'get_whooshes', clientId: currentClientId });
+  if (r.success && r.whooshes) {
+    const today = new Date().toDateString();
+    window.__whooshToday = r.whooshes.filter(w => new Date(w.timestamp).toDateString() === today);
+    renderWhooshList();
+  }
+}
+
+/* ── WEEKLY UPDATES ── most recent shown, past dates archived below ── */
+async function loadUpdatesClient() {
+  const wrap = document.getElementById('updates-wrap');
+  if (!wrap) return;
+  const r = await sheetCall({ action:'get_updates', clientId: currentClientId });
+  if (!r.success || !r.updates || !r.updates.length) { wrap.innerHTML = '<div class="im-empty">No updates yet.</div>'; return; }
+  const [latest, ...older] = r.updates;
+  let html = `<div class="update-latest"><div class="update-title">${(latest.title||'Weekly Update').replace(/</g,'&lt;')}</div><div class="update-date">${latest.timeLocal||''}</div><div class="update-body">${(latest.body||'').replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div></div>`;
+  if (older.length) {
+    html += `<div class="update-archive-label" onclick="document.getElementById('update-archive').classList.toggle('open')">Past updates ▾</div>`;
+    html += `<div class="update-archive" id="update-archive">` + older.map(u =>
+      `<div class="update-old"><div class="update-old-title">${(u.title||'Update').replace(/</g,'&lt;')} · ${u.timeLocal||''}</div><div class="update-old-body">${(u.body||'').replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div></div>`).join('') + `</div>`;
+  }
+  wrap.innerHTML = html;
 }
 
 /* ── SUPPLEMENTS ── */
@@ -1111,6 +1225,28 @@ function lineChart(canvasId, emptyId, labels, datasets, min, max) {
   });
 }
 
+async function publishUpdate() {
+  const title = document.getElementById('update-title-input').value.trim();
+  const body = document.getElementById('update-body-input').value.trim();
+  if (!body) return;
+  const t = stamp();
+  const r = await sheetCall({ action:'save_update', clientId: currentClientId, title: title, body: body, timestamp: t.iso, timeLocal: t.local });
+  if (r.success) {
+    document.getElementById('update-title-input').value = '';
+    document.getElementById('update-body-input').value = '';
+    const flash = document.getElementById('update-published-flash');
+    if (flash) { flash.style.display='block'; setTimeout(()=>{flash.style.display='none';},3000); }
+    loadCoachUpdates();
+  }
+}
+async function loadCoachUpdates() {
+  const el = document.getElementById('coach-updates-list');
+  if (!el) return;
+  const r = await sheetCall({ action:'get_updates', clientId: currentClientId });
+  if (!r.success || !r.updates || !r.updates.length) { el.innerHTML = '<div class="coach-empty">No updates published yet.</div>'; return; }
+  el.innerHTML = r.updates.map(u => `<div class="coach-log-item"><div><div class="coach-log-field">${(u.title||'Update').replace(/</g,'&lt;')}</div><div class="coach-log-time">${u.timeLocal||''} — ${(u.body||'').slice(0,80).replace(/</g,'&lt;')}${(u.body||'').length>80?'…':''}</div></div></div>`).join('');
+}
+
 function initCoachView(logsData) {
   const ds = (rows, key) => rows.filter(r=>r.field===key).map(r=>({ t:(r.timeLocal||'').split(',')[0]||r.timestamp?.slice(5,10)||'', v:r.value }));
   const sage='#2D5A2D', gold='#C8960A', blue='#4F7EA8', red='#B03030';
@@ -1226,6 +1362,7 @@ function showPage(id, btn) {
   if (id === 'message') {
     setCoachBadge(false);
     if (typeof fetchCoachMsgs === 'function') fetchCoachMsgs();
+    if (typeof loadUpdatesClient === 'function') loadUpdatesClient();
   }
 }
 
@@ -1239,11 +1376,12 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('hero-time').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   initVerse();
   renderTiles();
+  fetchWhooshesToday();
   renderSupps();
   renderFoodLists();
   renderFoodToday();
   initWins();
-  if (coachMode) { initCoachMode(); return; }
+  if (coachMode) { initCoachMode(); loadCoachUpdates(); return; }
   initCoach();
 });
 </script>
