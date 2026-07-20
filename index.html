@@ -295,18 +295,19 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
 .tile-stack-cancel { color:var(--muted); font-weight:700; margin-left:0.6rem; cursor:pointer; padding:0 0.3rem; }
 .tile-stack-cancel:hover { color:#b23; }
 
-/* ── WEEKLY UPDATES ── */
+/* ── UPDATES TAB ── dated tiles, newest expanded, tap to expand ── */
 .updates-wrap { margin-bottom:0.4rem; }
-.update-latest { background:var(--sage-soft); border-radius:16px; padding:1rem 1.1rem; }
-.update-title { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:700; color:var(--sage); }
-.update-date { font-size:0.78rem; color:var(--muted); margin:0.15rem 0 0.6rem; }
-.update-body { font-size:0.95rem; line-height:1.5; }
-.update-archive-label { font-size:0.85rem; color:var(--sage); font-weight:600; cursor:pointer; margin:0.8rem 0 0.4rem; }
-.update-archive { display:none; }
-.update-archive.open { display:block; }
-.update-old { border-top:1px solid rgba(0,0,0,0.08); padding:0.7rem 0; }
-.update-old-title { font-size:0.85rem; font-weight:700; color:var(--muted); }
-.update-old-body { font-size:0.9rem; margin-top:0.3rem; line-height:1.5; }
+.upd-tile { background:var(--surface); border-radius:16px; padding:1rem 1.1rem; margin-bottom:0.7rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+.upd-tile.open { background:var(--sage-soft); }
+.upd-tile-head { display:flex; justify-content:space-between; align-items:center; gap:0.8rem; }
+.upd-tile-title { font-family:'Cormorant Garamond',serif; font-size:1.25rem; font-weight:700; color:var(--sage); }
+.upd-tile-date { font-size:0.78rem; color:var(--muted); margin-top:0.15rem; }
+.upd-tile-chev { color:var(--sage); font-size:1.1rem; flex-shrink:0; transition:transform 0.2s; }
+.upd-tile.open .upd-tile-chev { transform:rotate(180deg); }
+.upd-tile-body { display:none; font-size:0.95rem; line-height:1.55; margin-top:0.7rem; }
+.upd-tile.open .upd-tile-body { display:block; }
+.upd-tile-body strong { color:var(--sage); }
+@media (max-width:430px) { .nav-label { font-size:0.58rem; letter-spacing:0.03em; } .nav-icon { font-size:1.6rem; } .nav-btn { padding:0.5rem 0.1rem; } }
 </style>
 </head>
 <body>
@@ -467,11 +468,15 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
     </div>
   </div>
 
+  <!-- ══ UPDATES ══ -->
+  <div class="page" id="page-updates">
+    <div class="page-title">Your <em>updates</em></div>
+    <div style="font-size:0.95rem;color:var(--muted);margin:-0.4rem 0 1rem;">Your progress report after every review. Tap any date to read it.</div>
+    <div id="updates-wrap" class="updates-wrap"></div>
+  </div>
+
   <!-- ══ COACH ══ -->
   <div class="page" id="page-message">
-    <div class="section-label" style="margin-top:0;">Updates</div>
-    <div id="updates-wrap" class="updates-wrap"></div>
-    <div class="section-label">Chat</div>
     <div class="im-header">
       <div class="im-avatar">CH</div>
       <div><div class="im-name">Christopher</div><div class="im-status">Your coach</div></div>
@@ -533,6 +538,7 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
     <button class="nav-btn" onclick="showPage('supps',this)"><div class="nav-icon">💊</div><div class="nav-label">Supplements</div></button>
     <button class="nav-btn" onclick="showPage('food',this)"><div class="nav-icon">🍽️</div><div class="nav-label">Food</div></button>
     <button class="nav-btn" onclick="showPage('wins',this)"><div class="nav-icon">🏆</div><div class="nav-label">Wins</div></button>
+    <button class="nav-btn" onclick="showPage('updates',this)"><div class="nav-icon">🌿</div><div class="nav-label">Updates</div></button>
     <button class="nav-btn" onclick="showPage('message',this)"><span class="nav-badge" id="coach-badge"></span><div class="nav-icon">💬</div><div class="nav-label">Coach</div></button>
   </div>
 
@@ -881,20 +887,20 @@ async function fetchWhooshesToday() {
   }
 }
 
-/* ── WEEKLY UPDATES ── most recent shown, past dates archived below ── */
+/* ── UPDATES TAB ── dated tiles, newest expanded on top, tap any tile to expand ── */
+function fmtUpdateBody(raw) {
+  return (raw||'').replace(/</g,'&lt;').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+}
 async function loadUpdatesClient() {
   const wrap = document.getElementById('updates-wrap');
   if (!wrap) return;
   const r = await sheetCall({ action:'get_updates', clientId: currentClientId });
-  if (!r.success || !r.updates || !r.updates.length) { wrap.innerHTML = '<div class="im-empty">No updates yet.</div>'; return; }
-  const [latest, ...older] = r.updates;
-  let html = `<div class="update-latest"><div class="update-title">${(latest.title||'Weekly Update').replace(/</g,'&lt;')}</div><div class="update-date">${latest.timeLocal||''}</div><div class="update-body">${(latest.body||'').replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div></div>`;
-  if (older.length) {
-    html += `<div class="update-archive-label" onclick="document.getElementById('update-archive').classList.toggle('open')">Past updates ▾</div>`;
-    html += `<div class="update-archive" id="update-archive">` + older.map(u =>
-      `<div class="update-old"><div class="update-old-title">${(u.title||'Update').replace(/</g,'&lt;')} · ${u.timeLocal||''}</div><div class="update-old-body">${(u.body||'').replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div></div>`).join('') + `</div>`;
-  }
-  wrap.innerHTML = html;
+  if (!r.success || !r.updates || !r.updates.length) { wrap.innerHTML = '<div class="im-empty">Your first progress report will appear here soon. 🌿</div>'; return; }
+  wrap.innerHTML = r.updates.map((u,i) =>
+    `<div class="upd-tile${i===0?' open':''}" onclick="this.classList.toggle('open')">`
+    + `<div class="upd-tile-head"><div><div class="upd-tile-title">${(u.title||'Update').replace(/</g,'&lt;')}</div><div class="upd-tile-date">${(u.timeLocal||'').toString().replace(/</g,'&lt;')}</div></div><div class="upd-tile-chev">▾</div></div>`
+    + `<div class="upd-tile-body">${fmtUpdateBody(u.body)}</div></div>`
+  ).join('');
 }
 
 /* ── SUPPLEMENTS ── */
@@ -1372,6 +1378,8 @@ function showPage(id, btn) {
   if (id === 'message') {
     setCoachBadge(false);
     if (typeof fetchCoachMsgs === 'function') fetchCoachMsgs();
+  }
+  if (id === 'updates') {
     if (typeof loadUpdatesClient === 'function') loadUpdatesClient();
   }
 }
