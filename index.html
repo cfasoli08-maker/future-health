@@ -433,7 +433,7 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
   <div class="page" id="page-wins">
     <div class="wins-hero">
       <div style="font-size:0.78rem;letter-spacing:0.25em;text-transform:uppercase;opacity:0.75;margin-bottom:0.4rem;">Valerie's results — Future Health protocol</div>
-      <div class="wins-big">18</div>
+      <div class="wins-big">20</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;font-style:italic;opacity:0.95;margin-top:0.2rem;text-align:center;">milestones since March 7, 2026</div>
       <div style="font-size:0.82rem;letter-spacing:0.2em;text-transform:uppercase;opacity:0.8;margin-top:0.3rem;text-align:center;" id="wins-days-line">— days on protocol · 3 chronic medications eliminated</div>
     </div>
@@ -1004,8 +1004,8 @@ function toggleTier(id, btn) {
 }
 
 /* ── FOOD ── */
-const FOOD_GREEN = ['Beef','Lamb','Pork','Ham','Chicken skin-on','Turkey','Bacon','Organ meats','Eggs any style','Salmon','Mackerel','Sardines','Herring','White fish','Shellfish','Butter','Ghee','Tallow','Duck fat','Olive oil','Avocado oil','Coconut oil','MCT oil','Heavy cream','Parmesan','Aged cheddar','Gruyere','Gouda','Manchego','Spinach','Zucchini','Green beans','Carrots','Squash','Peppers','Asparagus','Avocado','Macadamia','Pecans','Walnuts','Raspberries','Strawberries','Blueberries','Fresh orange','Water with Redmond salt','Coffee with heavy cream','Green tea','Black tea','Redmond salt','Herbs and spices','Plain vinegars','Mustard','Olive oil and vinegar dressing'];
-const FOOD_YELLOW = ['Mozzarella','Burrata','Ricotta','Cottage cheese','Cream cheese','Fluid milk','Raw vegetables and salads','Onion and garlic in quantity','Large cruciferous loads','Almonds','Hazelnuts','Cashews','Pistachios','Chia','Ground flax','Sourdough','White rice small portions','Potato cooked then cooled','One beer occasionally','Dry wine','Spirits'];
+const FOOD_GREEN = ['Beef','Lamb','Pork','Ham','Chicken skin-on','Turkey','Bacon','Organ meats','Eggs any style','Salmon','Mackerel','Sardines','Herring','White fish','Shellfish','Butter','Ghee','Tallow','Duck fat','Olive oil','Avocado oil','Coconut oil','MCT oil','Heavy cream','Parmesan','Aged cheddar','Gruyere','Gouda','Manchego','Spinach','Zucchini','Green beans','Carrots','Squash','Peppers','Asparagus','Avocado','Macadamia','Pecans','Walnuts','Raspberries','Strawberries','Blueberries','Fresh orange','Water with Redmond salt','Coffee with heavy cream','Green tea','Black tea','Redmond salt','Herbs and spices','Plain vinegars','Mustard','Olive oil and vinegar dressing','Ginger tea'];
+const FOOD_YELLOW = ['Mozzarella','Burrata','Ricotta','Cottage cheese','Cream cheese','Fluid milk','Raw vegetables and salads','Onion and garlic in quantity','Large cruciferous loads','Almonds','Hazelnuts','Cashews','Pistachios','Chia','Ground flax','Sourdough','White rice small portions','Potato cooked then cooled','One beer occasionally','Dry wine','Spirits','Havarti','Pork puffs (check bag for seed oils)'];
 const FOOD_RED = ['Canola oil','Soybean oil','Corn oil','Sunflower oil','Safflower oil','Grapeseed oil','Apple','Pear','Mango','Grapes','Watermelon','Cherries','Dried fruit','Peanuts','Peanut butter','Legumes','Bean soup any source','Added sugar','Refined flour with no ferment','Diet pop','Artificial sweeteners','Sugar alcohols','Honey','Concentrated balsamic glaze'];
 
 function renderFoodLists() {
@@ -1143,7 +1143,9 @@ const wins = [
   { icon:"🦵", title:"Knee replacement — flying colours", desc:"Robotic-assisted procedure completed successfully in Toronto. First pain-free knee in months. Body performed under maximum stress.", date:"Jun 2" },
   { icon:"🚶", title:"Walking outdoors post-surgery", desc:"Walker in hand, moving independently outside within 6 days of major surgery. Recovery is ahead of schedule.", date:"Jun 8" },
   { icon:"🧠", title:"Root cause identified after 5 months", desc:"Diabetic autonomic neuropathy confirmed as the upstream driver of chronic gut symptoms. Cajal cell and vagal motor fiber damage from years of T2D now the active target. The protocol was working correctly all along.", date:"Jun 25" },
-  { icon:"⚡", title:"Alpha lipoic acid protocol begins", desc:"600mg daily confirmed. Direct nerve tissue support targeting autonomic recovery. The next layer of healing starts Friday June 27.", date:"Jun 27" }
+  { icon:"⚡", title:"Alpha lipoic acid protocol begins", desc:"600mg daily confirmed. Direct nerve tissue support targeting autonomic recovery. The next layer of healing starts Friday June 27.", date:"Jun 27" },
+  { icon:"🩸", title:"Blood sugar 4.9 — lowest ever recorded", desc:"Deep in fully non-diabetic territory. The floor has moved again: 5.7 in May, 4.9 now. This is what a recovering metabolism looks like.", date:"Jul 15" },
+  { icon:"⚖️", title:"140.4 lb — lowest weight of the journey", desc:"13.6 lb below the March start, reached while rebuilding strength after knee surgery, not by losing it.", date:"Jul 18" }
 ];
 
 function initWins() {
