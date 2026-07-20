@@ -1009,17 +1009,27 @@ function renderFoodLists() {
   document.getElementById('food-red').innerHTML    = `<div style="padding:0.3rem 0.2rem 0.8rem;">${FOOD_RED.map(chip).join('')}</div>`;
 }
 
+let foodSearchLogTimer = null;
 function searchFood(q) {
   const out = document.getElementById('food-search-results');
-  q = q.trim().toLowerCase();
-  if (q.length < 2) { out.innerHTML=''; return; }
+  const rawQ = q.trim();
+  q = rawQ.toLowerCase();
+  if (q.length < 2) { out.innerHTML=''; clearTimeout(foodSearchLogTimer); return; }
   const hits = [];
   FOOD_GREEN.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'green', label:'Enjoy freely', color:'var(--green)'}); });
   FOOD_YELLOW.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'yellow', label:'Caution, small amounts', color:'var(--amber)'}); });
   FOOD_RED.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'red', label:'Avoid', color:'var(--red)'}); });
   out.innerHTML = hits.length
     ? hits.slice(0,8).map(h=>`<div class="search-result"><div class="tier-dot" style="background:${h.color};width:20px;height:20px;flex-shrink:0;border-radius:50%;"></div><div>${h.f}<div style="font-size:0.9rem;color:${h.color};font-weight:700;">${h.label}</div></div></div>`).join('')
-    : `<div class="search-result">Not on the list yet. Log it and Christopher will let you know.</div>`;
+    : `<div class="search-result">Not on the list yet. We've sent this to Christopher and will let you know.</div>`;
+  clearTimeout(foodSearchLogTimer);
+  foodSearchLogTimer = setTimeout(() => { logFoodSearchQuery(rawQ, hits.length > 0); }, 900);
+}
+
+function logFoodSearchQuery(rawQ, matched) {
+  if (!rawQ || rawQ.length < 2) return;
+  const t = stamp();
+  sheetCall({ action:'log_food_search', clientId: currentClientId, query: rawQ, matched: matched, timestamp: t.iso, timeLocal: t.local });
 }
 
 function renderFoodToday() {
