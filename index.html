@@ -569,10 +569,16 @@ function stamp() {
 }
 
 /* ── LOCAL DAY STATE ── */
-const dayKey = () => 'fh_' + new Date().toISOString().slice(0,10);
+// Day key uses HER LOCAL date. The old UTC key flipped to tomorrow at 8pm Eastern,
+// which made everything logged that day vanish from the tiles every evening.
+function localDayStr(d){ const n = d || new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); }
+const dayKey = () => 'fh_' + localDayStr();
 function loadDay() { try { return JSON.parse(localStorage.getItem(dayKey())) || {}; } catch(e){ return {}; } }
 function saveDay(state) { localStorage.setItem(dayKey(), JSON.stringify(state)); }
-function doRefresh(){ const b=document.getElementById('refresh-btn'); if(b){ b.classList.add('refreshing'); b.innerHTML='↻ <span>refreshing</span>'; } setTimeout(function(){ location.reload(); }, 500); }
+function doRefresh(){ const b=document.getElementById('refresh-btn'); if(b){ b.classList.add('refreshing'); b.innerHTML='↻ <span>refreshing</span>'; } setTimeout(function(){
+  try { const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString()); }
+  catch(e){ location.reload(); }
+}, 500); }
 
 /* ── DAILY INPUT TILES ── */
 const INPUTS = [
@@ -632,10 +638,87 @@ const SESSIONS = [
   { id:'noon',    label:'Noon',    metrics: REPEATABLE_IDS },
   { id:'night',   label:'Night',   metrics: REPEATABLE_IDS }
 ];
-let sessionOpen = { morning:true, noon:false, night:false };
+let sessionOpen = { morning:false, noon:false, night:false };
 
 function sessionReadings(day, sid, mid){ return (day[sid] && day[sid][mid]) ? day[sid][mid] : []; }
 function toggleSession(id){ sessionOpen[id] = !sessionOpen[id]; renderSessions(); }
+
+/* ── ONE-TIME DAY MIGRATION ── runs at startup, before first render.
+   Repairs two older storage shapes so past readings show on the tiles:
+   1. Entries saved under the old UTC day key (evening logs landed under tomorrow's date).
+   2. Entries saved flat as day[metricId] by pre-session builds, lifted into their session bucket. */
+function sessionForEntry(r){
+  let h = null;
+  if (r && r.iso) { const d = new Date(r.iso); if (!isNaN(d)) h = d.getHours(); }
+  if (h === null && r) {
+    const m = String(r.when || r.t || '').match(/(\d{1,2})[:h.](\d{2})\s*([ap])/i);
+    if (m) h = (parseInt(m[1],10) % 12) + (/p/i.test(m[3]) ? 12 : 0);
+  }
+  if (h === null) return 'morning';
+  return h < 12 ? 'morning' : (h < 17 ? 'noon' : 'night');
+}
+function migrateDay(){
+  try {
+    const key = dayKey();
+    const day = loadDay();
+    let changed = false;
+    const SIDS = ['morning','noon','night'];
+    // 1) pull in anything the old UTC-keyed build wrote under a different date key today
+    const utcKey = 'fh_' + new Date().toISOString().slice(0,10);
+    if (utcKey !== key) {
+      let spill = null;
+      try { spill = JSON.parse(localStorage.getItem(utcKey)); } catch(e){}
+      if (spill) {
+        SIDS.forEach(function(sid){
+          if (!spill[sid]) return;
+          day[sid] = day[sid] || {};
+          Object.keys(spill[sid]).forEach(function(mid){
+            day[sid][mid] = (day[sid][mid] || []).concat([].concat(spill[sid][mid] || []));
+          });
+        });
+        Object.keys(spill).forEach(function(k){
+          if (SIDS.indexOf(k) > -1) return;
+          if (day[k] === undefined) day[k] = spill[k];
+        });
+        localStorage.removeItem(utcKey);
+        changed = true;
+      }
+    }
+    // 2) lift old flat-shape readings into their session bucket
+    INPUTS.forEach(function(inp){
+      const flat = day[inp.id];
+      if (flat === undefined) return;
+      const arr = Array.isArray(flat) ? flat : [flat];
+      arr.forEach(function(r){
+        const e = (r && typeof r === 'object') ? r : { disp: String(r), when: '' };
+        if (!e.when && e.t) e.when = e.t;
+        const sid = (REPEATABLE_IDS.indexOf(inp.id) > -1) ? sessionForEntry(e) : 'morning';
+        day[sid] = day[sid] || {};
+        day[sid][inp.id] = day[sid][inp.id] || [];
+        day[sid][inp.id].push(e);
+      });
+      delete day[inp.id];
+      changed = true;
+    });
+    // 3) drop entries stamped with a different calendar day, so each day starts clean
+    const today = localDayStr();
+    SIDS.forEach(function(sid){
+      const bucket = day[sid];
+      if (!bucket) return;
+      Object.keys(bucket).forEach(function(mid){
+        const all = bucket[mid] || [];
+        const kept = all.filter(function(r){
+          if (!r || !r.iso) return true;
+          const d = new Date(r.iso);
+          return isNaN(d) || localDayStr(d) === today;
+        });
+        if (kept.length !== all.length) changed = true;
+        if (kept.length) bucket[mid] = kept; else delete bucket[mid];
+      });
+    });
+    if (changed) saveDay(day);
+  } catch(e) { console.error('Future Health migrate error', e); }
+}
 
 function tileHtml(day, sid, mid){
   const inp = INPUTS.find(i=>i.id===mid);
@@ -1227,8 +1310,12 @@ const coachMode = new URLSearchParams(location.search).get('coach') === 'future1
 
 function lineChart(canvasId, emptyId, labels, datasets, min, max) {
   if (!labels.length) return;
+  const cv = document.getElementById(canvasId);
+  if (!cv) return;
+  const prior = Chart.getChart(cv);
+  if (prior) prior.destroy();
   document.getElementById(emptyId).style.display = 'none';
-  new Chart(document.getElementById(canvasId), {
+  new Chart(cv, {
     type:'line',
     data:{ labels, datasets },
     options:{
@@ -1265,38 +1352,51 @@ async function loadCoachUpdates() {
   el.innerHTML = r.updates.map(u => `<div class="coach-log-item"><div><div class="coach-log-field">${(u.title||'Update').replace(/</g,'&lt;')}</div><div class="coach-log-time">${u.timeLocal||''} — ${(u.body||'').slice(0,80).replace(/</g,'&lt;')}${(u.body||'').length>80?'…':''}</div></div></div>`).join('');
 }
 
+function sessionTag(sess) {
+  const s = String(sess||'').toLowerCase();
+  if (s !== 'morning' && s !== 'noon' && s !== 'night') return '';
+  const color = s === 'morning' ? 'var(--green)' : (s === 'noon' ? 'var(--gold)' : 'var(--luff1)');
+  return `<span style="color:${color};font-weight:700;">${s.charAt(0).toUpperCase()+s.slice(1)}</span> · `;
+}
+
 function initCoachView(logsData) {
-  const ds = (rows, key) => rows.filter(r=>r.field===key).map(r=>({ t:(r.timeLocal||'').split(',')[0]||r.timestamp?.slice(5,10)||'', v:r.value }));
-  const sage='#2D5A2D', gold='#C8960A', blue='#4F7EA8', red='#B03030';
-  const g = ds(logsData,'glucose');
-  lineChart('c-glucose','e-glucose', g.map(x=>x.t), [{data:g.map(x=>x.v), borderColor:sage, backgroundColor:'rgba(45,90,45,0.08)', fill:true}], 4, 10);
-  const bp = ds(logsData,'bp');
-  lineChart('c-bp','e-bp', bp.map(x=>x.t), [
-    {label:'Top', data:bp.map(x=>x.v && x.v.sys), borderColor:red},
-    {label:'Bottom', data:bp.map(x=>x.v && x.v.dia), borderColor:blue}
-  ], 60, 160);
-  const w = ds(logsData,'weight');
-  lineChart('c-weight','e-weight', w.map(x=>x.t), [{data:w.map(x=>x.v), borderColor:gold, backgroundColor:'rgba(200,150,10,0.08)', fill:true}], null, null);
-  const p = ds(logsData,'pulse');
-  lineChart('c-pulse','e-pulse', p.map(x=>x.t), [{data:p.map(x=>x.v), borderColor:red}], 50, 90);
-  const s = ds(logsData,'sleephours');
-  lineChart('c-sleep','e-sleep', s.map(x=>x.t), [{data:s.map(x=>x.v), borderColor:blue, backgroundColor:'rgba(79,126,168,0.1)', fill:true}], 0, 10);
-  const kp = ds(logsData,'kneepain'), en = ds(logsData,'energy');
-  const peLabels = (kp.length?kp:en).map(x=>x.t);
-  if (peLabels.length) lineChart('c-painenergy','e-painenergy', peLabels, [
-    {label:'Knee pain', data:kp.map(x=>x.v), borderColor:red},
-    {label:'Energy', data:en.map(x=>x.v), borderColor:sage}
-  ], 0, 10);
-  const recent = [...logsData].reverse().slice(0,25);
-  if (recent.length) {
-    document.getElementById('coach-log-list').innerHTML = recent.map(r=>{
-      const inp = INPUTS.find(i=>i.id===r.field);
-      const label = inp ? inp.icon+' '+inp.label : r.field;
-      let val = r.value;
-      if (val && typeof val === 'object') val = val.sys ? val.sys+'/'+val.dia : (val.type!==undefined ? 'Type '+val.type+' '+(val.warning||'') : (val.intensity!==undefined ? val.intensity+' · '+(val.source||'') : JSON.stringify(val)));
-      return `<div class="coach-log-item"><div><div class="coach-log-field">${label}</div><div class="coach-log-time">${r.timeLocal||''}</div></div><div class="coach-log-val">${val}</div></div>`;
-    }).join('');
-  }
+  // The dated log list renders FIRST so her history always shows, whatever the charts do.
+  try {
+    const recent = [...logsData].reverse().slice(0,25);
+    if (recent.length) {
+      document.getElementById('coach-log-list').innerHTML = recent.map(r=>{
+        const inp = INPUTS.find(i=>i.id===r.field);
+        const label = inp ? inp.icon+' '+inp.label : r.field;
+        let val = r.value;
+        if (val && typeof val === 'object') val = val.sys ? val.sys+'/'+val.dia : (val.type!==undefined ? 'Type '+val.type+' '+(val.warning||'') : (val.intensity!==undefined ? val.intensity+' · '+(val.source||'') : JSON.stringify(val)));
+        return `<div class="coach-log-item"><div><div class="coach-log-field">${label}</div><div class="coach-log-time">${sessionTag(r.session)}${r.timeLocal||''}</div></div><div class="coach-log-val">${val}</div></div>`;
+      }).join('');
+    }
+  } catch(e) { console.error('Future Health coach log list error', e); }
+  // Charts are guarded: a chart failure can never blank the log list again.
+  try {
+    const ds = (rows, key) => rows.filter(r=>r.field===key).map(r=>({ t:(r.timeLocal||'').split(',')[0]||r.timestamp?.slice(5,10)||'', v:r.value }));
+    const sage='#2D5A2D', gold='#C8960A', blue='#4F7EA8', red='#B03030';
+    const g = ds(logsData,'glucose');
+    lineChart('c-glucose','e-glucose', g.map(x=>x.t), [{data:g.map(x=>x.v), borderColor:sage, backgroundColor:'rgba(45,90,45,0.08)', fill:true}], 4, 10);
+    const bp = ds(logsData,'bp');
+    lineChart('c-bp','e-bp', bp.map(x=>x.t), [
+      {label:'Top', data:bp.map(x=>x.v && x.v.sys), borderColor:red},
+      {label:'Bottom', data:bp.map(x=>x.v && x.v.dia), borderColor:blue}
+    ], 60, 160);
+    const w = ds(logsData,'weight');
+    lineChart('c-weight','e-weight', w.map(x=>x.t), [{data:w.map(x=>x.v), borderColor:gold, backgroundColor:'rgba(200,150,10,0.08)', fill:true}], null, null);
+    const p = ds(logsData,'pulse');
+    lineChart('c-pulse','e-pulse', p.map(x=>x.t), [{data:p.map(x=>x.v), borderColor:red}], 50, 90);
+    const s = ds(logsData,'sleephours');
+    lineChart('c-sleep','e-sleep', s.map(x=>x.t), [{data:s.map(x=>x.v), borderColor:blue, backgroundColor:'rgba(79,126,168,0.1)', fill:true}], 0, 10);
+    const kp = ds(logsData,'kneepain'), en = ds(logsData,'energy');
+    const peLabels = (kp.length?kp:en).map(x=>x.t);
+    if (peLabels.length) lineChart('c-painenergy','e-painenergy', peLabels, [
+      {label:'Knee pain', data:kp.map(x=>x.v), borderColor:red},
+      {label:'Energy', data:en.map(x=>x.v), borderColor:sage}
+    ], 0, 10);
+  } catch(e) { console.error('Future Health chart error', e); }
 }
 
 async function sendCoachMsg() {
@@ -1343,15 +1443,19 @@ function loadCoachChat() {
 function loadCoachLogs() {
   return sheetCall({ action:'get_logs', clientId: currentClientId }).then(r => {
     if (r.success) {
-      if (r.logs && r.logs.length) initCoachView(r.logs);
-      if (r.food && r.food.length) {
-        document.getElementById('coach-food-list').innerHTML = [...r.food].reverse().slice(0,20).map(f =>
-          `<div class="coach-log-item"><div><div class="coach-log-field">${String(f.food).replace(/</g,'&lt;')}</div><div class="coach-log-time">${f.timeLocal||''}</div></div></div>`).join('');
-      }
-      if (r.supps && r.supps.length) {
-        document.getElementById('coach-supp-list').innerHTML = [...r.supps].reverse().slice(0,20).map(s =>
-          `<div class="coach-log-item"><div><div class="coach-log-field">${s.taken==='YES'?'\u2705':'\u25fb'} ${s.supplement}</div><div class="coach-log-time">${s.timeLocal||''}</div></div></div>`).join('');
-      }
+      try { if (r.logs && r.logs.length) initCoachView(r.logs); } catch(e) { console.error('Future Health coach view error', e); }
+      try {
+        if (r.food && r.food.length) {
+          document.getElementById('coach-food-list').innerHTML = [...r.food].reverse().slice(0,20).map(f =>
+            `<div class="coach-log-item"><div><div class="coach-log-field">${String(f.food).replace(/</g,'&lt;')}</div><div class="coach-log-time">${f.timeLocal||''}</div></div></div>`).join('');
+        }
+      } catch(e) { console.error('Future Health food list error', e); }
+      try {
+        if (r.supps && r.supps.length) {
+          document.getElementById('coach-supp-list').innerHTML = [...r.supps].reverse().slice(0,20).map(s =>
+            `<div class="coach-log-item"><div><div class="coach-log-field">${s.taken==='YES'?'\u2705':'\u25fb'} ${s.supplement}</div><div class="coach-log-time">${s.timeLocal||''}</div></div></div>`).join('');
+        }
+      } catch(e) { console.error('Future Health supp list error', e); }
     }
     return r;
   });
@@ -1386,23 +1490,27 @@ function showPage(id, btn) {
   }
 }
 
-/* ── INIT ── */
+/* ── INIT ── every step is guarded so one error can never blank the screens after it */
+function safeRun(label, fn) { try { fn(); } catch(e) { console.error('Future Health init error in ' + label, e); } }
 document.addEventListener('DOMContentLoaded', function() {
-  const today = new Date();
-  const days = Math.floor((today - PROTOCOL_START) / (1000*60*60*24));
-  document.getElementById('days-count').textContent = days;
-  document.getElementById('wins-days-line').textContent = days + ' days on protocol · 3 chronic medications eliminated';
-  const h = today.getHours();
-  document.getElementById('hero-time').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  initVerse();
-  renderTiles();
-  fetchWhooshesToday();
-  renderSupps();
-  renderFoodLists();
-  renderFoodToday();
-  initWins();
-  if (coachMode) { initCoachMode(); loadCoachUpdates(); return; }
-  initCoach();
+  safeRun('daycount', function(){
+    const today = new Date();
+    const days = Math.floor((today - PROTOCOL_START) / (1000*60*60*24));
+    document.getElementById('days-count').textContent = days;
+    document.getElementById('wins-days-line').textContent = days + ' days on protocol · 3 chronic medications eliminated';
+    const h = today.getHours();
+    document.getElementById('hero-time').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  });
+  safeRun('verse', initVerse);
+  safeRun('migrate', migrateDay);
+  safeRun('tiles', renderTiles);
+  safeRun('whooshes', fetchWhooshesToday);
+  safeRun('supplements', renderSupps);
+  safeRun('foodlists', renderFoodLists);
+  safeRun('foodtoday', renderFoodToday);
+  safeRun('wins', initWins);
+  if (coachMode) { safeRun('coachmode', initCoachMode); safeRun('coachupdates', loadCoachUpdates); return; }
+  safeRun('coachchat', initCoach);
 });
 </script>
 </body>
