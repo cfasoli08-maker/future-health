@@ -920,7 +920,9 @@ async function saveEntry() {
   renderSessions();
   document.getElementById('saved-flash').style.display = 'block';
   setTimeout(closeSheet, 550);
-  sheetCall({ action:'log_entry', clientId: currentClientId, field: inp.id, session: activeSession, value: value, timestamp: t.iso, timeLocal: t.local });
+  // timeLocal carries the session tag so it lands in the sheet even before the backend
+  // stores the separate session column; the dashboard parses it back out for grouping.
+  sheetCall({ action:'log_entry', clientId: currentClientId, field: inp.id, session: activeSession, value: value, timestamp: t.iso, timeLocal: t.local + ' · ' + activeSession });
 }
 
 /* ── CANCEL A LOGGED ENTRY ── Valerie can undo a mistaken tap, no going back needed */
@@ -1358,6 +1360,14 @@ function sessionTag(sess) {
   const color = s === 'morning' ? 'var(--green)' : (s === 'noon' ? 'var(--gold)' : 'var(--luff1)');
   return `<span style="color:${color};font-weight:700;">${s.charAt(0).toUpperCase()+s.slice(1)}</span> · `;
 }
+// Session for a log row: the backend session column when present, else the tag
+// embedded in timeLocal by builds that predate the backend column.
+function sessionFromRow(r) {
+  if (r && r.session) return r.session;
+  const m = String(r && r.timeLocal || '').match(/ · (morning|noon|night)$/i);
+  return m ? m[1].toLowerCase() : '';
+}
+function cleanTimeLocal(t) { return String(t||'').replace(/ · (morning|noon|night)$/i, ''); }
 
 function initCoachView(logsData) {
   // The dated log list renders FIRST so her history always shows, whatever the charts do.
@@ -1369,7 +1379,7 @@ function initCoachView(logsData) {
         const label = inp ? inp.icon+' '+inp.label : r.field;
         let val = r.value;
         if (val && typeof val === 'object') val = val.sys ? val.sys+'/'+val.dia : (val.type!==undefined ? 'Type '+val.type+' '+(val.warning||'') : (val.intensity!==undefined ? val.intensity+' · '+(val.source||'') : JSON.stringify(val)));
-        return `<div class="coach-log-item"><div><div class="coach-log-field">${label}</div><div class="coach-log-time">${sessionTag(r.session)}${r.timeLocal||''}</div></div><div class="coach-log-val">${val}</div></div>`;
+        return `<div class="coach-log-item"><div><div class="coach-log-field">${label}</div><div class="coach-log-time">${sessionTag(sessionFromRow(r))}${cleanTimeLocal(r.timeLocal)}</div></div><div class="coach-log-val">${val}</div></div>`;
       }).join('');
     }
   } catch(e) { console.error('Future Health coach log list error', e); }
