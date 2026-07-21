@@ -376,6 +376,13 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
     <button class="food-save" style="width:100%;" onclick="askSupp()">Send to Christopher ✓</button>
     <div class="food-hint" id="supp-question-hint" style="margin-top:0.6rem;"></div>
 
+    <button class="tier-btn tier-amber" style="margin-top:1rem;" onclick="toggleTier('supp-review-list',this)">
+      <div class="tier-dot"></div>
+      <div><div class="tier-btn-title">Sent to Christopher</div><div class="tier-btn-sub">Your questions waiting for his next review</div></div>
+      <div class="tier-arrow">›</div>
+    </button>
+    <div class="tier-list" id="supp-review-list"></div>
+
     <div class="section-label">Full supplement guide</div>
     <button class="tier-btn tier-green" onclick="toggleTier('supp-green',this)">
       <div class="tier-dot"></div>
@@ -416,6 +423,20 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
 
     <div class="section-label" id="food-today-label" style="display:none;">Logged today</div>
     <div id="food-today"></div>
+
+    <button class="tier-btn tier-green" style="margin-top:0.4rem;" onclick="toggleTier('food-history-list',this)">
+      <div class="tier-dot"></div>
+      <div><div class="tier-btn-title">Your meals so far</div><div class="tier-btn-sub">Look back at what you have been eating</div></div>
+      <div class="tier-arrow">›</div>
+    </button>
+    <div class="tier-list" id="food-history-list"></div>
+
+    <button class="tier-btn tier-amber" onclick="toggleTier('food-review-list',this)">
+      <div class="tier-dot"></div>
+      <div><div class="tier-btn-title">Waiting for review</div><div class="tier-btn-sub">Foods you asked about, on Christopher's desk</div></div>
+      <div class="tier-arrow">›</div>
+    </button>
+    <div class="tier-list" id="food-review-list"></div>
 
     <div class="section-label">Have a question about a food?</div>
     <div class="search-wrap">
@@ -1085,11 +1106,14 @@ const SUPP_RED = [
 function renderSupps() {
   const day = loadDay();
   const taken = day.supps || {};
+  const times = day.suppTimes || {};
   const magCount = day.magCount || 0;
   let html = SUPPS.map(s => `
     <div class="supp-tick ${taken[s.id]?'checked':''}" onclick="toggleSuppTick('${s.id}',this)">
       <div class="supp-tick-box">${taken[s.id]?'✓':''}</div>
-      <div><div class="supp-tick-name">${s.name}</div><div class="supp-tick-dose">${s.dose}</div></div>
+      <div><div class="supp-tick-name">${s.name}</div><div class="supp-tick-dose">${taken[s.id]
+        ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${times[s.id]||''}</span> · tap again to undo`
+        : s.dose}</div></div>
     </div>`).join('');
   // Magnesium counter tile
   let boxes = '';
@@ -1101,7 +1125,9 @@ function renderSupps() {
     <div class="supp-tick ${magCount>0?'checked':''}" style="flex-wrap:wrap;">
       <div style="flex:1 1 100%;display:flex;align-items:center;gap:1rem;">
         <div class="supp-tick-box">${magCount>0?'✓':''}</div>
-        <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">Tap how many 200mg pills you took (${magCount>0?magCount*MAG.pill+'mg tonight':'none yet'})</div></div>
+        <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">${magCount>0
+          ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${magCount*MAG.pill}mg ${day.magTime?'· '+day.magTime:''}</span> · tap a box to change it`
+          : 'Tap how many 200mg pills you took (none yet)'}</div></div>
       </div>
       <div class="mag-row">${boxes}</div>
     </div>`;
@@ -1116,6 +1142,7 @@ function setMag(n, ev) {
   const day = loadDay();
   // tapping the same count again clears back one; tapping a higher box sets to that count
   day.magCount = (day.magCount === n) ? n-1 : n;
+  day.magTime = timeOnly();
   saveDay(day);
   renderSupps();
   const t = stamp();
@@ -1129,11 +1156,12 @@ function tierItem(x) {
 function toggleSuppTick(id, el) {
   const day = loadDay();
   day.supps = day.supps || {};
+  day.suppTimes = day.suppTimes || {};
   const nowOn = !day.supps[id];
   day.supps[id] = nowOn;
+  day.suppTimes[id] = nowOn ? timeOnly() : '';
   saveDay(day);
-  el.classList.toggle('checked', nowOn);
-  el.querySelector('.supp-tick-box').textContent = nowOn ? '✓' : '';
+  renderSupps();
   const t = stamp();
   const s = SUPPS.find(x=>x.id===id);
   sheetCall({ action:'log_supplement', clientId: currentClientId, supplement: s.name, taken: nowOn, timestamp: t.iso, timeLocal: t.local });
@@ -1142,6 +1170,100 @@ function toggleSuppTick(id, el) {
 function toggleTier(id, btn) {
   document.getElementById(id).classList.toggle('open');
   btn.classList.toggle('open');
+}
+
+/* ── SHEET HYDRATION ── the sheet is the shared truth. Tiles, supplement ticks, and food
+   load today's state from it on every open, so her phone, Christopher's phone, and any
+   other device all show the same thing (the whoosh list already worked this way). */
+async function hydrateFromSheet() {
+  try {
+    const r = await sheetCall({ action:'get_logs', clientId: currentClientId });
+    if (!r || !r.success) return;
+    window.__clientLogs = r;
+    const todayStr = localDayStr();
+    const day = loadDay();
+    let changed = false;
+    (r.logs || []).forEach(function(row){
+      const d = new Date(row.timestamp);
+      if (isNaN(d) || localDayStr(d) !== todayStr) return;
+      const inp = INPUTS.find(i => i.id === row.field);
+      if (!inp) return;
+      const sid = sessionFromRow(row) || sessionForEntry({ iso: row.timestamp });
+      day[sid] = day[sid] || {};
+      const arr = day[sid][inp.id] = day[sid][inp.id] || [];
+      if (arr.some(function(e){ return e.iso === row.timestamp; })) return;
+      arr.push({ disp: displayVal(inp, row.value), when: cleanTimeLocal(row.timeLocal), iso: row.timestamp });
+      changed = true;
+    });
+    // once-a-day metrics keep only their latest reading
+    ['weight','sleephours','sleepquality','wakeups'].forEach(function(mid){
+      if (day.morning && day.morning[mid] && day.morning[mid].length > 1) { day.morning[mid] = [day.morning[mid][day.morning[mid].length - 1]]; changed = true; }
+    });
+    // supplement ticks from today's rows, last state per supplement wins
+    day.supps = day.supps || {};
+    day.suppTimes = day.suppTimes || {};
+    (r.supps || []).forEach(function(srow){
+      const d = new Date(srow.timestamp);
+      if (isNaN(d) || localDayStr(d) !== todayStr) return;
+      const name = String(srow.supplement || '');
+      const magM = name.match(/^Magnesium glycinate bedtime \((\d+)mg \((\d+) pills?\)\)/);
+      if (magM) {
+        const c = parseInt(magM[2], 10);
+        if (day.magCount !== c) { day.magCount = c; day.magTime = cleanTimeLocal(srow.timeLocal); changed = true; }
+        return;
+      }
+      const sdef = SUPPS.find(function(x){ return x.name === name; });
+      if (!sdef) return;
+      const on = srow.taken === 'YES';
+      if (day.supps[sdef.id] !== on) { day.supps[sdef.id] = on; day.suppTimes[sdef.id] = cleanTimeLocal(srow.timeLocal); changed = true; }
+    });
+    window.__foodHistory = r.food || [];
+    if (changed) saveDay(day);
+    renderSessions();
+    renderSupps();
+    renderFoodHistory();
+  } catch(e) { console.error('Future Health hydrate error', e); }
+}
+
+/* ── HER REVIEW LISTS ── what she has asked about, shown back to her so she knows
+   Christopher has it. Data comes from the Food Searches log. */
+function dedupeQueries(rows) {
+  const out = [];
+  rows.forEach(function(row){
+    const q = String(row.query || '').trim();
+    if (!q) return;
+    // drop partial typing: an earlier query that a later one starts with
+    while (out.length && q.toLowerCase().indexOf(out[out.length-1].q.toLowerCase()) === 0) out.pop();
+    if (out.some(function(o){ return o.q.toLowerCase() === q.toLowerCase(); })) return;
+    out.push({ q: q, when: row.timeLocal || '' });
+  });
+  return out;
+}
+async function loadReviewLists() {
+  try {
+    const r = await sheetCall({ action:'get_food_searches', clientId: currentClientId });
+    if (!r || !r.success) return;
+    const rows = r.searches || [];
+    const suppQ = [], foodQ = [];
+    dedupeQueries(rows).forEach(function(item){
+      if (/^SUPPLEMENT:/i.test(item.q)) suppQ.push({ q: item.q.replace(/^SUPPLEMENT:\s*/i, ''), when: item.when });
+      else foodQ.push(item);
+    });
+    const li = function(item){ return `<div class="tier-item"><div class="tier-item-name">${String(item.q).replace(/</g,'&lt;')}</div><div class="tier-item-note">${String(item.when).replace(/</g,'&lt;')}</div></div>`; };
+    const suppEl = document.getElementById('supp-review-list');
+    if (suppEl) suppEl.innerHTML = suppQ.length ? suppQ.slice(-12).reverse().map(li).join('') : '<div class="tier-item"><div class="tier-item-note">Nothing waiting. Ask about any supplement above.</div></div>';
+    const foodEl = document.getElementById('food-review-list');
+    if (foodEl) foodEl.innerHTML = foodQ.length ? foodQ.slice(-12).reverse().map(li).join('') : '<div class="tier-item"><div class="tier-item-note">Nothing waiting. Search any food above.</div></div>';
+  } catch(e) { console.error('Future Health review lists error', e); }
+}
+
+function renderFoodHistory() {
+  const el = document.getElementById('food-history-list');
+  if (!el) return;
+  const rows = (window.__foodHistory || []).slice(-20).reverse();
+  el.innerHTML = rows.length
+    ? rows.map(function(f){ return `<div class="tier-item"><div class="tier-item-name">${String(f.food).replace(/</g,'&lt;')}</div><div class="tier-item-note">${String(f.timeLocal||'').replace(/</g,'&lt;')}</div></div>`; }).join('')
+    : '<div class="tier-item"><div class="tier-item-note">Your logged meals will appear here.</div></div>';
 }
 
 /* ── FOOD ── */
@@ -1685,6 +1807,8 @@ document.addEventListener('DOMContentLoaded', function() {
   safeRun('wins', initWins);
   if (coachMode) { safeRun('coachmode', initCoachMode); safeRun('coachupdates', loadCoachUpdates); return; }
   safeRun('coachchat', initCoach);
+  safeRun('hydrate', hydrateFromSheet);
+  safeRun('reviewlists', loadReviewLists);
 });
 </script>
 </body>
