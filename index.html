@@ -1445,12 +1445,9 @@ function coachShowTab(name) {
     if (btn) btn.classList.toggle('active', t === name);
   });
   if (name === 'trends') {
-    // charts created while hidden have no size; give them one now
+    // charts cannot size themselves while hidden, so (re)build them once the tab is visible
     requestAnimationFrame(function(){
-      ['c-glucose','c-bp','c-weight','c-pulse','c-sleep','c-painenergy'].forEach(function(id){
-        const ch = Chart.getChart(document.getElementById(id));
-        if (ch) ch.resize();
-      });
+      if (window.__lastLogs) initCoachCharts(window.__lastLogs);
     });
   }
   window.scrollTo(0, 0);
@@ -1484,6 +1481,13 @@ function initCoachView(logsData) {
       `<div class="coach-day-label">Yesterday</div>` +
       (byDay.yesterday.length ? byDay.yesterday.map(coachLogRow).join('') : '<div class="coach-empty">Nothing logged.</div>');
   } catch(e) { console.error('Future Health coach log list error', e); }
+  window.__lastLogs = logsData;
+  // Charts only render when the Trends tab is visible; hidden canvases cannot size themselves.
+  const trendsSec = document.getElementById('csec-trends');
+  if (trendsSec && trendsSec.style.display !== 'none') initCoachCharts(logsData);
+}
+
+function initCoachCharts(logsData) {
   // Charts are guarded: a chart failure can never blank the log list again.
   try {
     const ds = (rows, key) => rows.filter(r=>r.field===key).map(r=>({ t:(r.timeLocal||'').split(',')[0]||r.timestamp?.slice(5,10)||'', v:r.value }));
