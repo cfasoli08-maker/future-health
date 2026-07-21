@@ -358,6 +358,14 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
     <div class="section-label">Tap each one as you take it today</div>
     <div id="supp-ticks"></div>
 
+    <div class="section-label">Have a question about a supplement?</div>
+    <div class="search-wrap" style="margin-bottom:0.7rem;">
+      <span class="search-icon">💊</span>
+      <input class="search-input" id="supp-question" placeholder="Type its name, like collagen or fish oil">
+    </div>
+    <button class="food-save" style="width:100%;" onclick="askSupp()">Send to Christopher ✓</button>
+    <div class="food-hint" id="supp-question-hint" style="margin-top:0.6rem;"></div>
+
     <div class="section-label">Full supplement guide</div>
     <button class="tier-btn tier-green" onclick="toggleTier('supp-green',this)">
       <div class="tier-dot"></div>
@@ -720,6 +728,11 @@ function migrateDay(){
   } catch(e) { console.error('Future Health migrate error', e); }
 }
 
+// Some tile subtitles mention "morning" and would read wrong inside Noon and Night.
+const SESSION_SUBS = {
+  glucose: { noon:'Before eating', night:'Before eating' },
+  pulse:   { noon:'Your heart rate', night:'Your heart rate' }
+};
 function tileHtml(day, sid, mid){
   const inp = INPUTS.find(i=>i.id===mid);
   const log = sessionReadings(day, sid, mid);
@@ -730,7 +743,8 @@ function tileHtml(day, sid, mid){
     stack = '<div class="tile-stack">' + log.map((r,ri) =>
       `<div class="tile-stack-row"><span class="tile-stack-val">${r.disp}</span><span class="tile-stack-when">${r.when || r.t || ''}</span><span class="tile-stack-cancel" onclick="event.stopPropagation();cancelEntry('${sid}','${mid}',${ri})" title="Cancel this entry">✕</span></div>`).join('') + '</div>';
   }
-  const sub = done ? (repeatable ? log.length + ' logged, tap to add another' : 'Logged ✓ tap to change') : inp.sub;
+  const restSub = (SESSION_SUBS[mid] && SESSION_SUBS[mid][sid]) || inp.sub;
+  const sub = done ? (repeatable ? log.length + ' logged, tap to add another' : 'Logged ✓ tap to change') : restSub;
   return `<div class="tile ${done?'done tile-multi':''}" onclick="openEntry('${mid}','${sid}')">
       <div class="tile-head">
         <div class="tile-icon">${inp.icon}</div>
@@ -773,11 +787,17 @@ function displayVal(inp, v) {
   return v;
 }
 
+// Help wording for metrics whose default text mentions the morning.
+const SESSION_HELP = {
+  glucose: 'Your blood sugar from your meter, before eating if you can. The time is recorded for you automatically.',
+  pulse: 'Your pulse in beats per minute. The time is recorded for you automatically.'
+};
 function openEntry(id, session) {
   activeInput = INPUTS.find(i=>i.id===id);
   activeSession = session || 'morning';
   sheetSel = {};
   const inp = activeInput;
+  const helpText = (activeSession !== 'morning' && SESSION_HELP[inp.id]) ? SESSION_HELP[inp.id] : inp.help;
   let body = '';
   if (inp.type==='number') {
     body = `<input class="big-input" type="number" inputmode="decimal" step="${inp.step}" id="entry-val" placeholder="${inp.placeholder}">
@@ -839,6 +859,7 @@ function openEntry(id, session) {
   const repeatable = REPEATABLE_IDS.indexOf(inp.id) > -1;
   const sessLog = sessionReadings(loadDay(), activeSession, inp.id);
   const sessName = activeSession.charAt(0).toUpperCase()+activeSession.slice(1);
+  const sessColor = activeSession === 'morning' ? 'var(--green)' : (activeSession === 'noon' ? 'var(--gold)' : 'var(--luff1)');
   if (sessLog.length) {
     priorReadings = `<div class="today-readings"><div class="today-readings-label">${sessName} so far${repeatable?'. A new entry adds to this list, it does not replace it.':''}</div>` +
       sessLog.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${r.when || r.t || ''}</span></div>`).join('') + `</div>`;
@@ -847,8 +868,8 @@ function openEntry(id, session) {
   }
   document.getElementById('sheet').innerHTML = `
     <div class="sheet-icon">${inp.icon}</div>
-    <div class="sheet-title">${inp.label}</div>
-    <div class="sheet-help">${inp.help}</div>
+    <div class="sheet-title">${inp.label} <span style="color:${sessColor};">· ${sessName}</span></div>
+    <div class="sheet-help">${helpText}</div>
     ${priorReadings}
     ${body}
     <button class="save-btn" onclick="saveEntry()">Save ✓</button>
@@ -1101,6 +1122,7 @@ function renderFoodLists() {
 }
 
 let foodSearchLogTimer = null;
+let lastFoodSearchLogged = '';
 function searchFood(q) {
   const out = document.getElementById('food-search-results');
   const rawQ = q.trim();
@@ -1112,15 +1134,39 @@ function searchFood(q) {
   FOOD_RED.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'red', label:'Avoid', color:'var(--red)'}); });
   out.innerHTML = hits.length
     ? hits.slice(0,8).map(h=>`<div class="search-result"><div class="tier-dot" style="background:${h.color};width:20px;height:20px;flex-shrink:0;border-radius:50%;"></div><div>${h.f}<div style="font-size:0.9rem;color:${h.color};font-weight:700;">${h.label}</div></div></div>`).join('')
-    : `<div class="search-result">Not on the list yet. We've sent this to Christopher and will let you know.</div>`;
+    : `<div class="search-result" id="food-noresult"><div>Not on your lists yet.<br><button class="food-logged-edit" style="margin-top:0.55rem;" onclick="sendFoodQuestion()">Send to Christopher ✓</button></div></div>`;
+  // matched searches log quietly for the weekly review; unmatched ones use the send button
   clearTimeout(foodSearchLogTimer);
-  foodSearchLogTimer = setTimeout(() => { logFoodSearchQuery(rawQ, hits.length > 0); }, 900);
+  if (hits.length) foodSearchLogTimer = setTimeout(() => { logFoodSearchQuery(rawQ, true); }, 2500);
 }
 
 function logFoodSearchQuery(rawQ, matched) {
-  if (!rawQ || rawQ.length < 2) return;
+  if (!rawQ || rawQ.length < 2 || rawQ === lastFoodSearchLogged) return;
+  lastFoodSearchLogged = rawQ;
   const t = stamp();
-  sheetCall({ action:'log_food_search', clientId: currentClientId, query: rawQ, matched: matched, timestamp: t.iso, timeLocal: t.local });
+  return sheetCall({ action:'log_food_search', clientId: currentClientId, query: rawQ, matched: matched, timestamp: t.iso, timeLocal: t.local });
+}
+
+async function sendFoodQuestion() {
+  const rawQ = document.getElementById('food-search').value.trim();
+  if (!rawQ) return;
+  const box = document.getElementById('food-noresult');
+  if (box) box.innerHTML = 'Sending…';
+  await logFoodSearchQuery(rawQ, false);
+  if (box) box.innerHTML = `Sent to Christopher 🌿 "${rawQ.replace(/</g,'&lt;')}" will be on your food lists after his next review.`;
+}
+
+async function askSupp() {
+  const input = document.getElementById('supp-question');
+  const q = input.value.trim();
+  if (!q) return;
+  const hint = document.getElementById('supp-question-hint');
+  hint.textContent = 'Sending…';
+  const t = stamp();
+  await sheetCall({ action:'log_food_search', clientId: currentClientId, query: 'SUPPLEMENT: ' + q, matched: false, timestamp: t.iso, timeLocal: t.local });
+  input.value = '';
+  hint.textContent = 'Sent to Christopher 🌿 He will have an answer for you in your next update.';
+  setTimeout(() => { if (hint.textContent.indexOf('Sent') === 0) hint.textContent = ''; }, 8000);
 }
 
 function renderFoodToday() {
