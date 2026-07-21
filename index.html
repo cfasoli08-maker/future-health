@@ -279,6 +279,12 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
 .coach-log-time { font-size:0.82rem; color:var(--muted); }
 .coach-log-val { font-family:'Oswald',sans-serif; font-size:1.15rem; font-weight:600; color:var(--sage); text-align:right; }
 
+/* ── COACH TABS ── */
+.coach-tabs { display:flex; gap:0.45rem; margin-bottom:1rem; }
+.coach-tab { flex:1; padding:0.85rem 0.3rem; border-radius:14px; border:2px solid var(--sage); background:var(--surface); font-weight:700; cursor:pointer; color:var(--sage); font-family:'DM Sans',sans-serif; font-size:0.95rem; }
+.coach-tab.active { background:var(--sage); color:#fff; }
+.coach-day-label { font-size:0.85rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); font-weight:700; margin:1.2rem 0 0.6rem; }
+
 /* ── WHOOSH ── */
 .whoosh-card { background:var(--surface); border:2px solid var(--gold); border-radius:18px; padding:1rem 1.1rem; margin-top:1.2rem; }
 .whoosh-head { display:flex; justify-content:space-between; align-items:center; gap:0.8rem; }
@@ -504,40 +510,46 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
     </div>
     <button class="reply-send" style="margin:0 0 1rem;background:var(--luff1);" onclick="coachRefresh(this)">Refresh dashboard ⟳</button>
 
-    <div class="section-label" style="margin-top:0.5rem;">Chat with Valerie</div>
-    <div class="chat-thread" id="coach-chat-thread"></div>
-    <div class="reply-card">
-      <textarea class="reply-box" id="coach-reply-input" placeholder="Write your message to Valerie."></textarea>
-      <button class="reply-send" onclick="sendCoachMsg()">Send to Valerie ✓</button>
-      <div class="reply-sent" id="coach-reply-sent">Sent 🌿</div>
+    <div class="coach-tabs">
+      <button class="coach-tab active" id="ctab-chat" onclick="coachShowTab('chat')">💬 Chat</button>
+      <button class="coach-tab" id="ctab-updates" onclick="coachShowTab('updates')">🌿 Updates</button>
+      <button class="coach-tab" id="ctab-trends" onclick="coachShowTab('trends')">📈 Trends</button>
+      <button class="coach-tab" id="ctab-entries" onclick="coachShowTab('entries')">📋 Entries</button>
     </div>
 
-    <div class="section-label">Weekly Update to Valerie</div>
-    <div class="reply-card">
-      <input class="reply-box" id="update-title-input" style="min-height:auto;margin-bottom:0.5rem;" placeholder="Title, e.g. Week of July 13">
-      <textarea class="reply-box" id="update-body-input" placeholder="What changed, what moved to green, milestones, encouragement."></textarea>
-      <button class="reply-send" onclick="publishUpdate()">Publish update ✓</button>
-      <div class="reply-sent" id="update-published-flash">Published 🌿</div>
+    <div class="coach-section" id="csec-chat">
+      <div class="chat-thread" id="coach-chat-thread"></div>
+      <div class="reply-card">
+        <textarea class="reply-box" id="coach-reply-input" placeholder="Write your message to Valerie."></textarea>
+        <button class="reply-send" onclick="sendCoachMsg()">Send to Valerie ✓</button>
+        <div class="reply-sent" id="coach-reply-sent">Sent 🌿</div>
+      </div>
     </div>
-    <div class="section-label">Past updates</div>
-    <div id="coach-updates-list"><div class="coach-empty">No updates published yet.</div></div>
 
-    <div class="section-label">Trends</div>
-    <div class="coach-chart-card"><div class="coach-chart-title">🩸 Blood sugar (mmol/L)</div><div class="coach-chart-wrap"><canvas id="c-glucose"></canvas></div><div class="coach-empty" id="e-glucose">Waiting for logged data.</div></div>
-    <div class="coach-chart-card"><div class="coach-chart-title">💓 Blood pressure (mmHg)</div><div class="coach-chart-wrap"><canvas id="c-bp"></canvas></div><div class="coach-empty" id="e-bp">Waiting for logged data.</div></div>
-    <div class="coach-chart-card"><div class="coach-chart-title">⚖️ Weight (lb)</div><div class="coach-chart-wrap"><canvas id="c-weight"></canvas></div><div class="coach-empty" id="e-weight">Waiting for logged data.</div></div>
-    <div class="coach-chart-card"><div class="coach-chart-title">💗 Pulse (bpm)</div><div class="coach-chart-wrap"><canvas id="c-pulse"></canvas></div><div class="coach-empty" id="e-pulse">Waiting for logged data.</div></div>
-    <div class="coach-chart-card"><div class="coach-chart-title">🌙 Sleep hours</div><div class="coach-chart-wrap"><canvas id="c-sleep"></canvas></div><div class="coach-empty" id="e-sleep">Waiting for logged data.</div></div>
-    <div class="coach-chart-card"><div class="coach-chart-title">🦵⚡ Knee pain vs energy (0–10)</div><div class="coach-chart-wrap"><canvas id="c-painenergy"></canvas></div><div class="coach-empty" id="e-painenergy">Waiting for logged data.</div></div>
+    <div class="coach-section" id="csec-updates" style="display:none">
+      <div class="section-label" style="margin-top:0.5rem;">Weekly update to Valerie</div>
+      <div class="reply-card">
+        <input class="reply-box" id="update-title-input" style="min-height:auto;margin-bottom:0.5rem;" placeholder="Title, e.g. Week of July 13">
+        <textarea class="reply-box" id="update-body-input" placeholder="What changed, what moved to green, milestones, encouragement."></textarea>
+        <button class="reply-send" onclick="publishUpdate()">Publish update ✓</button>
+        <div class="reply-sent" id="update-published-flash">Published 🌿</div>
+      </div>
+      <div class="section-label">Past updates</div>
+      <div id="coach-updates-list"><div class="coach-empty">No updates published yet.</div></div>
+    </div>
 
-    <div class="section-label">Latest entries</div>
-    <div id="coach-log-list"><div class="coach-empty">Entries appear here as Valerie logs them.</div></div>
+    <div class="coach-section" id="csec-trends" style="display:none">
+      <div class="coach-chart-card"><div class="coach-chart-title">🩸 Blood sugar (mmol/L)</div><div class="coach-chart-wrap"><canvas id="c-glucose"></canvas></div><div class="coach-empty" id="e-glucose">Waiting for logged data.</div></div>
+      <div class="coach-chart-card"><div class="coach-chart-title">💓 Blood pressure (mmHg)</div><div class="coach-chart-wrap"><canvas id="c-bp"></canvas></div><div class="coach-empty" id="e-bp">Waiting for logged data.</div></div>
+      <div class="coach-chart-card"><div class="coach-chart-title">⚖️ Weight (lb)</div><div class="coach-chart-wrap"><canvas id="c-weight"></canvas></div><div class="coach-empty" id="e-weight">Waiting for logged data.</div></div>
+      <div class="coach-chart-card"><div class="coach-chart-title">💗 Pulse (bpm)</div><div class="coach-chart-wrap"><canvas id="c-pulse"></canvas></div><div class="coach-empty" id="e-pulse">Waiting for logged data.</div></div>
+      <div class="coach-chart-card"><div class="coach-chart-title">🌙 Sleep hours</div><div class="coach-chart-wrap"><canvas id="c-sleep"></canvas></div><div class="coach-empty" id="e-sleep">Waiting for logged data.</div></div>
+      <div class="coach-chart-card"><div class="coach-chart-title">🦵⚡ Knee pain vs energy (0–10)</div><div class="coach-chart-wrap"><canvas id="c-painenergy"></canvas></div><div class="coach-empty" id="e-painenergy">Waiting for logged data.</div></div>
+    </div>
 
-    <div class="section-label">Food diary</div>
-    <div id="coach-food-list"><div class="coach-empty">Food entries appear here.</div></div>
-
-    <div class="section-label">Supplements log</div>
-    <div id="coach-supp-list"><div class="coach-empty">Supplement ticks appear here.</div></div>
+    <div class="coach-section" id="csec-entries" style="display:none">
+      <div id="coach-log-list"><div class="coach-empty">Entries appear here as Valerie logs them.</div></div>
+    </div>
   </div>
 
   <!-- ══ NAV ══ -->
@@ -969,10 +981,9 @@ function openWhoosh() {
 }
 async function logWhoosh(note) {
   const t = stamp();
-  const listEl = document.getElementById('whoosh-list');
   const today = new Date().toDateString();
   window.__whooshToday = window.__whooshToday || [];
-  window.__whooshToday.unshift({ timeLocal: t.local, note: note, _day: today });
+  window.__whooshToday.unshift({ timeLocal: t.local, note: note, _day: today, timestamp: t.iso });
   renderWhooshList();
   const r = await sheetCall({ action:'log_whoosh', clientId: currentClientId, note: note, timestamp: t.iso, timeLocal: t.local });
   return r;
@@ -982,7 +993,18 @@ function renderWhooshList() {
   if (!el) return;
   const items = (window.__whooshToday || []);
   if (!items.length) { el.innerHTML = '<div class="whoosh-empty">None logged yet today.</div>'; return; }
-  el.innerHTML = items.map(w => `<div class="whoosh-row"><span class="whoosh-time">${w.timeLocal}</span>${w.note ? `<span class="whoosh-note">${w.note.replace(/</g,'&lt;')}</span>` : ''}</div>`).join('');
+  el.innerHTML = items.map((w, i) => `<div class="whoosh-row"><span class="whoosh-time">${w.timeLocal}</span>${w.note ? `<span class="whoosh-note">${w.note.replace(/</g,'&lt;')}</span>` : ''}<span class="tile-stack-cancel" onclick="cancelWhoosh(${i})" title="Cancel this whoosh">✕</span></div>`).join('');
+}
+// Same undo she has on the vitals tiles: removes the row from today's list and from the sheet.
+async function cancelWhoosh(i) {
+  const items = window.__whooshToday || [];
+  const w = items[i];
+  if (!w) return;
+  items.splice(i, 1);
+  renderWhooshList();
+  if (w.timestamp) {
+    sheetCall({ action:'delete_entry', clientId: currentClientId, sheet: 'Whoosh Log', timestamp: w.timestamp });
+  }
 }
 async function fetchWhooshesToday() {
   const r = await sheetCall({ action:'get_whooshes', clientId: currentClientId });
@@ -1415,19 +1437,52 @@ function sessionFromRow(r) {
 }
 function cleanTimeLocal(t) { return String(t||'').replace(/ · (morning|noon|night)$/i, ''); }
 
+function coachShowTab(name) {
+  ['chat','updates','trends','entries'].forEach(function(t){
+    const sec = document.getElementById('csec-'+t);
+    const btn = document.getElementById('ctab-'+t);
+    if (sec) sec.style.display = (t === name) ? '' : 'none';
+    if (btn) btn.classList.toggle('active', t === name);
+  });
+  if (name === 'trends') {
+    // charts created while hidden have no size; give them one now
+    requestAnimationFrame(function(){
+      ['c-glucose','c-bp','c-weight','c-pulse','c-sleep','c-painenergy'].forEach(function(id){
+        const ch = Chart.getChart(document.getElementById(id));
+        if (ch) ch.resize();
+      });
+    });
+  }
+  window.scrollTo(0, 0);
+}
+
+function coachLogRow(r) {
+  const inp = INPUTS.find(i=>i.id===r.field);
+  const label = inp ? inp.icon+' '+inp.label : r.field;
+  let val = r.value;
+  if (val && typeof val === 'object') val = val.sys ? val.sys+'/'+val.dia : (val.type!==undefined ? 'Type '+val.type+' '+(val.warning||'') : (val.intensity!==undefined ? val.intensity+' · '+(val.source||'') : JSON.stringify(val)));
+  return `<div class="coach-log-item"><div><div class="coach-log-field">${label}</div><div class="coach-log-time">${sessionTag(sessionFromRow(r))}${cleanTimeLocal(r.timeLocal)}</div></div><div class="coach-log-val">${val}</div></div>`;
+}
+
 function initCoachView(logsData) {
   // The dated log list renders FIRST so her history always shows, whatever the charts do.
   try {
-    const recent = [...logsData].reverse().slice(0,25);
-    if (recent.length) {
-      document.getElementById('coach-log-list').innerHTML = recent.map(r=>{
-        const inp = INPUTS.find(i=>i.id===r.field);
-        const label = inp ? inp.icon+' '+inp.label : r.field;
-        let val = r.value;
-        if (val && typeof val === 'object') val = val.sys ? val.sys+'/'+val.dia : (val.type!==undefined ? 'Type '+val.type+' '+(val.warning||'') : (val.intensity!==undefined ? val.intensity+' · '+(val.source||'') : JSON.stringify(val)));
-        return `<div class="coach-log-item"><div><div class="coach-log-field">${label}</div><div class="coach-log-time">${sessionTag(sessionFromRow(r))}${cleanTimeLocal(r.timeLocal)}</div></div><div class="coach-log-val">${val}</div></div>`;
-      }).join('');
-    }
+    const todayStr = localDayStr();
+    const yd = new Date(); yd.setDate(yd.getDate() - 1);
+    const yesterdayStr = localDayStr(yd);
+    const byDay = { today: [], yesterday: [] };
+    [...logsData].reverse().forEach(function(r){
+      const d = new Date(r.timestamp);
+      if (isNaN(d)) return;
+      const ds = localDayStr(d);
+      if (ds === todayStr) byDay.today.push(r);
+      else if (ds === yesterdayStr) byDay.yesterday.push(r);
+    });
+    document.getElementById('coach-log-list').innerHTML =
+      `<div class="coach-day-label">Today</div>` +
+      (byDay.today.length ? byDay.today.map(coachLogRow).join('') : '<div class="coach-empty">Nothing logged yet today.</div>') +
+      `<div class="coach-day-label">Yesterday</div>` +
+      (byDay.yesterday.length ? byDay.yesterday.map(coachLogRow).join('') : '<div class="coach-empty">Nothing logged.</div>');
   } catch(e) { console.error('Future Health coach log list error', e); }
   // Charts are guarded: a chart failure can never blank the log list again.
   try {
@@ -1500,18 +1555,8 @@ function loadCoachLogs() {
   return sheetCall({ action:'get_logs', clientId: currentClientId }).then(r => {
     if (r.success) {
       try { if (r.logs && r.logs.length) initCoachView(r.logs); } catch(e) { console.error('Future Health coach view error', e); }
-      try {
-        if (r.food && r.food.length) {
-          document.getElementById('coach-food-list').innerHTML = [...r.food].reverse().slice(0,20).map(f =>
-            `<div class="coach-log-item"><div><div class="coach-log-field">${String(f.food).replace(/</g,'&lt;')}</div><div class="coach-log-time">${f.timeLocal||''}</div></div></div>`).join('');
-        }
-      } catch(e) { console.error('Future Health food list error', e); }
-      try {
-        if (r.supps && r.supps.length) {
-          document.getElementById('coach-supp-list').innerHTML = [...r.supps].reverse().slice(0,20).map(s =>
-            `<div class="coach-log-item"><div><div class="coach-log-field">${s.taken==='YES'?'\u2705':'\u25fb'} ${s.supplement}</div><div class="coach-log-time">${s.timeLocal||''}</div></div></div>`).join('');
-        }
-      } catch(e) { console.error('Future Health supp list error', e); }
+      // Food diary and supplement feeds were removed from the dashboard by Christopher's
+      // request July 21 2026. The data still lands in the sheet for the analysis pass.
     }
     return r;
   });
