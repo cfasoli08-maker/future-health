@@ -1005,15 +1005,15 @@ async function cancelEntry(sid, mid, idx) {
 
 /* ── WHOOSH LOG ── standalone, not tied to morning/noon/night, can log many times a day */
 function openWhoosh() {
-  const note = prompt("Anything to note about this whoosh? (optional, tap OK to leave blank)", "");
+  const note = prompt("Anything to note? If it happened earlier, say when, for example: 9:15 last night. (optional, tap OK to leave blank)", "");
   if (note === null) return;
   logWhoosh(note.trim());
 }
 async function logWhoosh(note) {
   const t = stamp();
   // a bare time like "9:15 pm" gets auto-converted to a raw date code by Google Sheets;
-  // a leading word keeps it stored as plain text
-  if (/^[\d:.\s]*\d[\d:.\s]*(am|pm|a\.m\.|p\.m\.)?$/i.test(note)) note = 'at ' + note;
+  // a leading word keeps it stored as plain text AND makes the row read clearly
+  if (/^[\d:.\s]*\d[\d:.\s]*(am|pm|a\.m\.|p\.m\.)?$/i.test(note)) note = 'happened at ' + note;
   const today = new Date().toDateString();
   window.__whooshToday = window.__whooshToday || [];
   window.__whooshToday.unshift({ timeLocal: t.local, note: note, _day: today, timestamp: t.iso });
@@ -1030,8 +1030,8 @@ function fmtWhooshNote(note) {
   const h = parseInt(m[4], 10), min = m[5];
   const h12 = (h % 12) || 12;
   const t = h12 + ':' + min + (h < 12 ? ' a.m.' : ' p.m.');
-  if (m[1] === '1899') return 'around ' + t;
-  return m[1] + '-' + m[2] + '-' + m[3] + ', ' + t;
+  if (m[1] === '1899') return 'happened around ' + t;
+  return 'happened ' + m[1] + '-' + m[2] + '-' + m[3] + ' around ' + t;
 }
 function renderWhooshList() {
   const el = document.getElementById('whoosh-list');
