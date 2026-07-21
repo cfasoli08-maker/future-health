@@ -1446,9 +1446,10 @@ function coachShowTab(name) {
   });
   if (name === 'trends') {
     // charts cannot size themselves while hidden, so (re)build them once the tab is visible
-    requestAnimationFrame(function(){
+    // (setTimeout, not requestAnimationFrame: rAF never fires in a backgrounded browser tab)
+    setTimeout(function(){
       if (window.__lastLogs) initCoachCharts(window.__lastLogs);
-    });
+    }, 0);
   }
   window.scrollTo(0, 0);
 }
