@@ -1228,14 +1228,18 @@ async function hydrateFromSheet() {
 /* ── HER REVIEW LISTS ── what she has asked about, shown back to her so she knows
    Christopher has it. Data comes from the Food Searches log. */
 function dedupeQueries(rows) {
+  const all = rows.map(function(row){ return { q: String(row.query || '').trim(), when: row.timeLocal || '' }; })
+    .filter(function(x){ return x.q.length >= 3; });
   const out = [];
-  rows.forEach(function(row){
-    const q = String(row.query || '').trim();
-    if (!q) return;
-    // drop partial typing: an earlier query that a later one starts with
-    while (out.length && q.toLowerCase().indexOf(out[out.length-1].q.toLowerCase()) === 0) out.pop();
-    if (out.some(function(o){ return o.q.toLowerCase() === q.toLowerCase(); })) return;
-    out.push({ q: q, when: row.timeLocal || '' });
+  all.forEach(function(item, i){
+    const ql = item.q.toLowerCase();
+    // drop partial typing: this text is the start of some longer query she went on to finish
+    const isFragment = all.some(function(o, j){ return j !== i && o.q.length > item.q.length && o.q.toLowerCase().indexOf(ql) === 0; });
+    if (isFragment) return;
+    // one entry per distinct text, keep the latest
+    const dup = out.findIndex(function(o){ return o.q.toLowerCase() === ql; });
+    if (dup > -1) out.splice(dup, 1);
+    out.push(item);
   });
   return out;
 }
@@ -1245,9 +1249,11 @@ async function loadReviewLists() {
     if (!r || !r.success) return;
     const rows = r.searches || [];
     const suppQ = [], foodQ = [];
+    // foods already on her lists are answered, not waiting
+    const answered = function(q){ const ql = q.toLowerCase(); return FOOD_GREEN.concat(FOOD_YELLOW, FOOD_RED).some(function(f){ return f.toLowerCase().includes(ql); }); };
     dedupeQueries(rows).forEach(function(item){
       if (/^SUPPLEMENT:/i.test(item.q)) suppQ.push({ q: item.q.replace(/^SUPPLEMENT:\s*/i, ''), when: item.when });
-      else foodQ.push(item);
+      else if (!answered(item.q)) foodQ.push(item);
     });
     const li = function(item){ return `<div class="tier-item"><div class="tier-item-name">${String(item.q).replace(/</g,'&lt;')}</div><div class="tier-item-note">${String(item.when).replace(/</g,'&lt;')}</div></div>`; };
     const suppEl = document.getElementById('supp-review-list');
