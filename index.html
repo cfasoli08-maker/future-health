@@ -431,19 +431,21 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
     </button>
     <div class="tier-list" id="food-history-list"></div>
 
-    <button class="tier-btn tier-amber" onclick="toggleTier('food-review-list',this)">
+    <div class="section-label">Have a question about a food?</div>
+    <div class="search-wrap" style="margin-bottom:0.7rem;">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="food-search" placeholder="Type a food, like cheese or apple" oninput="searchFood(this.value)">
+    </div>
+    <div id="food-search-results"></div>
+    <button class="food-save" style="width:100%;" onclick="askFood()">Send to Christopher ✓</button>
+    <div class="food-hint" id="food-question-hint" style="margin-top:0.6rem;"></div>
+
+    <button class="tier-btn tier-amber" style="margin-top:1rem;" onclick="toggleTier('food-review-list',this)">
       <div class="tier-dot"></div>
       <div><div class="tier-btn-title">Waiting for review</div><div class="tier-btn-sub">Foods you asked about, on Christopher's desk</div></div>
       <div class="tier-arrow">›</div>
     </button>
     <div class="tier-list" id="food-review-list"></div>
-
-    <div class="section-label">Have a question about a food?</div>
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" id="food-search" placeholder="Type a food, like cheese or apple" oninput="searchFood(this.value)">
-    </div>
-    <div id="food-search-results"></div>
 
     <div class="section-label">Your food guide</div>
     <button class="tier-btn tier-green" onclick="toggleTier('food-green',this)">
@@ -1009,6 +1011,9 @@ function openWhoosh() {
 }
 async function logWhoosh(note) {
   const t = stamp();
+  // a bare time like "9:15 pm" gets auto-converted to a raw date code by Google Sheets;
+  // a leading word keeps it stored as plain text
+  if (/^[\d:.\s]*\d[\d:.\s]*(am|pm|a\.m\.|p\.m\.)?$/i.test(note)) note = 'at ' + note;
   const today = new Date().toDateString();
   window.__whooshToday = window.__whooshToday || [];
   window.__whooshToday.unshift({ timeLocal: t.local, note: note, _day: today, timestamp: t.iso });
@@ -1016,12 +1021,24 @@ async function logWhoosh(note) {
   const r = await sheetCall({ action:'log_whoosh', clientId: currentClientId, note: note, timestamp: t.iso, timeLocal: t.local });
   return r;
 }
+// Repair notes Google Sheets already turned into raw date codes: 1899-dated values are
+// pure times (Sheets' zero date), anything else date-like shows as its readable part.
+function fmtWhooshNote(note) {
+  const s = String(note || '');
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (!m) return s;
+  const h = parseInt(m[4], 10), min = m[5];
+  const h12 = (h % 12) || 12;
+  const t = h12 + ':' + min + (h < 12 ? ' a.m.' : ' p.m.');
+  if (m[1] === '1899') return 'around ' + t;
+  return m[1] + '-' + m[2] + '-' + m[3] + ', ' + t;
+}
 function renderWhooshList() {
   const el = document.getElementById('whoosh-list');
   if (!el) return;
   const items = (window.__whooshToday || []);
   if (!items.length) { el.innerHTML = '<div class="whoosh-empty">None logged yet today.</div>'; return; }
-  el.innerHTML = items.map((w, i) => `<div class="whoosh-row"><span class="whoosh-time">${w.timeLocal}</span>${w.note ? `<span class="whoosh-note">${w.note.replace(/</g,'&lt;')}</span>` : ''}<span class="tile-stack-cancel" onclick="cancelWhoosh(${i})" title="Cancel this whoosh">✕</span></div>`).join('');
+  el.innerHTML = items.map((w, i) => `<div class="whoosh-row"><span class="whoosh-time">${w.timeLocal}</span>${w.note ? `<span class="whoosh-note">${fmtWhooshNote(w.note).replace(/</g,'&lt;')}</span>` : ''}<span class="tile-stack-cancel" onclick="cancelWhoosh(${i})" title="Cancel this whoosh">✕</span></div>`).join('');
 }
 // Same undo she has on the vitals tiles: removes the row from today's list and from the sheet.
 async function cancelWhoosh(i) {
@@ -1297,7 +1314,7 @@ function searchFood(q) {
   FOOD_RED.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'red', label:'Avoid', color:'var(--red)'}); });
   out.innerHTML = hits.length
     ? hits.slice(0,8).map(h=>`<div class="search-result"><div class="tier-dot" style="background:${h.color};width:20px;height:20px;flex-shrink:0;border-radius:50%;"></div><div>${h.f}<div style="font-size:0.9rem;color:${h.color};font-weight:700;">${h.label}</div></div></div>`).join('')
-    : `<div class="search-result" id="food-noresult"><div>Not on your lists yet.<br><button class="food-logged-edit" style="margin-top:0.55rem;" onclick="sendFoodQuestion()">Send to Christopher ✓</button></div></div>`;
+    : `<div class="search-result" id="food-noresult"><div>Not on your lists yet. Tap Send to Christopher below and he will review it.</div></div>`;
   // matched searches log quietly for the weekly review; unmatched ones use the send button
   clearTimeout(foodSearchLogTimer);
   if (hits.length) foodSearchLogTimer = setTimeout(() => { logFoodSearchQuery(rawQ, true); }, 2500);
@@ -1310,13 +1327,18 @@ function logFoodSearchQuery(rawQ, matched) {
   return sheetCall({ action:'log_food_search', clientId: currentClientId, query: rawQ, matched: matched, timestamp: t.iso, timeLocal: t.local });
 }
 
-async function sendFoodQuestion() {
-  const rawQ = document.getElementById('food-search').value.trim();
-  if (!rawQ) return;
-  const box = document.getElementById('food-noresult');
-  if (box) box.innerHTML = 'Sending…';
-  await logFoodSearchQuery(rawQ, false);
-  if (box) box.innerHTML = `Sent to Christopher 🌿 "${rawQ.replace(/</g,'&lt;')}" will be on your food lists after his next review.`;
+async function askFood() {
+  const input = document.getElementById('food-search');
+  const q = input.value.trim();
+  if (!q) return;
+  const hint = document.getElementById('food-question-hint');
+  hint.textContent = 'Sending…';
+  await logFoodSearchQuery(q, false);
+  input.value = '';
+  document.getElementById('food-search-results').innerHTML = '';
+  hint.textContent = `Sent to Christopher 🌿 "${q.replace(/</g,'&lt;')}" will be on your food lists after his next review.`;
+  setTimeout(() => { if (hint.textContent.indexOf('Sent') === 0) hint.textContent = ''; }, 8000);
+  loadReviewLists();
 }
 
 async function askSupp() {
@@ -1330,6 +1352,7 @@ async function askSupp() {
   input.value = '';
   hint.textContent = 'Sent to Christopher 🌿 He will have an answer for you in your next update.';
   setTimeout(() => { if (hint.textContent.indexOf('Sent') === 0) hint.textContent = ''; }, 8000);
+  loadReviewLists();
 }
 
 function renderFoodToday() {
@@ -1666,7 +1689,7 @@ function initCoachView(logsData) {
       else if (ds === yesterdayStr) byDay.yesterday.push(r);
     });
     // whooshes belong in the day picture too
-    const whooshRow = function(w){ return `<div class="coach-log-item"><div><div class="coach-log-field">💨 Whoosh${w.note ? ' — ' + String(w.note).replace(/</g,'&lt;') : ''}</div><div class="coach-log-time">${w.timeLocal || ''}</div></div><div class="coach-log-val" style="color:var(--gold);">!</div></div>`; };
+    const whooshRow = function(w){ return `<div class="coach-log-item"><div><div class="coach-log-field">💨 Whoosh${w.note ? ' — ' + fmtWhooshNote(w.note).replace(/</g,'&lt;') : ''}</div><div class="coach-log-time">${w.timeLocal || ''}</div></div><div class="coach-log-val" style="color:var(--gold);">!</div></div>`; };
     const whooshesFor = function(dayStr){
       return (window.__whooshAll || []).filter(function(w){ const d = new Date(w.timestamp); return !isNaN(d) && localDayStr(d) === dayStr; }).map(whooshRow).join('');
     };
