@@ -266,7 +266,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 /* ── COACH VIEW ── */
 #coach-view { display:none; }
 body.coach-mode #coach-view { display:block; }
-body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
+body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
 .coach-banner { background:linear-gradient(145deg,#5C6E33,#7D8F4E); border-radius:var(--radius); padding:1.3rem 1.5rem; color:#fff; margin-bottom:1rem; }
 .coach-banner-label { font-size:0.78rem; letter-spacing:0.22em; text-transform:uppercase; opacity:0.85; font-weight:700; }
 .coach-banner-title { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:600; margin-top:0.15rem; }
@@ -279,11 +279,15 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
 .coach-log-time { font-size:0.82rem; color:var(--muted); }
 .coach-log-val { font-family:'Oswald',sans-serif; font-size:1.15rem; font-weight:600; color:var(--sage); text-align:right; }
 
-/* ── COACH TABS ── */
-.coach-tabs { display:flex; gap:0.45rem; margin-bottom:1rem; }
-.coach-tab { flex:1; padding:0.85rem 0.3rem; border-radius:14px; border:2px solid var(--sage); background:var(--surface); font-weight:700; cursor:pointer; color:var(--sage); font-family:'DM Sans',sans-serif; font-size:0.95rem; }
-.coach-tab.active { background:var(--sage); color:#fff; }
+/* ── COACH HOME TILES + DAY LABELS ── */
 .coach-day-label { font-size:0.85rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); font-weight:700; margin:1.2rem 0 0.6rem; }
+.coach-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; }
+.coach-stat { background:var(--surface); border-radius:16px; padding:1.1rem 1.2rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+.coach-stat-wide { grid-column:1 / -1; }
+.coach-stat-label { font-size:0.95rem; font-weight:700; color:var(--muted); }
+.coach-stat-val { font-family:'Oswald',sans-serif; font-size:1.9rem; font-weight:600; color:var(--sage); margin-top:0.2rem; }
+.coach-stat-sub { font-size:1.05rem; font-weight:600; margin-top:0.3rem; }
+.coach-stat-when { font-size:0.82rem; color:var(--muted); margin-top:0.15rem; }
 
 /* ── WHOOSH ── */
 .whoosh-card { background:var(--surface); border:2px solid var(--gold); border-radius:18px; padding:1rem 1.1rem; margin-top:1.2rem; }
@@ -508,16 +512,11 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
       <div class="coach-banner-label">Coach view · Christopher only</div>
       <div class="coach-banner-title">Valerie — Client Dashboard</div>
     </div>
-    <button class="reply-send" style="margin:0 0 1rem;background:var(--luff1);" onclick="coachRefresh(this)">Refresh dashboard ⟳</button>
-
-    <div class="coach-tabs">
-      <button class="coach-tab active" id="ctab-chat" onclick="coachShowTab('chat')">💬 Chat</button>
-      <button class="coach-tab" id="ctab-updates" onclick="coachShowTab('updates')">🌿 Updates</button>
-      <button class="coach-tab" id="ctab-trends" onclick="coachShowTab('trends')">📈 Trends</button>
-      <button class="coach-tab" id="ctab-entries" onclick="coachShowTab('entries')">📋 Entries</button>
+    <div class="coach-section" id="csec-home">
+      <div id="coach-home-tiles"><div class="coach-empty">Loading today's picture.</div></div>
     </div>
 
-    <div class="coach-section" id="csec-chat">
+    <div class="coach-section" id="csec-chat" style="display:none">
       <div class="chat-thread" id="coach-chat-thread"></div>
       <div class="reply-card">
         <textarea class="reply-box" id="coach-reply-input" placeholder="Write your message to Valerie."></textarea>
@@ -550,10 +549,18 @@ body.coach-mode .page, body.coach-mode .bottom-nav { display:none !important; }
     <div class="coach-section" id="csec-entries" style="display:none">
       <div id="coach-log-list"><div class="coach-empty">Entries appear here as Valerie logs them.</div></div>
     </div>
+
+    <div class="bottom-nav" id="coach-nav">
+      <button class="nav-btn active" id="cnav-home" onclick="coachShowTab('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></button>
+      <button class="nav-btn" id="cnav-chat" onclick="coachShowTab('chat')"><span class="nav-badge" id="coach-dash-badge"></span><div class="nav-icon">💬</div><div class="nav-label">Chat</div></button>
+      <button class="nav-btn" id="cnav-updates" onclick="coachShowTab('updates')"><div class="nav-icon">🌿</div><div class="nav-label">Updates</div></button>
+      <button class="nav-btn" id="cnav-trends" onclick="coachShowTab('trends')"><div class="nav-icon">📈</div><div class="nav-label">Trends</div></button>
+      <button class="nav-btn" id="cnav-entries" onclick="coachShowTab('entries')"><div class="nav-icon">📋</div><div class="nav-label">Entries</div></button>
+    </div>
   </div>
 
   <!-- ══ NAV ══ -->
-  <div class="bottom-nav">
+  <div class="bottom-nav" id="main-nav">
     <button class="nav-btn active" onclick="showPage('home',this)"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></button>
     <button class="nav-btn" onclick="showPage('supps',this)"><div class="nav-icon">💊</div><div class="nav-label">Supplements</div></button>
     <button class="nav-btn" onclick="showPage('food',this)"><div class="nav-icon">🍽️</div><div class="nav-label">Food</div></button>
@@ -1010,8 +1017,14 @@ async function fetchWhooshesToday() {
   const r = await sheetCall({ action:'get_whooshes', clientId: currentClientId });
   if (r.success && r.whooshes) {
     const today = new Date().toDateString();
+    window.__whooshAll = r.whooshes;
     window.__whooshToday = r.whooshes.filter(w => new Date(w.timestamp).toDateString() === today);
     renderWhooshList();
+    // coach mode: whoosh data may land after the logs, refresh the tiles and day list
+    if (coachMode) {
+      try { renderCoachHome(); } catch(e) {}
+      try { if (window.__lastLogs) initCoachView(window.__lastLogs); } catch(e) {}
+    }
   }
 }
 
@@ -1419,7 +1432,11 @@ async function loadCoachUpdates() {
   if (!el) return;
   const r = await sheetCall({ action:'get_updates', clientId: currentClientId });
   if (!r.success || !r.updates || !r.updates.length) { el.innerHTML = '<div class="coach-empty">No updates published yet.</div>'; return; }
-  el.innerHTML = r.updates.map(u => `<div class="coach-log-item"><div><div class="coach-log-field">${(u.title||'Update').replace(/</g,'&lt;')}</div><div class="coach-log-time">${u.timeLocal||''} — ${(u.body||'').slice(0,80).replace(/</g,'&lt;')}${(u.body||'').length>80?'…':''}</div></div></div>`).join('');
+  el.innerHTML = r.updates.map(u =>
+    `<div class="upd-tile" onclick="this.classList.toggle('open')">`
+    + `<div class="upd-tile-head"><div><div class="upd-tile-title">${(u.title||'Update').replace(/</g,'&lt;')}</div><div class="upd-tile-date">${(u.timeLocal||'').toString().replace(/</g,'&lt;')}</div></div><div class="upd-tile-chev">▾</div></div>`
+    + `<div class="upd-tile-body">${fmtUpdateBody(u.body)}</div></div>`
+  ).join('');
 }
 
 function sessionTag(sess) {
@@ -1438,9 +1455,9 @@ function sessionFromRow(r) {
 function cleanTimeLocal(t) { return String(t||'').replace(/ · (morning|noon|night)$/i, ''); }
 
 function coachShowTab(name) {
-  ['chat','updates','trends','entries'].forEach(function(t){
+  ['home','chat','updates','trends','entries'].forEach(function(t){
     const sec = document.getElementById('csec-'+t);
-    const btn = document.getElementById('ctab-'+t);
+    const btn = document.getElementById('cnav-'+t);
     if (sec) sec.style.display = (t === name) ? '' : 'none';
     if (btn) btn.classList.toggle('active', t === name);
   });
@@ -1451,7 +1468,51 @@ function coachShowTab(name) {
       if (window.__lastLogs) initCoachCharts(window.__lastLogs);
     }, 0);
   }
+  if (name === 'chat') {
+    const b = document.getElementById('coach-dash-badge');
+    if (b) b.classList.remove('show');
+    const thread = document.getElementById('coach-chat-thread');
+    if (thread) setTimeout(function(){ thread.scrollIntoView(false); }, 0);
+    return;
+  }
   window.scrollTo(0, 0);
+}
+
+// Coach Home: the ten-second picture. Latest vitals plus today's activity counts.
+function renderCoachHome() {
+  const el = document.getElementById('coach-home-tiles');
+  if (!el || !window.__lastGetLogs) return;
+  try {
+    const d = window.__lastGetLogs;
+    const logs = d.logs || [];
+    const todayStr = localDayStr();
+    const latest = function(field){ for (let i = logs.length - 1; i >= 0; i--) { if (logs[i].field === field) return logs[i]; } return null; };
+    const fmtVal = function(r){
+      if (!r) return null;
+      let v = r.value;
+      if (v && typeof v === 'object') v = v.sys ? v.sys + '/' + v.dia : JSON.stringify(v);
+      return { v: v, when: cleanTimeLocal(r.timeLocal), sess: sessionFromRow(r) };
+    };
+    const vital = function(icon, label, r){
+      const f = fmtVal(r);
+      return `<div class="coach-stat"><div class="coach-stat-label">${icon} ${label}</div>` +
+        (f ? `<div class="coach-stat-val">${f.v}</div><div class="coach-stat-when">${sessionTag(f.sess)}${f.when}</div>`
+           : `<div class="coach-stat-sub" style="color:var(--muted);">Nothing yet</div>`) + `</div>`;
+    };
+    const todayLogs = logs.filter(function(r){ const dt = new Date(r.timestamp); return !isNaN(dt) && localDayStr(dt) === todayStr; }).length;
+    const todaySupps = (d.supps || []).filter(function(s){ const dt = new Date(s.timestamp); return !isNaN(dt) && localDayStr(dt) === todayStr && s.taken === 'YES'; }).length;
+    const todayWhoosh = (window.__whooshToday || []).length;
+    el.innerHTML = `<div class="coach-stat-grid">
+      <div class="coach-stat coach-stat-wide"><div class="coach-stat-label">📋 Today so far</div>
+        <div class="coach-stat-sub">${todayLogs} vitals · ${todaySupps} supplements · <span style="color:${todayWhoosh ? 'var(--gold)' : 'var(--green)'};">${todayWhoosh} whoosh${todayWhoosh === 1 ? '' : 'es'}</span></div></div>
+      ${vital('🩸','Blood sugar', latest('glucose'))}
+      ${vital('💓','Blood pressure', latest('bp'))}
+      ${vital('💗','Pulse', latest('pulse'))}
+      ${vital('⚖️','Weight', latest('weight'))}
+      ${vital('🌙','Sleep hours', latest('sleephours'))}
+      ${vital('🦵','Knee pain', latest('kneepain'))}
+    </div>`;
+  } catch(e) { console.error('Future Health coach home error', e); }
 }
 
 function coachLogRow(r) {
@@ -1476,10 +1537,15 @@ function initCoachView(logsData) {
       if (ds === todayStr) byDay.today.push(r);
       else if (ds === yesterdayStr) byDay.yesterday.push(r);
     });
+    // whooshes belong in the day picture too
+    const whooshRow = function(w){ return `<div class="coach-log-item"><div><div class="coach-log-field">💨 Whoosh${w.note ? ' — ' + String(w.note).replace(/</g,'&lt;') : ''}</div><div class="coach-log-time">${w.timeLocal || ''}</div></div><div class="coach-log-val" style="color:var(--gold);">!</div></div>`; };
+    const whooshesFor = function(dayStr){
+      return (window.__whooshAll || []).filter(function(w){ const d = new Date(w.timestamp); return !isNaN(d) && localDayStr(d) === dayStr; }).map(whooshRow).join('');
+    };
     document.getElementById('coach-log-list').innerHTML =
-      `<div class="coach-day-label">Today</div>` +
+      `<div class="coach-day-label">Today</div>` + whooshesFor(todayStr) +
       (byDay.today.length ? byDay.today.map(coachLogRow).join('') : '<div class="coach-empty">Nothing logged yet today.</div>') +
-      `<div class="coach-day-label">Yesterday</div>` +
+      `<div class="coach-day-label">Yesterday</div>` + whooshesFor(yesterdayStr) +
       (byDay.yesterday.length ? byDay.yesterday.map(coachLogRow).join('') : '<div class="coach-empty">Nothing logged.</div>');
   } catch(e) { console.error('Future Health coach log list error', e); }
   window.__lastLogs = logsData;
@@ -1559,7 +1625,9 @@ function loadCoachChat() {
 function loadCoachLogs() {
   return sheetCall({ action:'get_logs', clientId: currentClientId }).then(r => {
     if (r.success) {
+      window.__lastGetLogs = r;
       try { if (r.logs && r.logs.length) initCoachView(r.logs); } catch(e) { console.error('Future Health coach view error', e); }
+      try { renderCoachHome(); } catch(e) { console.error('Future Health coach home error', e); }
       // Food diary and supplement feeds were removed from the dashboard by Christopher's
       // request July 21 2026. The data still lands in the sheet for the analysis pass.
     }
