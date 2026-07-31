@@ -411,10 +411,15 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
     <div class="page-title">Food <em>log</em></div>
 
     <div class="food-entry-card">
-      <div class="section-label" style="margin-top:0;">🍽 What did you eat?</div>
-      <textarea class="food-textarea" id="food-input" placeholder="Type it or tap the microphone on your keyboard and just say it. Example: Scrambled eggs with butter at home. Salmon and green beans at Alice's."></textarea>
+      <div class="section-label" style="margin-top:0;">🍽 Meal log</div>
+      <button class="food-save" style="width:100%;padding:1.3rem;font-size:1.4rem;" onclick="mealTap()">I just ate ✓</button>
+      <div class="food-hint" style="margin-top:0.6rem;">One tap saves the time for Christopher. Everything below is optional.</div>
+      <div class="sheet-field-label">Ate earlier and forgot? Type when:</div>
+      <input class="sheet-text" id="meal-when" placeholder="For example: 8:30 this morning">
+      <div class="sheet-field-label">What did you eat? (optional)</div>
+      <textarea class="food-textarea" id="food-input" style="min-height:90px;" placeholder="Type it or tap the microphone on your keyboard and just say it. Example: Scrambled eggs with butter at home."></textarea>
       <div class="food-btn-row">
-        <button class="food-save" onclick="saveFood()">Save ✓</button>
+        <button class="food-save" onclick="saveFood()">Save meal details ✓</button>
         <label class="food-photo" for="food-cam">📷</label>
         <input type="file" id="food-cam" accept="image/*" capture="environment" style="display:none" onchange="foodPhoto(this)">
       </div>
@@ -512,6 +517,10 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
   <!-- ══ UPDATES ══ -->
   <div class="page" id="page-updates">
     <div class="page-title">Your <em>updates</em></div>
+    <div id="quest-section" style="display:none;">
+      <div class="section-label" style="margin-top:0.2rem;">Christopher has a question for you</div>
+      <div id="quest-wrap"></div>
+    </div>
     <div style="font-size:0.95rem;color:var(--muted);margin:-0.4rem 0 1rem;">Your progress report after every review. Tap any date to read it.</div>
     <div id="updates-wrap" class="updates-wrap"></div>
   </div>
@@ -973,6 +982,15 @@ async function saveEntry() {
   const day = loadDay();
   day[activeSession] = day[activeSession] || {};
   const entry = { disp: displayVal(inp, value), when: stampFull(), iso: t.iso };
+  // double-tap guard: an identical reading within 2 minutes of the last one is a duplicate
+  const priorList = (day[activeSession][inp.id] || []);
+  const prior = priorList[priorList.length - 1];
+  if (prior && prior.disp === entry.disp && prior.iso && (new Date(t.iso) - new Date(prior.iso)) < 2 * 60 * 1000) {
+    document.getElementById('saved-flash').textContent = 'Already saved ✓';
+    document.getElementById('saved-flash').style.display = 'block';
+    setTimeout(closeSheet, 550);
+    return;
+  }
   if (REPEATABLE_IDS.indexOf(inp.id) > -1) {
     day[activeSession][inp.id] = day[activeSession][inp.id] || [];
     day[activeSession][inp.id].push(entry);
@@ -1004,16 +1022,63 @@ async function cancelEntry(sid, mid, idx) {
 }
 
 /* ── WHOOSH LOG ── standalone, not tied to morning/noon/night, can log many times a day */
+let whooshSel = {};
 function openWhoosh() {
-  const note = prompt("Anything to note? If it happened earlier, say when, for example: 9:15 last night. (optional, tap OK to leave blank)", "");
-  if (note === null) return;
-  logWhoosh(note.trim());
+  whooshSel = {};
+  document.getElementById('sheet').innerHTML = `
+    <div class="sheet-icon">💨</div>
+    <div class="sheet-title">Whoosh</div>
+    <div class="sheet-help">Two quick taps so Christopher can see the pattern. Everything else is optional.</div>
+    <div class="sheet-field-label">How big was it?</div>
+    <div class="opt-col">
+      <button class="opt-btn" onclick="pickWhoosh(this,'severity','Mild')">Mild</button>
+      <button class="opt-btn" onclick="pickWhoosh(this,'severity','Medium')">Medium</button>
+      <button class="opt-btn" onclick="pickWhoosh(this,'severity','Big')">Big</button>
+    </div>
+    <div class="sheet-field-label">Did it come with warning?</div>
+    <div class="opt-col">
+      <button class="opt-btn" onclick="pickWhoosh(this,'warning','With warning')">Yes, with warning</button>
+      <button class="opt-btn" onclick="pickWhoosh(this,'warning','Some warning')">Some warning</button>
+      <button class="opt-btn" onclick="pickWhoosh(this,'warning','No warning')">No warning</button>
+    </div>
+    <div class="sheet-field-label">Happened earlier? Type when: (optional)</div>
+    <input class="sheet-text" id="whoosh-when" placeholder="For example: 9:15 last night">
+    <div class="sheet-field-label">Anything to note? (optional)</div>
+    <input class="sheet-text" id="whoosh-note" placeholder="For example: right after lunch">
+    <button class="save-btn" onclick="saveWhooshSheet()">Save ✓</button>
+    <button class="cancel-btn" onclick="closeSheet()">Cancel</button>
+    <div class="saved-flash" id="whoosh-saved-flash">Saved 🌿</div>`;
+  document.getElementById('overlay').classList.add('open');
 }
+function pickWhoosh(el, key, val) {
+  el.parentElement.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  whooshSel[key] = val;
+}
+function saveWhooshSheet() {
+  if (!whooshSel.severity) return;
+  const parts = [whooshSel.severity];
+  if (whooshSel.warning) parts.push(whooshSel.warning);
+  let when = document.getElementById('whoosh-when').value.trim();
+  if (when) {
+    if (/^[\d:.\s]*\d[\d:.\s]*(am|pm|a\.m\.|p\.m\.)?$/i.test(when)) when = 'at ' + when;
+    parts.push('happened ' + when);
+  }
+  const noteTxt = document.getElementById('whoosh-note').value.trim();
+  if (noteTxt) parts.push(noteTxt);
+  logWhoosh(parts.join(' · '));
+  document.getElementById('whoosh-saved-flash').style.display = 'block';
+  setTimeout(closeSheet, 550);
+}
+let lastWhooshSent = { note: '', at: 0 };
 async function logWhoosh(note) {
   const t = stamp();
   // a bare time like "9:15 pm" gets auto-converted to a raw date code by Google Sheets;
   // a leading word keeps it stored as plain text AND makes the row read clearly
   if (/^[\d:.\s]*\d[\d:.\s]*(am|pm|a\.m\.|p\.m\.)?$/i.test(note)) note = 'happened at ' + note;
+  // double-tap guard: an identical whoosh within 2 minutes is one whoosh
+  if (note === lastWhooshSent.note && Date.now() - lastWhooshSent.at < 2 * 60 * 1000) return { success: true, duplicate: true };
+  lastWhooshSent = { note: note, at: Date.now() };
   const today = new Date().toDateString();
   window.__whooshToday = window.__whooshToday || [];
   window.__whooshToday.unshift({ timeLocal: t.local, note: note, _day: today, timestamp: t.iso });
@@ -1070,6 +1135,39 @@ async function fetchWhooshesToday() {
 function fmtUpdateBody(raw) {
   return (raw||'').replace(/</g,'&lt;').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
 }
+
+/* ── QUESTIONS FROM CHRISTOPHER ── unanswered questions appear as tiles above her updates;
+   her answer writes back to the sheet and the tile goes away. Needs the get_questions and
+   save_answer backend actions; until those exist this section stays hidden. */
+async function loadQuestionsClient() {
+  const section = document.getElementById('quest-section');
+  const wrap = document.getElementById('quest-wrap');
+  if (!section || !wrap) return;
+  try {
+    const r = await sheetCall({ action:'get_questions', clientId: currentClientId });
+    if (!r.success || !r.questions) { section.style.display = 'none'; return; }
+    const open = r.questions.filter(function(q){ return !String(q.answer || '').trim(); });
+    if (!open.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    wrap.innerHTML = open.map(function(q, i){
+      return `<div class="upd-tile open" style="border-left:5px solid var(--gold);">
+        <div class="upd-tile-head"><div><div class="upd-tile-title">${String(q.question||'').replace(/</g,'&lt;')}</div><div class="upd-tile-date">${String(q.timeLocal||'').replace(/</g,'&lt;')}</div></div></div>
+        <div class="upd-tile-body">
+          <textarea class="sheet-text" id="quest-answer-${i}" style="min-height:80px;margin-top:0.4rem;" placeholder="Type your answer, or tap the microphone and say it"></textarea>
+          <button class="food-save" style="width:100%;margin-top:0.6rem;" onclick="answerQuestion('${String(q.timestamp).replace(/'/g,'')}',${i})">Send answer ✓</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { console.error('Future Health questions error', e); section.style.display = 'none'; }
+}
+async function answerQuestion(ts, i) {
+  const box = document.getElementById('quest-answer-' + i);
+  const ans = box ? box.value.trim() : '';
+  if (!ans) return;
+  const t = stamp();
+  const r = await sheetCall({ action:'save_answer', clientId: currentClientId, timestamp: ts, answer: ans, timeLocal: t.local });
+  if (r.success) loadQuestionsClient();
+}
 async function loadUpdatesClient() {
   const wrap = document.getElementById('updates-wrap');
   if (!wrap) return;
@@ -1094,6 +1192,10 @@ const SUPPS = [
 
 // Magnesium is a separate count tile: each tap logs one 200mg pill (1=200, 2=400, 3=600)
 const MAG = { id:'mag_pm', name:'Magnesium glycinate — bedtime', pill:200, max:3 };
+// Pain relief counters, same tap-the-boxes pattern. They log to the Supplement Log so
+// Christopher's dashboard and the weekly scan pick them up automatically.
+const TYL = { name:'Tylenol 650', pill:650, max:4, sub:'Tap one box per pill you took' };
+const GUM = { name:'Indica gummy 2.5mg', max:4, sub:'Tap one box per gummy you took' };
 
 const SUPP_GREEN = [
   { name:'Alpha Lipoic Acid', note:'600mg daily. Six 100mg capsules taken together with the largest meal. Always with food.' },
@@ -1149,6 +1251,24 @@ function renderSupps() {
       </div>
       <div class="mag-row">${boxes}</div>
     </div>`;
+  // Pain relief counters, same pattern as magnesium
+  const counterTile = function(label, icon, count, time, max, setFn, sub){
+    let b = '';
+    for (let n = 1; n <= max; n++) b += `<div class="mag-box ${count >= n ? 'on' : ''}" onclick="${setFn}(${n},event)">${count >= n ? '✓' : ''}<span class="mag-mg">${n}</span></div>`;
+    return `
+    <div class="supp-tick ${count > 0 ? 'checked' : ''}" style="flex-wrap:wrap;">
+      <div style="flex:1 1 100%;display:flex;align-items:center;gap:1rem;">
+        <div class="supp-tick-box">${count > 0 ? '✓' : ''}</div>
+        <div><div class="supp-tick-name">${icon} ${label}</div><div class="supp-tick-dose">${count > 0
+          ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${count} ${time ? '· ' + time : ''}</span> · tap a box to change it`
+          : sub}</div></div>
+      </div>
+      <div class="mag-row">${b}</div>
+    </div>`;
+  };
+  html += `<div class="section-label" style="margin:1.4rem 0 0.8rem;">Pain relief today</div>`;
+  html += counterTile(TYL.name, '💊', day.tylCount || 0, day.tylTime || '', TYL.max, 'setTyl', TYL.sub);
+  html += counterTile(GUM.name, '🍬', day.gumCount || 0, day.gumTime || '', GUM.max, 'setGum', GUM.sub);
   document.getElementById('supp-ticks').innerHTML = html;
   document.getElementById('supp-green').innerHTML  = SUPP_GREEN.map(tierItem).join('');
   document.getElementById('supp-yellow').innerHTML = SUPP_YELLOW.map(tierItem).join('');
@@ -1165,6 +1285,28 @@ function setMag(n, ev) {
   renderSupps();
   const t = stamp();
   sheetCall({ action:'log_supplement', clientId: currentClientId, supplement: 'Magnesium glycinate bedtime', taken: day.magCount>0, note: day.magCount*MAG.pill+'mg ('+day.magCount+' pills)', timestamp: t.iso, timeLocal: t.local });
+}
+
+function setTyl(n, ev) {
+  if (ev) ev.stopPropagation();
+  const day = loadDay();
+  day.tylCount = (day.tylCount === n) ? n - 1 : n;
+  day.tylTime = timeOnly();
+  saveDay(day);
+  renderSupps();
+  const t = stamp();
+  sheetCall({ action:'log_supplement', clientId: currentClientId, supplement: 'Tylenol 650', taken: day.tylCount > 0, note: (day.tylCount * TYL.pill) + 'mg (' + day.tylCount + ' pills)', timestamp: t.iso, timeLocal: t.local });
+}
+
+function setGum(n, ev) {
+  if (ev) ev.stopPropagation();
+  const day = loadDay();
+  day.gumCount = (day.gumCount === n) ? n - 1 : n;
+  day.gumTime = timeOnly();
+  saveDay(day);
+  renderSupps();
+  const t = stamp();
+  sheetCall({ action:'log_supplement', clientId: currentClientId, supplement: 'Indica gummy 2.5mg', taken: day.gumCount > 0, note: day.gumCount + ' gummies', timestamp: t.iso, timeLocal: t.local });
 }
 
 function tierItem(x) {
@@ -1228,6 +1370,18 @@ async function hydrateFromSheet() {
       if (magM) {
         const c = parseInt(magM[2], 10);
         if (day.magCount !== c) { day.magCount = c; day.magTime = cleanTimeLocal(srow.timeLocal); changed = true; }
+        return;
+      }
+      const tylM = name.match(/^Tylenol 650 \((\d+)mg \((\d+) pills?\)\)/);
+      if (tylM) {
+        const c = parseInt(tylM[2], 10);
+        if (day.tylCount !== c) { day.tylCount = c; day.tylTime = cleanTimeLocal(srow.timeLocal); changed = true; }
+        return;
+      }
+      const gumM = name.match(/^Indica gummy 2.5mg \((\d+) gummies\)/);
+      if (gumM) {
+        const c = parseInt(gumM[1], 10);
+        if (day.gumCount !== c) { day.gumCount = c; day.gumTime = cleanTimeLocal(srow.timeLocal); changed = true; }
         return;
       }
       const sdef = SUPPS.find(function(x){ return x.name === name; });
@@ -1373,19 +1527,59 @@ function renderFoodToday() {
     </div>`).join('');
 }
 
+// "when did she eat" helper: pulls the optional earlier-time field and formats it so
+// Google Sheets keeps it as text (a bare time would become a raw date code)
+function mealWhenSuffix() {
+  const el = document.getElementById('meal-when');
+  let w = el ? el.value.trim() : '';
+  if (!w) return '';
+  if (/^[\d:.\s]*\d[\d:.\s]*(am|pm|a\.m\.|p\.m\.)?$/i.test(w)) w = 'at ' + w;
+  return ' · ate ' + w;
+}
+function clearMealWhen() { const el = document.getElementById('meal-when'); if (el) el.value = ''; }
+
+// duplicate guard: the same food text arriving within 2 minutes is a double tap, not a meal
+let lastFoodSent = { text: '', at: 0 };
+function foodIsDuplicate(txt) {
+  const now = Date.now();
+  if (txt === lastFoodSent.text && now - lastFoodSent.at < 2 * 60 * 1000) return true;
+  lastFoodSent = { text: txt, at: now };
+  return false;
+}
+
+async function mealTap() {
+  const t = stamp();
+  const txt = ('Meal' + mealWhenSuffix()).trim();
+  const hint = document.getElementById('food-hint');
+  if (foodIsDuplicate(txt)) { hint.textContent = 'Already saved ✓'; setTimeout(()=>{ hint.textContent = 'Your entries stay below so you can see everything you logged today.'; }, 3000); return; }
+  const day = loadDay();
+  day.foodLog = day.foodLog || [];
+  day.foodLog.push({ text: txt, time: t.local });
+  saveDay(day);
+  clearMealWhen();
+  hint.textContent = 'Saved 🌿 Christopher has the time: ' + t.local;
+  renderFoodToday();
+  sheetCall({ action:'log_food', clientId: currentClientId, food: txt, timestamp: t.iso, timeLocal: t.local });
+  setTimeout(()=>{ hint.textContent = 'Your entries stay below so you can see everything you logged today.'; }, 4000);
+}
+
 async function saveFood() {
-  const txt = document.getElementById('food-input').value.trim();
-  if (!txt) return;
+  const raw = document.getElementById('food-input').value.trim();
+  if (!raw) return;
+  const txt = raw + mealWhenSuffix();
+  const hint = document.getElementById('food-hint');
+  if (foodIsDuplicate(txt)) { hint.textContent = 'Already saved ✓'; setTimeout(()=>{ hint.textContent = 'Your entries stay below so you can see everything you logged today.'; }, 3000); return; }
   const t = stamp();
   const day = loadDay();
   day.foodLog = day.foodLog || [];
   day.foodLog.push({ text: txt, time: t.local });
   saveDay(day);
   document.getElementById('food-input').value = '';
-  document.getElementById('food-hint').textContent = 'Sent to Christopher 🌿 ' + t.local;
+  clearMealWhen();
+  hint.textContent = 'Sent to Christopher 🌿 ' + t.local;
   renderFoodToday();
   sheetCall({ action:'log_food', clientId: currentClientId, food: txt, timestamp: t.iso, timeLocal: t.local });
-  setTimeout(()=>{ document.getElementById('food-hint').textContent = 'Your entries stay below so you can see everything you logged today.'; }, 4000);
+  setTimeout(()=>{ hint.textContent = 'Your entries stay below so you can see everything you logged today.'; }, 4000);
 }
 
 function editFood(i) {
@@ -1557,7 +1751,7 @@ function lineChart(canvasId, emptyId, labels, datasets, min, max) {
     data:{ labels, datasets },
     options:{
       responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ display: datasets.length>1, labels:{font:{family:'DM Sans',size:11}} } },
+      plugins:{ legend:{ display: datasets.some(d=>d.label && d.label!=='_band'), labels:{filter:(item)=>item.text!=='_band', font:{family:'DM Sans',size:11}} } },
       scales:{
         x:{ grid:{display:false}, ticks:{font:{family:'DM Sans',size:10},color:'#6B6B60',maxTicksLimit:6} },
         y:{ grid:{color:'rgba(45,90,45,0.08)'}, ticks:{font:{family:'DM Sans',size:10},color:'#6B6B60'}, suggestedMin:min, suggestedMax:max }
@@ -1711,14 +1905,29 @@ function initCoachView(logsData) {
 function initCoachCharts(logsData) {
   // Charts are guarded: a chart failure can never blank the log list again.
   try {
-    const ds = (rows, key) => rows.filter(r=>r.field===key).map(r=>({ t:(r.timeLocal||'').split(',')[0]||r.timestamp?.slice(5,10)||'', v:r.value }));
+    const ds = (rows, key) => rows.filter(r=>r.field===key).map(r=>({ t:(r.timeLocal||'').split(',')[0]||r.timestamp?.slice(5,10)||'', v:r.value, s: sessionFromRow(r) }));
     const sage='#2D5A2D', gold='#C8960A', blue='#4F7EA8', red='#B03030';
+    const band = (labels, hi, lo) => [
+      { label:'_band', data: labels.map(()=>hi), borderColor:'transparent', pointRadius:0, pointHoverRadius:0, fill:'+1', backgroundColor:'rgba(45,125,58,0.10)' },
+      { label:'_band', data: labels.map(()=>lo), borderColor:'transparent', pointRadius:0, pointHoverRadius:0, fill:false }
+    ];
+    const sessColor = x => x.s === 'morning' ? '#2D7D3A' : (x.s === 'noon' ? '#C8960A' : (x.s === 'night' ? '#1E5A96' : sage));
     const g = ds(logsData,'glucose');
-    lineChart('c-glucose','e-glucose', g.map(x=>x.t), [{data:g.map(x=>x.v), borderColor:sage, backgroundColor:'rgba(45,90,45,0.08)', fill:true}], 4, 10);
+    const gNums = g.map(x=>Number(x.v)).filter(v=>!isNaN(v));
+    const gAvg = gNums.length ? gNums.reduce((a,b)=>a+b,0) / gNums.length : null;
+    const gLabels = g.map(x=>x.t);
+    const gSets = [
+      { data:g.map(x=>x.v), borderColor:sage, pointBackgroundColor:g.map(sessColor), pointBorderColor:g.map(sessColor), fill:false }
+    ];
+    if (gAvg !== null) gSets.push({ label:'Your average: ' + (Math.round(gAvg*10)/10), data:gLabels.map(()=>gAvg), borderColor:'#6B6B60', borderDash:[6,6], pointRadius:0, pointHoverRadius:0, fill:false });
+    lineChart('c-glucose','e-glucose', gLabels, gSets.concat(band(gLabels, 7.0, 4.0)), 4, 10);
     const bp = ds(logsData,'bp');
-    lineChart('c-bp','e-bp', bp.map(x=>x.t), [
+    const bpLabels = bp.map(x=>x.t);
+    lineChart('c-bp','e-bp', bpLabels, [
       {label:'Top', data:bp.map(x=>x.v && x.v.sys), borderColor:red},
-      {label:'Bottom', data:bp.map(x=>x.v && x.v.dia), borderColor:blue}
+      {label:'Bottom', data:bp.map(x=>x.v && x.v.dia), borderColor:blue},
+      {label:'_band', data:bpLabels.map(()=>130), borderColor:'transparent', pointRadius:0, pointHoverRadius:0, fill:'start', backgroundColor:'rgba(45,125,58,0.08)'},
+      {label:'_band', data:bpLabels.map(()=>80), borderColor:'rgba(45,125,58,0.5)', borderDash:[4,5], pointRadius:0, pointHoverRadius:0, fill:false}
     ], 60, 160);
     const w = ds(logsData,'weight');
     lineChart('c-weight','e-weight', w.map(x=>x.t), [{data:w.map(x=>x.v), borderColor:gold, backgroundColor:'rgba(200,150,10,0.08)', fill:true}], null, null);
@@ -1815,6 +2024,7 @@ function showPage(id, btn) {
   }
   if (id === 'updates') {
     if (typeof loadUpdatesClient === 'function') loadUpdatesClient();
+    if (typeof loadQuestionsClient === 'function') loadQuestionsClient();
   }
 }
 
@@ -1841,6 +2051,7 @@ document.addEventListener('DOMContentLoaded', function() {
   safeRun('coachchat', initCoach);
   safeRun('hydrate', hydrateFromSheet);
   safeRun('reviewlists', loadReviewLists);
+  safeRun('questions', loadQuestionsClient);
 });
 </script>
 </body>
