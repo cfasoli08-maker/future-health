@@ -1751,7 +1751,7 @@ function lineChart(canvasId, emptyId, labels, datasets, min, max) {
     data:{ labels, datasets },
     options:{
       responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ display: datasets.some(d=>d.label && d.label!=='_band'), labels:{filter:(item)=>item.text!=='_band', font:{family:'DM Sans',size:11}} } },
+      plugins:{ legend:{ display: datasets.some(d=>d.label && d.label!=='_band'), labels:{filter:(item)=>!!item.text && item.text!=='_band', font:{family:'DM Sans',size:11}} } },
       scales:{
         x:{ grid:{display:false}, ticks:{font:{family:'DM Sans',size:10},color:'#6B6B60',maxTicksLimit:6} },
         y:{ grid:{color:'rgba(45,90,45,0.08)'}, ticks:{font:{family:'DM Sans',size:10},color:'#6B6B60'}, suggestedMin:min, suggestedMax:max }
