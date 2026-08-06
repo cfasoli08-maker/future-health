@@ -1187,7 +1187,8 @@ const SUPPS = [
   { id:'d3',       name:'Vitamin D3', dose:'Four 1000 IU capsules in the morning (4000 IU)' },
   { id:'k2',       name:'Vitamin K2 (MK-7)', dose:'Two 100mcg capsules (200mcg), with D3 at your largest meal' },
   { id:'vitc_am',  name:'Vitamin C — morning', dose:'500mg chewable' },
-  { id:'vitc_pm',  name:'Vitamin C — evening', dose:'500mg chewable' }
+  { id:'vitc_pm',  name:'Vitamin C — evening', dose:'500mg chewable' },
+  { id:'kraut',    name:'Sauerkraut', dose:'1 tablespoon, plain cabbage and salt. Tap it here instead of writing it in the food box.' }
 ];
 
 // Magnesium is a separate count tile: each tap logs one 200mg pill (1=200, 2=400, 3=600)
@@ -1203,7 +1204,9 @@ const SUPP_GREEN = [
   { name:'Magnesium Glycinate', note:'Taken at bedtime every 2nd night, now at 400mg using two 200mg pills, phasing up by comfort toward 600mg. The magnesium is driving your BP into the 120s.' },
   { name:'Vitamin D3', note:'4000 IU in the morning. Four 1000 IU capsules.' },
   { name:'Vitamin K2 as MK-7', note:'200mcg daily, two 100mcg capsules, taken with D3 at the largest meal. Directs calcium into bone and away from arteries. Fat-soluble, always take with a fatty meal.' },
-  { name:'Vitamin C', note:'500mg chewable, morning and evening.' }
+  { name:'Vitamin C', note:'500mg chewable, morning and evening.' },
+  { name:'Sauerkraut', note:'1 tablespoon a day, plain cabbage and salt only. Tick it here, no need to write it in the food box any more. Daily since July 30.' },
+  { name:'Whey Protein Isolate (Diesel)', note:'Cleared. The label question is settled: zero sugar, zero carbs per scoop, sweetened with stevia. One condition only, drink it before 4pm. Both high bedtime readings followed a late-day drink.' }
 ];
 const SUPP_YELLOW = [
   { name:'Melatonin', note:'Not currently in use. Situational only if reintroduced, 0.5mg to a maximum of 1mg.' },
@@ -1211,7 +1214,6 @@ const SUPP_YELLOW = [
   { name:'Enterogermina', note:'Keep or drop pending observed benefit.' },
   { name:'Psyllium Husk', note:'Go or no-go decision pending.' },
   { name:'Ashwagandha', note:'Schedule or hold pending.' },
-  { name:'Whey Protein Isolate', note:'In trial since July 26. Watch evening blood sugar on drink days and check the label for added sugars per scoop.' },
   { name:'Creatine', note:'Under review. Being considered for muscle rebuilding support.' },
   { name:'Marine Collagen', note:'Not yet added. Queued in sequence.' },
   { name:'BPC-157 Oral', note:'Dosing not yet discussed. Pending review.' }
@@ -1445,9 +1447,9 @@ function renderFoodHistory() {
 }
 
 /* ── FOOD ── */
-const FOOD_GREEN = ['Beef','Lamb','Pork','Ham','Chicken skin-on','Turkey','Bacon','Organ meats','Eggs any style','Salmon','Mackerel','Sardines','Herring','White fish','Shellfish','Butter','Ghee','Tallow','Duck fat','Olive oil','Avocado oil','Coconut oil','MCT oil','Heavy cream','Parmesan','Aged cheddar','Gruyere','Gouda','Manchego','Spinach','Zucchini','Green beans','Carrots','Squash','Peppers','Asparagus','Avocado','Macadamia','Pecans','Walnuts','Raspberries','Strawberries','Blueberries','Fresh orange','Water with Redmond salt','Coffee with heavy cream','Green tea','Black tea','Redmond salt','Herbs and spices','Sauerkraut (1 tablespoon a day)','Old Dutch bacon puffs (lard)','Plain vinegars','Mustard','Olive oil and vinegar dressing','Ginger tea'];
+const FOOD_GREEN = ['Beef','Lamb','Pork','Ham','Chicken skin-on','Turkey','Bacon','Organ meats','Eggs any style','Salmon','Mackerel','Sardines','Herring','White fish','Shellfish','Butter','Ghee','Tallow','Duck fat','Olive oil','Avocado oil','Coconut oil','MCT oil','Heavy cream','Parmesan','Aged cheddar','Gruyere','Gouda','Manchego','Spinach','Zucchini','Green beans','Carrots','Squash','Peppers','Asparagus','Avocado','Macadamia','Pecans','Walnuts','Raspberries','Strawberries','Blueberries','Fresh orange','Water with Redmond salt','Coffee with heavy cream','Green tea','Black tea','Redmond salt','Herbs and spices','Sauerkraut (1 tablespoon a day)','Old Dutch bacon puffs (lard)','Plain vinegars','Mustard','Olive oil and vinegar dressing','Ginger tea','Stevia (pure leaf, a small amount to sweeten)'];
 const FOOD_YELLOW = ['Mozzarella','Burrata','Ricotta','Cottage cheese','Cream cheese','Fluid milk','Raw vegetables and salads','Onion and garlic in quantity','Large cruciferous loads','Almonds','Hazelnuts','Cashews','Pistachios','Chia','Ground flax','Sourdough','White rice small portions','Potato cooked then cooled','One beer occasionally','Dry wine','Spirits','Havarti','Pork puffs (check bag for seed oils)','Beets small portions','Beet chips (check bag for seed oils)'];
-const FOOD_RED = ['Canola oil','Soybean oil','Corn oil','Sunflower oil','Safflower oil','Grapeseed oil','Apple','Pear','Mango','Grapes','Watermelon','Cherries','Dried fruit','Peanuts','Peanut butter','Legumes','Bean soup any source','Added sugar','Refined flour with no ferment','Diet pop','Artificial sweeteners','Sugar alcohols','Honey','Concentrated balsamic glaze'];
+const FOOD_RED = ['Canola oil','Soybean oil','Corn oil','Sunflower oil','Safflower oil','Grapeseed oil','Apple','Pear','Mango','Grapes','Watermelon','Cherries','Dried fruit','Peanuts','Peanut butter','Legumes','Bean soup any source','Added sugar','Refined flour with no ferment','Diet pop','Artificial sweeteners','Sugar alcohols','Honey','Concentrated balsamic glaze','Splenda and sucralose','Corn on the cob','Corn and cornmeal'];
 
 function renderFoodLists() {
   const chip = f => `<span class="food-chip">${f}</span>`;
@@ -1659,6 +1661,8 @@ const wins = [
   { icon:"🩸", title:"Blood sugar 4.9 — lowest ever recorded", desc:"Deep in fully non-diabetic territory. The floor has moved again: 5.7 in May, 4.9 now. This is what a recovering metabolism looks like.", date:"Jul 15" },
   { icon:"⚖️", title:"140.4 lb — lowest weight of the journey", desc:"13.6 lb below the March start, reached while rebuilding strength after knee surgery, not by losing it.", date:"Jul 18" },
   { icon:"😴", title:"Sleeping through the night — twice in one week", desc:"Zero wakeups Wednesday and Friday, the first unbroken nights since daily tracking began. Fibromyalgia pain touched 2 the same week, its lowest ever recorded.", date:"Jul 22–24" },
+  { icon:"❤️", title:"116/65 — the lowest blood pressure of the whole tracking record", desc:"Medication-free, five months after starting at 145/90 on Irbesartan. The last four days averaged 126/68, the best four-day stretch in the log.", date:"Aug 3" },
+  { icon:"😴", title:"Third full night — 8.5 hours, zero wakeups", desc:"The longest unbroken night in the record, nine weeks after a knee replacement. Three of these nights have now happened in fifteen days, and before July there were none.", date:"Aug 4" },
   { icon:"🌱", title:"Week 8: mowing the lawn", desc:"Back yard and back lane mowed, laundry done, dehumidifier hauled, eight weeks after a full knee replacement. Knee pain at 3, the lowest since surgery.", date:"Jul 26–28" }
 ];
 
@@ -1686,8 +1690,11 @@ function renderChat(msgs) {
       <div class="im-time">${m.date||''}</div>
     </div>`;
   }).join('');
-  thread.scrollIntoView(false);
-  window.scrollTo(0, document.body.scrollHeight);
+  // Only pull the view down when she is actually looking at the Coach tab.
+  // This fired on every 45-second poll from any screen, which yanked the Home
+  // page to the bottom while she was reading it. Reported Aug 6 2026.
+  const pm = document.getElementById('page-message');
+  if (pm && pm.classList.contains('active')) thread.scrollIntoView(false);
 }
 
 function fetchCoachMsgs() {
@@ -1732,7 +1739,7 @@ async function sendReply() {
   lastMsgCount++;
   box.value = '';
   box.style.height = 'auto';
-  window.scrollTo(0, document.body.scrollHeight);
+  thread.scrollIntoView(false);
   sheetCall({ action:'send_message', clientId: currentClientId, message: txt, timestamp: t.iso, timeLocal: t.local });
 }
 
@@ -1958,7 +1965,7 @@ async function sendCoachMsg() {
   box.value = '';
   const flash = document.getElementById('coach-reply-sent');
   if (flash) { flash.style.display = 'block'; setTimeout(()=>{ flash.style.display='none'; }, 3000); }
-  window.scrollTo(0, document.body.scrollHeight);
+  thread.scrollIntoView(false);
   sheetCall({ action:'send_coach_message', clientId: currentClientId, message: txt, timestamp: t.iso, timeLocal: t.local });
 }
 
@@ -1979,7 +1986,8 @@ function loadCoachChat() {
       const fromValerie = ordered.filter(m => m.from === 'valerie').length;
       if (ordered.length > lastCoachMsgCount && lastCoachMsgCount > 0 && badge) badge.classList.add('show');
       lastCoachMsgCount = ordered.length;
-      thread.scrollIntoView(false);
+      const cs = document.getElementById('csec-chat');
+      if (cs && cs.style.display !== 'none') thread.scrollIntoView(false);
     } else { thread.innerHTML = '<div class="im-empty">No messages yet. Send Valerie the first message below.</div>'; }
     return r;
   });
@@ -2030,7 +2038,12 @@ function showPage(id, btn) {
 
 /* ── INIT ── every step is guarded so one error can never blank the screens after it */
 function safeRun(label, fn) { try { fn(); } catch(e) { console.error('Future Health init error in ' + label, e); } }
+// Browsers restore the previous scroll position on reload, so reopening the app
+// dropped her partway down the Home page. Every open starts at the top now.
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.addEventListener('load', function(){ window.scrollTo(0, 0); });
 document.addEventListener('DOMContentLoaded', function() {
+  window.scrollTo(0, 0);
   safeRun('daycount', function(){
     const today = new Date();
     const days = Math.floor((today - PROTOCOL_START) / (1000*60*60*24));
