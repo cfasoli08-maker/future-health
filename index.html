@@ -1219,6 +1219,8 @@ const SUPP_YELLOW = [
   { name:'BPC-157 Oral', note:'Dosing not yet discussed. Pending review.' }
 ];
 const SUPP_RED = [
+  { name:'Ibuprofen (Advil, Motrin, Robax Platinum)', note:'Stop. This is the one that matters most. Ibuprofen strips the protective lining of the gut, and your three roughest gut days this summer all followed a dose. Robax Platinum contains ibuprofen even though the box does not say it loudly. Tylenol 650 is a different drug, it does not do this, and it stays fine to use.' },
+  { name:'All other NSAIDs (Aleve, naproxen, Aspirin, Voltaren pills)', note:'Same family as ibuprofen, same effect on the gut lining. Ask before taking anything new for pain.' },
   { name:'Digestive Enzyme Formula', note:'Do not use.' },
   { name:'Sublingual Vitamin B12', note:'Stop immediately. Check the label for biotin before discarding.' },
   { name:'5-HTP', note:'Do not use.' },
@@ -1449,7 +1451,7 @@ function renderFoodHistory() {
 /* ── FOOD ── */
 const FOOD_GREEN = ['Beef','Lamb','Pork','Ham','Chicken skin-on','Turkey','Bacon','Organ meats','Eggs any style','Salmon','Mackerel','Sardines','Herring','White fish','Shellfish','Butter','Ghee','Tallow','Duck fat','Olive oil','Avocado oil','Coconut oil','MCT oil','Heavy cream','Parmesan','Aged cheddar','Gruyere','Gouda','Manchego','Spinach','Zucchini','Green beans','Carrots','Squash','Peppers','Asparagus','Avocado','Macadamia','Pecans','Walnuts','Raspberries','Strawberries','Blueberries','Fresh orange','Water with Redmond salt','Coffee with heavy cream','Green tea','Black tea','Redmond salt','Herbs and spices','Sauerkraut (1 tablespoon a day)','Old Dutch bacon puffs (lard)','Plain vinegars','Mustard','Olive oil and vinegar dressing','Ginger tea','Stevia (pure leaf, a small amount to sweeten)'];
 const FOOD_YELLOW = ['Mozzarella','Burrata','Ricotta','Cottage cheese','Cream cheese','Fluid milk','Raw vegetables and salads','Onion and garlic in quantity','Large cruciferous loads','Almonds','Hazelnuts','Cashews','Pistachios','Chia','Ground flax','Sourdough','White rice small portions','Potato cooked then cooled','One beer occasionally','Dry wine','Spirits','Havarti','Pork puffs (check bag for seed oils)','Beets small portions','Beet chips (check bag for seed oils)'];
-const FOOD_RED = ['Canola oil','Soybean oil','Corn oil','Sunflower oil','Safflower oil','Grapeseed oil','Apple','Pear','Mango','Grapes','Watermelon','Cherries','Dried fruit','Peanuts','Peanut butter','Legumes','Bean soup any source','Added sugar','Refined flour with no ferment','Diet pop','Artificial sweeteners','Sugar alcohols','Honey','Concentrated balsamic glaze','Splenda and sucralose','Corn on the cob','Corn and cornmeal'];
+const FOOD_RED = ['Canola oil','Soybean oil','Corn oil','Sunflower oil','Safflower oil','Grapeseed oil','Apple','Pear','Mango','Grapes','Watermelon','Cherries','Dried fruit','Peanuts','Peanut butter','Legumes','Bean soup any source','Added sugar','Refined flour with no ferment','Diet pop','Artificial sweeteners','Sugar alcohols','Honey','Concentrated balsamic glaze','Splenda and sucralose','Corn on the cob','Corn and cornmeal','Restaurant and delivery pizza (here, not in Italy)','Beer on a night out (one occasionally is still fine, several is not)'];
 
 function renderFoodLists() {
   const chip = f => `<span class="food-chip">${f}</span>`;
@@ -1661,7 +1663,8 @@ const wins = [
   { icon:"🩸", title:"Blood sugar 4.9 — lowest ever recorded", desc:"Deep in fully non-diabetic territory. The floor has moved again: 5.7 in May, 4.9 now. This is what a recovering metabolism looks like.", date:"Jul 15" },
   { icon:"⚖️", title:"140.4 lb — lowest weight of the journey", desc:"13.6 lb below the March start, reached while rebuilding strength after knee surgery, not by losing it.", date:"Jul 18" },
   { icon:"😴", title:"Sleeping through the night — twice in one week", desc:"Zero wakeups Wednesday and Friday, the first unbroken nights since daily tracking began. Fibromyalgia pain touched 2 the same week, its lowest ever recorded.", date:"Jul 22–24" },
-  { icon:"❤️", title:"116/65 — the lowest blood pressure of the whole tracking record", desc:"Medication-free, five months after starting at 145/90 on Irbesartan. The last four days averaged 126/68, the best four-day stretch in the log.", date:"Aug 3" },
+  { icon:"🏆", title:"115/60 — a brand new record, and the best blood pressure of your life", desc:"Lowest reading ever recorded on both numbers, medication-free, from a 145/90 start on Irbesartan in March. Three of the four lowest readings in the entire record all landed in the same week.", date:"Aug 7" },
+  { icon:"❤️", title:"116/65 — the previous best of the tracking record", desc:"Medication-free, five months after starting at 145/90 on Irbesartan. The last four days averaged 126/68, the best four-day stretch in the log.", date:"Aug 3" },
   { icon:"😴", title:"Third full night — 8.5 hours, zero wakeups", desc:"The longest unbroken night in the record, nine weeks after a knee replacement. Three of these nights have now happened in fifteen days, and before July there were none.", date:"Aug 4" },
   { icon:"🌱", title:"Week 8: mowing the lawn", desc:"Back yard and back lane mowed, laundry done, dehumidifier hauled, eight weeks after a full knee replacement. Knee pain at 3, the lowest since surgery.", date:"Jul 26–28" }
 ];
