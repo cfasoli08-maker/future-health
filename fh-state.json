@@ -190,10 +190,10 @@
   "Apps Script endpoint returns 302. POST, then GET the redirect_url manually. curl -L turns it into a 405.",
   "The Apps Script IDE ignores programmatic Monaco edits. setValue and executeEdits both apply visually but Save writes the old content. Only real keyboard or clipboard input registers.",
   "GitHub commit summary over 50 chars shifts the Commit button. Keep it short.",
-  "Valerie logs late in the day. 2:27 PM lands in the Noon session. Never assume Morning."
+  "Valerie logs late in the day. 2:27 PM lands in the Noon session. Never assume Morning.",
+  "There is NO invisible-AI rule. Retired Aug 14 2026 by Christopher. Valerie is his mother, she helped build the app, she has always known AI is involved, and there are no other clients. Do not hide it, do not flag mentions of it, do not treat it as a brand issue. Any wording to the contrary in older project instructions is stale."
  ],
  "todo": [
-  "BRAND: Valerie wrote 'I know AI wants more' on Aug 13. The invisible-AI rule may have leaked. Christopher's call, nothing changed in her app.",
   "Apps Script patch (CodeGs-patch.js) still unapplied. Optional: both goals were met without it.",
   "Whoosh episode count field on the sheet.",
   "Hostinger upload of index.html.",
