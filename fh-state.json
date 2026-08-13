@@ -1,0 +1,209 @@
+{
+ "_legend": "READ THIS LINE ONLY FIRST. Sections: meta=what/when | watermark=last row seen per tab, pull only newer | deploy=live md5 + how to verify | tests=open hypotheses w/ readout dates | closed=settled questions, do not reopen | baselines=rolling trend numbers, compare do not recompute | tiers=exact tier list contents for building edit strings | asked=open client questions | hygiene=known bad data | traps=things that will waste your time | todo=pending work",
+ "_howto": "curl the file, then extract ONE section with python json. Never print the whole file. Update it at the end of every scan and redeploy alongside index.html.",
+ "meta": {
+  "client": "valerie",
+  "schema": 2,
+  "lastScan": "2026-08-13",
+  "scanCount": 3,
+  "nextScanDue": "2026-08-27 (magnesium readout)"
+ },
+ "watermark": {
+  "lastLogTimestamp": "2026-08-13T05:43:00.000Z",
+  "lastLogLocal": "Wed Aug 12, 10:43 PM night",
+  "rowCounts": {
+   "logs": 440,
+   "whooshes": 20,
+   "foodSearches": 27,
+   "coachMessages": 53,
+   "questions": 2,
+   "updates": 10
+  },
+  "note": "Backend has no since filter yet. Pull full JSON to a FILE with curl -o, diff in python against rowCounts, print only the delta. Never cat the raw response."
+ },
+ "deploy": {
+  "liveMd5": "b3bbeb511e1451e8b14ab40597f3a3da",
+  "repo": "cfasoli08-maker/future-health",
+  "branch": "main",
+  "file": "index.html",
+  "liveUrl": "https://cfasoli08-maker.github.io/future-health",
+  "verifyWith": "md5 of https://cfasoli08-maker.github.io/future-health/index.html?cb=RANDOM",
+  "doNotTrust": "raw.githubusercontent lags several minutes behind. Never verify with it.",
+  "commitRule": "Commit summary MUST be under 50 characters. Over 50 GitHub inserts a ProTip line that shifts the Commit button ~22px and the click misses.",
+  "pagesNote": "Rebuild is normally under 2 min. If stalled past 10, check /deployments/github-pages for a failed build and push a fresh commit to clear it."
+ },
+ "tests": [
+  {
+   "id": "magnesium-dose",
+   "opened": "2026-08-13",
+   "readout": "2026-08-27",
+   "change": "400mg -> 200mg every 2nd night",
+   "why": "Valerie flagged it herself Aug 11: 2 pills, sore gut next morning, 3 whooshes that day and 3 the next",
+   "success": "flare days per week drop from 3",
+   "status": "running"
+  },
+  {
+   "id": "food-matrix",
+   "opened": "2026-08-13",
+   "readout": "after magnesium",
+   "change": "none yet",
+   "why": "12 days pizza/bread/beer in Italy = 0 episodes. One night pizza/beer here = 3 next day. Points at the North American ingredient list, not the food.",
+   "status": "queued"
+  }
+ ],
+ "closed": [
+  {
+   "id": "nsaids-primary-driver",
+   "closed": "2026-08-13",
+   "verdict": "NEGATIVE as primary driver",
+   "evidence": "Pulled after Aug 8. Flares continued Aug 11 (3) and Aug 12 (3). Stays on red anyway, mechanism is real, but it does not explain the pattern."
+  }
+ ],
+ "corrections": [
+  {
+   "date": "2026-08-13",
+   "was": "Aug 10 claim that the fasting glucose drift had stopped",
+   "now": "It had not. Aug 12 hit 9.0, the record high."
+  },
+  {
+   "date": "2026-08-13",
+   "was": "Aug 6 read that whoosh frequency was falling",
+   "now": "Reversed. Three flare days in four by Aug 12."
+  }
+ ],
+ "baselines": {
+  "blocks": [
+   "Jul13-22",
+   "Jul23-Aug1",
+   "Aug2-12"
+  ],
+  "bp": {
+   "trend": "131/73 -> 130/73 -> 126/68",
+   "morningMean": "128/70",
+   "nightMean": "132/73",
+   "note": "night runs higher than morning"
+  },
+  "fastingGlucoseRolling5": [
+   7.64,
+   7.84,
+   7.88
+  ],
+  "sleepQuality": [
+   6.2,
+   5.0,
+   4.57
+  ],
+  "records": {
+   "bpLow": "115/60 Aug 7",
+   "glucoseLow": 4.9,
+   "glucoseHigh": 12.3,
+   "fastingHigh": "9.0 Aug 12",
+   "weightLow": 140.4,
+   "kneeSince": "3-4 since Aug 7"
+  },
+  "flareDays": {
+   "Jul20": 2,
+   "Jul21": 1,
+   "Jul22": 1,
+   "Jul23": 2,
+   "Jul24": 2,
+   "Jul26": 1,
+   "Jul27": 1,
+   "Jul30": 3,
+   "Aug3": 4,
+   "Aug9": 3,
+   "Aug11": 3,
+   "Aug12": 3
+  },
+  "flareCountRule": "Count episodes from the NOTE TEXT, not the row count. She logs multi-episode days in one row."
+ },
+ "tiers": {
+  "SUPP_GREEN": [
+   "Alpha Lipoic Acid",
+   "Florastor",
+   "Magnesium Glycinate (HELD 200mg)",
+   "Vitamin D3",
+   "Vitamin K2 MK-7",
+   "Vitamin C",
+   "Sauerkraut",
+   "Whey Protein Isolate (Diesel)"
+  ],
+  "SUPP_YELLOW": [
+   "Magnesium above 200mg (under test)",
+   "Melatonin",
+   "Indica gummy 2.5mg",
+   "Enterogermina",
+   "Psyllium Husk",
+   "Ashwagandha",
+   "Creatine",
+   "Marine Collagen",
+   "BPC-157 Oral"
+  ],
+  "SUPP_RED": [
+   "Ibuprofen (Advil, Motrin, Robax Platinum)",
+   "All other NSAIDs",
+   "Digestive Enzyme Formula",
+   "Sublingual Vitamin B12",
+   "5-HTP",
+   "Collagen-Biotin"
+  ],
+  "SUPPS_tickIds": [
+   "ala",
+   "florastor",
+   "d3",
+   "k2",
+   "vitc_am",
+   "vitc_pm",
+   "kraut"
+  ],
+  "FOOD_addedByScans": {
+   "green": [
+    "Stevia (pure leaf)",
+    "Sauerkraut",
+    "Old Dutch bacon puffs"
+   ],
+   "red": [
+    "Splenda and sucralose",
+    "Corn on the cob",
+    "Corn and cornmeal",
+    "Restaurant and delivery pizza",
+    "Beer on a night out"
+   ],
+   "yellow": [
+    "Beets small portions",
+    "Beet chips"
+   ]
+  }
+ },
+ "asked": [
+  {
+   "date": "2026-08-11",
+   "q": "Took 2 Magnesium last night. Sore gut this morning. Related?",
+   "answeredIn": "Aug 13 update tile",
+   "byChristopher": false
+  },
+  {
+   "date": "2026-08-11",
+   "q": "Different Pizza than Italy? I don't overdo it 2-3 pieces max.",
+   "answeredIn": "Aug 13 update tile",
+   "byChristopher": false
+  }
+ ],
+ "hygiene": [
+  "Pulse Jul 20 recorded as 7.3, almost certainly 73. Not auto-corrected.",
+  "Whoosh note Jul 21 1:58 PM contains 1899-12-30T21:15:00.000Z instead of a time. Time-picker serialization bug.",
+  "Whoosh row count understates episode count. Always parse the note text."
+ ],
+ "traps": [
+  "api.github.com repo endpoints are BLOCKED from the cloud sandbox. The stored token is ALIVE (200 on /user) - the old note saying it is dead with 401 is WRONG. The 403 is the sandbox, not the token.",
+  "Apps Script endpoint returns 302. POST, then GET the redirect_url manually. curl -L turns it into a 405.",
+  "The Apps Script IDE ignores programmatic Monaco edits. setValue and executeEdits both apply visually but Save writes the old content. Only real keyboard or clipboard input registers.",
+  "GitHub commit summary over 50 chars shifts the Commit button. Keep it short."
+ ],
+ "todo": [
+  "Apps Script patch: since filters, updates limit, save_state, get_state, deploy_file. Code written and delivered as CodeGs-patch.js, not yet applied.",
+  "Whoosh episode count field on the sheet.",
+  "Hostinger upload of index.html.",
+  "Future Health landing page."
+ ]
+}
