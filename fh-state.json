@@ -4,25 +4,25 @@
  "meta": {
   "client": "valerie",
   "schema": 2,
-  "lastScan": "2026-08-13",
-  "scanCount": 3,
-  "nextScanDue": "2026-08-27 (magnesium readout)"
+  "lastScan": "2026-08-14",
+  "scanCount": 4,
+  "nextScanDue": "when Christopher types update"
  },
  "watermark": {
-  "lastLogTimestamp": "2026-08-13T05:43:00.000Z",
-  "lastLogLocal": "Wed Aug 12, 10:43 PM night",
+  "lastLogTimestamp": "2026-08-13T21:27:00.000Z",
+  "lastLogLocal": "Thu Aug 13, 2:27 PM noon",
   "rowCounts": {
-   "logs": 440,
+   "logs": 443,
    "whooshes": 20,
    "foodSearches": 27,
-   "coachMessages": 53,
+   "coachMessages": 57,
    "questions": 2,
-   "updates": 10
+   "updates": 11
   },
-  "note": "Backend has no since filter yet. Pull full JSON to a FILE with curl -o, diff in python against rowCounts, print only the delta. Never cat the raw response."
+  "note": "Backend has no since filter. curl -o to a FILE, diff in python against rowCounts, print only the delta. Never cat the raw response."
  },
  "deploy": {
-  "liveMd5": "b3bbeb511e1451e8b14ab40597f3a3da",
+  "liveMd5": "54315f06905b059ac132e755c4e2f1c7",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -34,21 +34,12 @@
  },
  "tests": [
   {
-   "id": "magnesium-dose",
-   "opened": "2026-08-13",
-   "readout": "2026-08-27",
-   "change": "400mg -> 200mg every 2nd night",
-   "why": "Valerie flagged it herself Aug 11: 2 pills, sore gut next morning, 3 whooshes that day and 3 the next",
-   "success": "flare days per week drop from 3",
-   "status": "running"
-  },
-  {
    "id": "food-matrix",
    "opened": "2026-08-13",
-   "readout": "after magnesium",
+   "readout": "open",
    "change": "none yet",
    "why": "12 days pizza/bread/beer in Italy = 0 episodes. One night pizza/beer here = 3 next day. Points at the North American ingredient list, not the food.",
-   "status": "queued"
+   "status": "queued, now the primary open thread"
   }
  ],
  "closed": [
@@ -57,6 +48,18 @@
    "closed": "2026-08-13",
    "verdict": "NEGATIVE as primary driver",
    "evidence": "Pulled after Aug 8. Flares continued Aug 11 (3) and Aug 12 (3). Stays on red anyway, mechanism is real, but it does not explain the pattern."
+  },
+  {
+   "id": "magnesium-dose",
+   "closed": "2026-08-14",
+   "verdict": "CONFIRMED, 200mg is her ceiling",
+   "evidence": "Valerie ran it herself. 400mg Aug 10 -> sore gut Aug 11 + 3 whooshes. 400mg Aug 12 -> sore gut Aug 13. 200mg nights, no trouble. Two clean repeats. Dose settled at 200mg every 2nd night, no further increases."
+  },
+  {
+   "id": "weight-missing-home",
+   "closed": "2026-08-14",
+   "verdict": "FIXED, was a design flaw not a code bug",
+   "evidence": "Weight, sleep hours, sleep quality and wake-ups were in the Morning session only. She logged at 2:27 PM which the app treats as Noon, so they were invisible. Once-a-day metrics now appear in every session, share one reading across all three, and Cancel points at the session that actually stores it."
   }
  ],
  "corrections": [
@@ -113,7 +116,8 @@
    "Aug3": 4,
    "Aug9": 3,
    "Aug11": 3,
-   "Aug12": 3
+   "Aug12": 3,
+   "Aug13": 0
   },
   "flareCountRule": "Count episodes from the NOTE TEXT, not the row count. She logs multi-episode days in one row."
  },
@@ -175,20 +179,7 @@
    ]
   }
  },
- "asked": [
-  {
-   "date": "2026-08-11",
-   "q": "Took 2 Magnesium last night. Sore gut this morning. Related?",
-   "answeredIn": "Aug 13 update tile",
-   "byChristopher": false
-  },
-  {
-   "date": "2026-08-11",
-   "q": "Different Pizza than Italy? I don't overdo it 2-3 pieces max.",
-   "answeredIn": "Aug 13 update tile",
-   "byChristopher": false
-  }
- ],
+ "asked": [],
  "hygiene": [
   "Pulse Jul 20 recorded as 7.3, almost certainly 73. Not auto-corrected.",
   "Whoosh note Jul 21 1:58 PM contains 1899-12-30T21:15:00.000Z instead of a time. Time-picker serialization bug.",
@@ -198,10 +189,12 @@
   "api.github.com repo endpoints are BLOCKED from the cloud sandbox. The stored token is ALIVE (200 on /user) - the old note saying it is dead with 401 is WRONG. The 403 is the sandbox, not the token.",
   "Apps Script endpoint returns 302. POST, then GET the redirect_url manually. curl -L turns it into a 405.",
   "The Apps Script IDE ignores programmatic Monaco edits. setValue and executeEdits both apply visually but Save writes the old content. Only real keyboard or clipboard input registers.",
-  "GitHub commit summary over 50 chars shifts the Commit button. Keep it short."
+  "GitHub commit summary over 50 chars shifts the Commit button. Keep it short.",
+  "Valerie logs late in the day. 2:27 PM lands in the Noon session. Never assume Morning."
  ],
  "todo": [
-  "Apps Script patch: since filters, updates limit, save_state, get_state, deploy_file. Code written and delivered as CodeGs-patch.js, not yet applied.",
+  "BRAND: Valerie wrote 'I know AI wants more' on Aug 13. The invisible-AI rule may have leaked. Christopher's call, nothing changed in her app.",
+  "Apps Script patch (CodeGs-patch.js) still unapplied. Optional: both goals were met without it.",
   "Whoosh episode count field on the sheet.",
   "Hostinger upload of index.html.",
   "Future Health landing page."

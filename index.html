@@ -701,11 +701,25 @@ let sheetSel = {};
 
 // Repeatable metrics logged morning, noon, and night. The rest are morning-only, once a day.
 const REPEATABLE_IDS = ['glucose','pulse','bp','kneepain','fibropain','energy','activity','stress','bowel','hydration'];
+// Once-a-day metrics. They used to live under Morning only, so if she opened the app in
+// the afternoon they were invisible and looked deleted. Reported by Valerie Aug 13.
+// They now show in every session and share one reading across all three.
+const DAILY_IDS = INPUTS.map(i=>i.id).filter(id => REPEATABLE_IDS.indexOf(id) === -1);
+const SESSION_ORDER = ['morning','noon','night'];
 const SESSIONS = [
   { id:'morning', label:'Morning', metrics: INPUTS.map(i=>i.id) },
-  { id:'noon',    label:'Noon',    metrics: REPEATABLE_IDS },
-  { id:'night',   label:'Night',   metrics: REPEATABLE_IDS }
+  { id:'noon',    label:'Noon',    metrics: REPEATABLE_IDS.concat(DAILY_IDS) },
+  { id:'night',   label:'Night',   metrics: REPEATABLE_IDS.concat(DAILY_IDS) }
 ];
+
+// For a once-a-day metric, find whichever session actually holds today's reading.
+function dailyHolder(day, mid) {
+  for (var i = 0; i < SESSION_ORDER.length; i++) {
+    var sid = SESSION_ORDER[i];
+    if (day[sid] && day[sid][mid] && day[sid][mid].length) return sid;
+  }
+  return null;
+}
 let sessionOpen = { morning:false, noon:false, night:false };
 
 function sessionReadings(day, sid, mid){ return (day[sid] && day[sid][mid]) ? day[sid][mid] : []; }
@@ -795,17 +809,21 @@ const SESSION_SUBS = {
 };
 function tileHtml(day, sid, mid){
   const inp = INPUTS.find(i=>i.id===mid);
-  const log = sessionReadings(day, sid, mid);
-  const done = log.length > 0;
   const repeatable = REPEATABLE_IDS.indexOf(mid) > -1;
+  // A once-a-day metric shows its reading no matter which session she is looking at,
+  // and Cancel points back at the session that actually stores it.
+  const holder = repeatable ? sid : (dailyHolder(day, mid) || sid);
+  const log = sessionReadings(day, holder, mid);
+  const done = log.length > 0;
   let stack = '';
   if (done) {
     stack = '<div class="tile-stack">' + log.map((r,ri) =>
-      `<div class="tile-stack-row"><span class="tile-stack-val">${r.disp}</span><span class="tile-stack-when">${r.when || r.t || ''}</span><span class="tile-stack-cancel" onclick="event.stopPropagation();cancelEntry('${sid}','${mid}',${ri})" title="Cancel this entry">✕</span></div>`).join('') + '</div>';
+      `<div class="tile-stack-row"><span class="tile-stack-val">${r.disp}</span><span class="tile-stack-when">${r.when || r.t || ''}</span><span class="tile-stack-cancel" onclick="event.stopPropagation();cancelEntry('${holder}','${mid}',${ri})" title="Cancel this entry">✕</span></div>`).join('') + '</div>';
   }
   const restSub = (SESSION_SUBS[mid] && SESSION_SUBS[mid][sid]) || inp.sub;
-  const sub = done ? (repeatable ? log.length + ' logged, tap to add another' : 'Logged ✓ tap to change') : restSub;
-  return `<div class="tile ${done?'done tile-multi':''}" onclick="openEntry('${mid}','${sid}')">
+  const sub = done ? (repeatable ? log.length + ' logged, tap to add another' : 'Logged ✓ tap to change')
+                   : (repeatable ? restSub : restSub + ' · once a day, any time');
+  return `<div class="tile ${done?'done tile-multi':''}" onclick="openEntry('${mid}','${holder}')">
       <div class="tile-head">
         <div class="tile-icon">${inp.icon}</div>
         <div class="tile-body"><div class="tile-label">${inp.label}</div><div class="tile-sub">${sub}</div></div>
@@ -816,7 +834,12 @@ function tileHtml(day, sid, mid){
 }
 
 function sessionCount(day, s){
-  return s.metrics.reduce((a,mid)=> a + sessionReadings(day, s.id, mid).length, 0);
+  // Count repeatables for this session only. A once-a-day metric belongs to whichever
+  // session recorded it, so it is never counted three times.
+  return s.metrics.reduce(function(a, mid){
+    if (REPEATABLE_IDS.indexOf(mid) > -1) return a + sessionReadings(day, s.id, mid).length;
+    return a + (dailyHolder(day, mid) === s.id ? sessionReadings(day, s.id, mid).length : 0);
+  }, 0);
 }
 
 function renderSessions(){
@@ -1014,6 +1037,10 @@ async function saveEntry() {
     day[activeSession][inp.id] = day[activeSession][inp.id] || [];
     day[activeSession][inp.id].push(entry);
   } else {
+    // One reading per day. Clear any copy sitting under another session first so she
+    // never ends up with two weights on the same day.
+    SESSION_ORDER.forEach(function(sid){ if (day[sid]) delete day[sid][inp.id]; });
+    day[activeSession] = day[activeSession] || {};
     day[activeSession][inp.id] = [entry];
   }
   saveDay(day);
@@ -1220,7 +1247,7 @@ const GUM = { name:'Indica gummy 2.5mg', max:4, sub:'Tap one box per gummy you t
 const SUPP_GREEN = [
   { name:'Alpha Lipoic Acid', note:'600mg daily. Six 100mg capsules taken together with the largest meal. Always with food.' },
   { name:'Florastor (Saccharomyces boulardii)', note:'1 capsule with breakfast daily.' },
-  { name:'Magnesium Glycinate', note:'HOLD AT ONE PILL (200mg) for now. Do not go up. You asked on Aug 11 whether the two pills and the sore gut were related, and you were right to ask. Magnesium is the most common cause of loose stools of anything in a cabinet, and the old plan here was to keep raising your dose, which was the wrong direction. One pill at bedtime, every second night, and we watch for two weeks. It is still the reason your blood pressure sits in the 120s, so we are not dropping it, we are finding your right amount.' },
+  { name:'Magnesium Glycinate', note:'ONE PILL, 200mg. Settled. You proved this yourself twice: 400mg on Aug 10 gave you a sore gut on the 11th, 400mg again on the 12th gave you the same on the 13th, and at 200mg you have no trouble at all. Your read was right and your dose is now 200mg at bedtime every second night. No more increases. It is still doing the work on your blood pressure, which is sitting in the 120s.' },
   { name:'Vitamin D3', note:'4000 IU in the morning. Four 1000 IU capsules.' },
   { name:'Vitamin K2 as MK-7', note:'200mcg daily, two 100mcg capsules, taken with D3 at the largest meal. Directs calcium into bone and away from arteries. Fat-soluble, always take with a fatty meal.' },
   { name:'Vitamin C', note:'500mg chewable, morning and evening.' },
@@ -1228,7 +1255,7 @@ const SUPP_GREEN = [
   { name:'Whey Protein Isolate (Diesel)', note:'Cleared. The label question is settled: zero sugar, zero carbs per scoop, sweetened with stevia. One condition only, drink it before 4pm. Both high bedtime readings followed a late-day drink.' }
 ];
 const SUPP_YELLOW = [
-  { name:'Magnesium — the amount above 200mg', note:'Under active test since Aug 13. The 400mg nights are the ones we are watching. Anything above 200mg stays here until we know.' },
+  { name:'Magnesium — the amount above 200mg', note:'Closed Aug 14, and the answer is no. Two separate 400mg nights, two sore guts the next day. 200mg is your number. Nothing above it goes back in without a reason.' },
   { name:'Melatonin', note:'Not currently in use. Situational only if reintroduced, 0.5mg to a maximum of 1mg.' },
   { name:'Indica gummy 2.5mg', note:'Sleep support trial. Two unbroken nights logged with it this week, one rough night. Keep noting each use in the coach chat.' },
   { name:'Enterogermina', note:'Keep or drop pending observed benefit.' },
@@ -1683,6 +1710,7 @@ const wins = [
   { icon:"🩸", title:"Blood sugar 4.9 — lowest ever recorded", desc:"Deep in fully non-diabetic territory. The floor has moved again: 5.7 in May, 4.9 now. This is what a recovering metabolism looks like.", date:"Jul 15" },
   { icon:"⚖️", title:"140.4 lb — lowest weight of the journey", desc:"13.6 lb below the March start, reached while rebuilding strength after knee surgery, not by losing it.", date:"Jul 18" },
   { icon:"😴", title:"Sleeping through the night — twice in one week", desc:"Zero wakeups Wednesday and Friday, the first unbroken nights since daily tracking began. Fibromyalgia pain touched 2 the same week, its lowest ever recorded.", date:"Jul 22–24" },
+  { icon:"🎯", title:"You called it, and then you proved it", desc:"Aug 13: second 400mg magnesium night, second sore gut the next morning, and no trouble at all on 200mg. Two clean repeats in three days is not a hunch, it is evidence. You found your own dose and the protocol changed to match it.", date:"Aug 13" },
   { icon:"🔍", title:"You spotted a trigger before anyone else did", desc:"Aug 11, off your own logs: took two magnesium, sore gut the next morning, and you asked whether they were connected. They almost certainly are. That question changed your protocol the same week you asked it. This is what six months of careful logging buys you.", date:"Aug 11" },
   { icon:"🏆", title:"115/60 — a brand new record, and the best blood pressure of your life", desc:"Lowest reading ever recorded on both numbers, medication-free, from a 145/90 start on Irbesartan in March. Three of the four lowest readings in the entire record all landed in the same week.", date:"Aug 7" },
   { icon:"❤️", title:"116/65 — the previous best of the tracking record", desc:"Medication-free, five months after starting at 145/90 on Irbesartan. The last four days averaged 126/68, the best four-day stretch in the log.", date:"Aug 3" },
