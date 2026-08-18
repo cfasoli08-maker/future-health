@@ -1305,13 +1305,16 @@ function renderSupps() {
   // Pain relief counters, same pattern as magnesium
   const counterTile = function(label, icon, count, time, max, setFn, sub){
     let b = '';
-    for (let n = 1; n <= max; n++) b += `<div class="mag-box ${count >= n ? 'on' : ''}" onclick="${setFn}(${n},event)">${count >= n ? '✓' : ''}<span class="mag-mg">${n}</span></div>`;
+    for (let n = 1; n <= max; n++) {
+      const boxLabel = (label === TYL.name) ? (n * TYL.pill) + 'mg' : n;
+      b += `<div class="mag-box ${count >= n ? 'on' : ''}" onclick="${setFn}(${n},event)">${count >= n ? '✓' : ''}<span class="mag-mg">${boxLabel}</span></div>`;
+    }
     return `
     <div class="supp-tick ${count > 0 ? 'checked' : ''}" style="flex-wrap:wrap;">
       <div style="flex:1 1 100%;display:flex;align-items:center;gap:1rem;">
         <div class="supp-tick-box">${count > 0 ? '✓' : ''}</div>
         <div><div class="supp-tick-name">${icon} ${label}</div><div class="supp-tick-dose">${count > 0
-          ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${count} ${time ? '· ' + time : ''}</span> · tap a box to change it`
+          ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${count}${label === TYL.name ? ' pills today, ' + (count * TYL.pill) + 'mg' : ''} ${time ? '· ' + time : ''}</span> · tap a box to change it`
           : sub}</div></div>
       </div>
       <div class="mag-row">${b}</div>
@@ -1346,7 +1349,7 @@ function setTyl(n, ev) {
   saveDay(day);
   renderSupps();
   const t = stamp();
-  sheetCall({ action:'log_supplement', clientId: currentClientId, supplement: 'Tylenol 650', taken: day.tylCount > 0, note: (day.tylCount * TYL.pill) + 'mg (' + day.tylCount + ' pills)', timestamp: t.iso, timeLocal: t.local });
+  sheetCall({ action:'log_supplement', clientId: currentClientId, supplement: 'Tylenol 650', taken: day.tylCount > 0, note: day.tylCount > 0 ? ((day.tylCount * TYL.pill) + 'mg (' + day.tylCount + ' pills)') : 'cleared, none today', timestamp: t.iso, timeLocal: t.local });
 }
 
 function setGum(n, ev) {
@@ -1357,7 +1360,7 @@ function setGum(n, ev) {
   saveDay(day);
   renderSupps();
   const t = stamp();
-  sheetCall({ action:'log_supplement', clientId: currentClientId, supplement: 'Indica gummy 2.5mg', taken: day.gumCount > 0, note: day.gumCount + ' gummies', timestamp: t.iso, timeLocal: t.local });
+  sheetCall({ action:'log_supplement', clientId: currentClientId, supplement: 'Indica gummy 2.5mg', taken: day.gumCount > 0, note: day.gumCount > 0 ? (day.gumCount + ' gummies') : 'cleared, none today', timestamp: t.iso, timeLocal: t.local });
 }
 
 function tierItem(x) {
@@ -1710,6 +1713,7 @@ const wins = [
   { icon:"🩸", title:"Blood sugar 4.9 — lowest ever recorded", desc:"Deep in fully non-diabetic territory. The floor has moved again: 5.7 in May, 4.9 now. This is what a recovering metabolism looks like.", date:"Jul 15" },
   { icon:"⚖️", title:"140.4 lb — lowest weight of the journey", desc:"13.6 lb below the March start, reached while rebuilding strength after knee surgery, not by losing it.", date:"Jul 18" },
   { icon:"😴", title:"Sleeping through the night — twice in one week", desc:"Zero wakeups Wednesday and Friday, the first unbroken nights since daily tracking began. Fibromyalgia pain touched 2 the same week, its lowest ever recorded.", date:"Jul 22–24" },
+  { icon:"🚶", title:"You walked the property to build stamina", desc:"Week eleven after a knee replacement, with your back and knee both complaining, and you chose to build rather than rest. That decision is the whole protocol in one move. The soreness afterward is the price of progress, not a setback.", date:"Aug 17" },
   { icon:"🎯", title:"You called it, and then you proved it", desc:"Aug 13: second 400mg magnesium night, second sore gut the next morning, and no trouble at all on 200mg. Two clean repeats in three days is not a hunch, it is evidence. You found your own dose and the protocol changed to match it.", date:"Aug 13" },
   { icon:"🔍", title:"You spotted a trigger before anyone else did", desc:"Aug 11, off your own logs: took two magnesium, sore gut the next morning, and you asked whether they were connected. They almost certainly are. That question changed your protocol the same week you asked it. This is what six months of careful logging buys you.", date:"Aug 11" },
   { icon:"🏆", title:"115/60 — a brand new record, and the best blood pressure of your life", desc:"Lowest reading ever recorded on both numbers, medication-free, from a 145/90 start on Irbesartan in March. Three of the four lowest readings in the entire record all landed in the same week.", date:"Aug 7" },

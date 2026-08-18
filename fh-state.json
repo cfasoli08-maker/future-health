@@ -4,25 +4,26 @@
  "meta": {
   "client": "valerie",
   "schema": 2,
-  "lastScan": "2026-08-14",
-  "scanCount": 4,
+  "lastScan": "2026-08-18",
+  "scanCount": 5,
   "nextScanDue": "when Christopher types update"
  },
  "watermark": {
-  "lastLogTimestamp": "2026-08-13T21:27:00.000Z",
-  "lastLogLocal": "Thu Aug 13, 2:27 PM noon",
+  "lastLogTimestamp": "2026-08-18T05:24:00.000Z",
+  "lastLogLocal": "Mon Aug 17, 10:24 PM night",
   "rowCounts": {
-   "logs": 443,
-   "whooshes": 20,
+   "logs": 490,
+   "whooshes": 22,
    "foodSearches": 27,
-   "coachMessages": 57,
+   "coachMessages": 60,
    "questions": 2,
-   "updates": 11
+   "updates": 12,
+   "supplementLog": 312
   },
   "note": "Backend has no since filter. curl -o to a FILE, diff in python against rowCounts, print only the delta. Never cat the raw response."
  },
  "deploy": {
-  "liveMd5": "54315f06905b059ac132e755c4e2f1c7",
+  "liveMd5": "c0e6c03e960ba423afbd1f9403c9295f",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -40,6 +41,14 @@
    "change": "none yet",
    "why": "12 days pizza/bread/beer in Italy = 0 episodes. One night pizza/beer here = 3 next day. Points at the North American ingredient list, not the food.",
    "status": "queued, now the primary open thread"
+  },
+  {
+   "id": "pain-sleep-glucose-chain",
+   "opened": "2026-08-18",
+   "readout": "next scan",
+   "why": "Left knee + back pain, regular Tylenol 1300-2600mg/day, sleep quality 2-4 with 2-3 wakeups nightly, fasting glucose up 1.0 mmol/L. Her own Aug 6 data: 2+ wakeups = 7.74 fasting vs 0 wakeups = 7.20.",
+   "success": "If pain is managed and sleep consolidates, fasting should fall back toward 7.5 without any diet change.",
+   "status": "running"
   }
  ],
  "closed": [
@@ -81,7 +90,7 @@
    "Aug2-12"
   ],
   "bp": {
-   "trend": "131/73 -> 130/73 -> 126/68",
+   "trend": "131/73 -> 130/73 -> 126/68 -> 129/68. Mean holding, spread widening.",
    "morningMean": "128/70",
    "nightMean": "132/73",
    "note": "night runs higher than morning"
@@ -89,12 +98,15 @@
   "fastingGlucoseRolling5": [
    7.64,
    7.84,
-   7.88
+   7.88,
+   7.52,
+   8.52
   ],
   "sleepQuality": [
    6.2,
    5.0,
-   4.57
+   4.57,
+   3.33
   ],
   "records": {
    "bpLow": "115/60 Aug 7",
@@ -102,7 +114,8 @@
    "glucoseHigh": 12.3,
    "fastingHigh": "9.0 Aug 12",
    "weightLow": 140.4,
-   "kneeSince": "3-4 since Aug 7"
+   "kneeSince": "3-4 since Aug 7",
+   "lowestDiastolic": "55 on Aug 16 night"
   },
   "flareDays": {
    "Jul20": 2,
@@ -117,9 +130,14 @@
    "Aug9": 3,
    "Aug11": 3,
    "Aug12": 3,
-   "Aug13": 0
+   "Aug13": 0,
+   "Aug14": 3,
+   "Aug15": 0,
+   "Aug16": 0,
+   "Aug17": 3
   },
-  "flareCountRule": "Count episodes from the NOTE TEXT, not the row count. She logs multi-episode days in one row."
+  "flareCountRule": "Count episodes from the NOTE TEXT, not the row count. She logs multi-episode days in one row.",
+  "fastingNote": "Aug 18: stepped up, not drifting. Last5 8.52 vs prior5 7.52. Aug 17 night 9.8, second highest ever."
  },
  "tiers": {
   "SUPP_GREEN": [
@@ -179,11 +197,19 @@
    ]
   }
  },
- "asked": [],
+ "asked": [
+  {
+   "date": "2026-08-17",
+   "q": "Left knee and back giving grief, had to lie down an hour, Tylenol regularly",
+   "answeredIn": "Aug 18 update tile",
+   "byChristopher": false
+  }
+ ],
  "hygiene": [
   "Pulse Jul 20 recorded as 7.3, almost certainly 73. Not auto-corrected.",
   "Whoosh note Jul 21 1:58 PM contains 1899-12-30T21:15:00.000Z instead of a time. Time-picker serialization bug.",
-  "Whoosh row count understates episode count. Always parse the note text."
+  "Whoosh row count understates episode count. Always parse the note text.",
+  "FIXED Aug 18: pain counters wrote junk '0mg (0 pills)' rows on every tap-down. Rows before Aug 18 in the Supplement Log contain them, ignore zero-dose rows when reconstructing load. Use the FINAL state per session, the counter is a running daily total not a per-dose log."
  ],
  "traps": [
   "api.github.com repo endpoints are BLOCKED from the cloud sandbox. The stored token is ALIVE (200 on /user) - the old note saying it is dead with 401 is WRONG. The 403 is the sandbox, not the token.",
@@ -194,7 +220,9 @@
   "There is NO invisible-AI rule. Retired Aug 14 2026 by Christopher. Valerie is his mother, she helped build the app, she has always known AI is involved, and there are no other clients. Do not hide it, do not flag mentions of it, do not treat it as a brand issue. Any wording to the contrary in older project instructions is stale."
  ],
  "todo": [
-  "Apps Script patch (CodeGs-patch.js) still unapplied. Optional: both goals were met without it.",
+  "CHRISTOPHER MUST CONFIRM: which knee was replaced June 2. She now reports LEFT knee pain. If left is the replacement that is a week-11 post-op question. If right, it is contralateral overload plus lumbar compensation, a physio problem. Changes the whole read.",
+  "PROJECT INSTRUCTIONS still contain the invisible-AI HARD BRAND RULE and the line 'AI is never mentioned or implied anywhere in what she sees'. Christopher retired that rule Aug 14. Only he can edit project custom instructions. Until he does, every new session starts believing it.",
+  "PROJECT INSTRUCTIONS also still say the GitHub token is dead (401). It is not, the sandbox blocks the repo endpoint. Stale.",
   "Whoosh episode count field on the sheet.",
   "Hostinger upload of index.html.",
   "Future Health landing page."
