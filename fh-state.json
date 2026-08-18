@@ -3,27 +3,26 @@
  "_howto": "curl the file, then extract ONE section with python json. Never print the whole file. Update it at the end of every scan and redeploy alongside index.html.",
  "meta": {
   "client": "valerie",
-  "schema": 2,
+  "schema": 3,
   "lastScan": "2026-08-18",
-  "scanCount": 5,
-  "nextScanDue": "when Christopher types update"
+  "scanCount": 6
  },
  "watermark": {
   "lastLogTimestamp": "2026-08-18T05:24:00.000Z",
   "lastLogLocal": "Mon Aug 17, 10:24 PM night",
   "rowCounts": {
-   "logs": 490,
-   "whooshes": 22,
+   "logs": 491,
+   "whooshes": 23,
    "foodSearches": 27,
    "coachMessages": 60,
-   "questions": 2,
-   "updates": 12,
+   "questions": 4,
+   "updates": 13,
    "supplementLog": 312
   },
-  "note": "Backend has no since filter. curl -o to a FILE, diff in python against rowCounts, print only the delta. Never cat the raw response."
+  "note": "Pull to a FILE with curl -o, diff in python against rowCounts, print only the delta."
  },
  "deploy": {
-  "liveMd5": "c0e6c03e960ba423afbd1f9403c9295f",
+  "liveMd5": "e5eb7bb7ca8b239c87ea36e15f0ac263",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -206,10 +205,10 @@
   }
  ],
  "hygiene": [
-  "Pulse Jul 20 recorded as 7.3, almost certainly 73. Not auto-corrected.",
-  "Whoosh note Jul 21 1:58 PM contains 1899-12-30T21:15:00.000Z instead of a time. Time-picker serialization bug.",
-  "Whoosh row count understates episode count. Always parse the note text.",
-  "FIXED Aug 18: pain counters wrote junk '0mg (0 pills)' rows on every tap-down. Rows before Aug 18 in the Supplement Log contain them, ignore zero-dose rows when reconstructing load. Use the FINAL state per session, the counter is a running daily total not a per-dose log."
+  "FIXED Aug 18: pulse Jul 20 corrected from 7.3 to 73.",
+  "FIXED Aug 18: whoosh note Jul 21 1:58 PM corrected from the 1899 epoch string to 'happened around 9:15 pm'.",
+  "FIXED Aug 18: whoosh sheet now has a tap-a-number count. Notes written from Aug 18 lead with 'N episodes today'. Rows BEFORE Aug 18 still carry the count in prose and must be read from the note text.",
+  "Pain counters wrote junk '0mg (0 pills)' rows before Aug 18. Ignore zero-dose rows; the counter is a running daily total, so use the final state per session."
  ],
  "traps": [
   "api.github.com repo endpoints are BLOCKED from the cloud sandbox. The stored token is ALIVE (200 on /user) - the old note saying it is dead with 401 is WRONG. The 403 is the sandbox, not the token.",
@@ -217,14 +216,20 @@
   "The Apps Script IDE ignores programmatic Monaco edits. setValue and executeEdits both apply visually but Save writes the old content. Only real keyboard or clipboard input registers.",
   "GitHub commit summary over 50 chars shifts the Commit button. Keep it short.",
   "Valerie logs late in the day. 2:27 PM lands in the Noon session. Never assume Morning.",
-  "There is NO invisible-AI rule. Retired Aug 14 2026 by Christopher. Valerie is his mother, she helped build the app, she has always known AI is involved, and there are no other clients. Do not hide it, do not flag mentions of it, do not treat it as a brand issue. Any wording to the contrary in older project instructions is stale."
+  "There is no invisible-AI rule. Valerie knows. Retired Aug 14 2026.",
+  "Never hand Christopher a task. Check for a tool first. Questions for Valerie go to her via save_question."
  ],
- "todo": [
-  "CHRISTOPHER MUST CONFIRM: which knee was replaced June 2. She now reports LEFT knee pain. If left is the replacement that is a week-11 post-op question. If right, it is contralateral overload plus lumbar compensation, a physio problem. Changes the whole read.",
-  "PROJECT INSTRUCTIONS still contain the invisible-AI HARD BRAND RULE and the line 'AI is never mentioned or implied anywhere in what she sees'. Christopher retired that rule Aug 14. Only he can edit project custom instructions. Until he does, every new session starts believing it.",
-  "PROJECT INSTRUCTIONS also still say the GitHub token is dead (401). It is not, the sandbox blocks the repo endpoint. Stale.",
-  "Whoosh episode count field on the sheet.",
-  "Hostinger upload of index.html.",
-  "Future Health landing page."
- ]
+ "todo": [],
+ "_purpose": "This app tracks Valerie's health and finds root causes. That is the entire scope. No business, no clients, no brand, no landing page, no other hosting.",
+ "goal": {
+  "target": "fasting glucose under 7.0 mmol/L",
+  "current": "last 5 fasting mean 8.52",
+  "baseline": "7.52 the 5 before that",
+  "levers": [
+   "supper by 6:30 pm, her Aug 1 record: supper 6:30 with bread and dessert gave a 6.6 bedtime reading",
+   "ten minutes walking after supper",
+   "Tylenol before bed rather than after pain wakes her, because her 0-wakeup nights ran 7.20 fasting vs 7.74 at 2+ wakeups"
+  ],
+  "shippedToHer": "Focus card on the Home screen, Aug 18 2026"
+ }
 }

@@ -56,6 +56,13 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .days-number { font-family:'Oswald',sans-serif; font-size:3.4rem; font-weight:600; color:var(--sage); line-height:1; }
 .days-label { font-size:1.05rem; color:var(--muted); font-weight:500; margin-top:0.3rem; }
 .days-sub { font-size:0.9rem; color:var(--muted); font-weight:300; margin-top:0.4rem; }
+.focus-card { background:linear-gradient(160deg,var(--gold) 0%,#B8912F 100%); color:#fff; border-radius:var(--radius); padding:1.5rem 1.4rem; margin-bottom:0.9rem; box-shadow:0 2px 10px rgba(0,0,0,0.08); }
+.focus-eyebrow { font-size:0.78rem; letter-spacing:0.25em; text-transform:uppercase; opacity:0.85; margin-bottom:0.5rem; }
+.focus-goal { font-family:'Cormorant Garamond',serif; font-size:1.75rem; font-weight:600; line-height:1.15; }
+.focus-sub { font-size:0.98rem; opacity:0.92; margin:0.5rem 0 1.1rem; line-height:1.5; }
+.focus-item { display:flex; gap:0.85rem; align-items:flex-start; padding:0.7rem 0; border-top:1px solid rgba(255,255,255,0.28); font-size:0.98rem; line-height:1.5; }
+.focus-num { flex-shrink:0; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.22); display:flex; align-items:center; justify-content:center; font-family:'Oswald',sans-serif; font-weight:600; }
+.focus-item span { opacity:0.92; }
 
 /* ── INPUT TILES ── */
 .tile { border-radius:var(--radius); padding:1.5rem 1.4rem; margin-bottom:0.9rem; min-height:112px; display:flex; align-items:center; gap:1.1rem; cursor:pointer; border:3px solid var(--green); background:var(--green-soft); transition:transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease; box-shadow:0 2px 8px rgba(0,0,0,0.04); will-change:transform; }
@@ -367,6 +374,14 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
       <div id="whoosh-list"></div>
     </div>
 
+    <div class="focus-card" id="focus-card">
+      <div class="focus-eyebrow">✦ This week's focus</div>
+      <div class="focus-goal">Morning blood sugar back under 7</div>
+      <div class="focus-sub">You have been there before and these are the three things your own numbers say get you back.</div>
+      <div class="focus-item"><span class="focus-num">1</span><div><b>Supper by 6:30</b><br><span>On August 1 you ate supper at 6:30 with bread and dessert and your bedtime reading was 6.6. Earlier suppers are the single strongest thing in your whole record.</span></div></div>
+      <div class="focus-item"><span class="focus-num">2</span><div><b>Ten minutes of walking after supper</b><br><span>Even around the house. It gives the meal somewhere to go instead of sitting in your blood.</span></div></div>
+      <div class="focus-item"><span class="focus-num">3</span><div><b>Take the Tylenol before bed, not after the pain wakes you</b><br><span>Your unbroken nights ran a full half point lower in the morning than your broken ones. Protecting the night is protecting the number.</span></div></div>
+    </div>
     <div class="section-label">Today's log · tap a time of day to open it</div>
     <div id="sessions"></div>
   </div>
@@ -1075,6 +1090,14 @@ function openWhoosh() {
     <div class="sheet-icon">💨</div>
     <div class="sheet-title">Whoosh</div>
     <div class="sheet-help">Two quick taps so Christopher can see the pattern. Everything else is optional.</div>
+    <div class="sheet-field-label">How many so far today?</div>
+    <div class="opt-col" style="flex-direction:row;gap:0.5rem;">
+      <button class="opt-btn" style="text-align:center;flex:1;" onclick="pickWhoosh(this,'count','1')">1</button>
+      <button class="opt-btn" style="text-align:center;flex:1;" onclick="pickWhoosh(this,'count','2')">2</button>
+      <button class="opt-btn" style="text-align:center;flex:1;" onclick="pickWhoosh(this,'count','3')">3</button>
+      <button class="opt-btn" style="text-align:center;flex:1;" onclick="pickWhoosh(this,'count','4')">4</button>
+      <button class="opt-btn" style="text-align:center;flex:1;" onclick="pickWhoosh(this,'count','5+')">5+</button>
+    </div>
     <div class="sheet-field-label">How big was it?</div>
     <div class="opt-col">
       <button class="opt-btn" onclick="pickWhoosh(this,'severity','Mild')">Mild</button>
@@ -1103,7 +1126,10 @@ function pickWhoosh(el, key, val) {
 }
 function saveWhooshSheet() {
   if (!whooshSel.severity) return;
-  const parts = [whooshSel.severity];
+  // Count leads the note so the weekly scan reads a number instead of parsing her prose.
+  const parts = [];
+  if (whooshSel.count) parts.push(whooshSel.count + (whooshSel.count === '1' ? ' episode today' : ' episodes today'));
+  parts.push(whooshSel.severity);
   if (whooshSel.warning) parts.push(whooshSel.warning);
   let when = document.getElementById('whoosh-when').value.trim();
   if (when) {
