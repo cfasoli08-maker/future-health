@@ -24,8 +24,8 @@
   "note": "Real counts, written back by the third Aug 20 scan. questions and updates include the 2 questions and 1 update that scan wrote."
  },
  "deploy": {
-  "liveMd5": "307ecf54f676c63d22ea3ae9950264bc",
-  "prevMd5": "30fce527caa2817514375b48b5ea5432",
+  "liveMd5": "6dd72a4424b177acb486c4f76269f493",
+  "prevMd5": "307ecf54f676c63d22ea3ae9950264bc",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -363,7 +363,8 @@
   "Do NOT re-open acetaminophen load. Closed Aug 20, negative, arithmetic error.",
   "python is not on PATH in git-bash on this machine. node is. Use node for the analysis.",
   "The local clone can sit behind origin/main while its working index.html already matches live, because a prior session curl'd the live file. Run git status -sb before you commit.",
-  "MAGNESIUM: her dose is 200mg every SECOND night. Check the RUN, not the night. Four nights in a row is a different exposure from one night. Cross every supplement against gut days at lag 0, lag 1 and lag 2, and as a run length."
+  "MAGNESIUM: her dose is 200mg every SECOND night. Check the RUN, not the night. Four nights in a row is a different exposure from one night. Cross every supplement against gut days at lag 0, lag 1 and lag 2, and as a run length.",
+  "NEVER let the app stop her recording what actually happened. The Tylenol boxes did it, the sauerkraut tile did it, and the magnesium skip night nearly did it. An interface that argues with the patient produces a record that lies. Tell her the rule, then let her log the truth."
  ],
  "todo": [
   "BUILD: gut ache tile approved by Christopher Aug 20. Then fh-daily.json, fh-events.json, fh-signals.md per claude/PLAN-ROOTCAUSE.md.",

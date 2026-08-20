@@ -1345,7 +1345,7 @@ function renderSupps() {
         <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">${magCount>0
           ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${magCount*MAG.pill}mg ${day.magTime?'· '+day.magTime:''}</span> · tap a box to change it`
           : (magTookLastNight()
-              ? '<span style="color:var(--gold);font-weight:700;">You took it last night, so tonight is a skip night.</span> 200mg every second night. Nothing to tap.'
+              ? '<span style="color:var(--gold);font-weight:700;">You took it last night, so tonight is a skip night.</span> 200mg every second night. If you did take it anyway, tap it, so I see the truth.'
               : 'Tap the box when you take your 200mg pill. Every second night, not every night.')}</div></div>
       </div>
       <div class="mag-row">${boxes}</div>
