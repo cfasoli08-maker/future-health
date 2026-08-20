@@ -5,8 +5,8 @@
   "client": "valerie",
   "schema": 3,
   "lastScan": "2026-08-20",
-  "scanCount": 8,
-  "scanNote": "Third scan of Aug 20. Mostly a retraction. Two of the three chains opened by the earlier scans that day were instrumentation errors, not biology. See FINDINGS.md."
+  "scanCount": 9,
+  "scanNote": "Aug 20. Day table built. Gut ache tile shipped. Magnesium run caught and fixed. Two chains retracted earlier the same day."
  },
  "watermark": {
   "lastLogTimestamp": "2026-08-20T14:33:35.778Z",
@@ -24,8 +24,8 @@
   "note": "Real counts, written back by the third Aug 20 scan. questions and updates include the 2 questions and 1 update that scan wrote."
  },
  "deploy": {
-  "liveMd5": "6dd72a4424b177acb486c4f76269f493",
-  "prevMd5": "307ecf54f676c63d22ea3ae9950264bc",
+  "liveMd5": "53fde901d73ad7cd30448adc843a72da",
+  "prevMd5": "6dd72a4424b177acb486c4f76269f493",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -37,6 +37,14 @@
   "gitNote": "Aug 20: the local clone was 15 commits BEHIND origin/main while its working index.html already matched live, because a prior session curl'd the live file instead of pulling. Fixed with git reset --mixed origin/main. Check `git status -sb` before committing."
  },
  "tests": [
+  {
+   "id": "sauerkraut-fasting",
+   "opened": "2026-08-20",
+   "readout": "2026-08-28",
+   "why": "First run of the day table. Sauerkraut against a fasting reading of 8.5 or more, at lag 1: 83% on sauerkraut days against 8% on other days, 10x, n=6. Same day: 67% against 13%, 5.3x. Sauerkraut went on trial for her gut and it lines up harder with her morning blood sugar.",
+   "success": "The washout already running from Aug 21 now reads out on two things. Watch the FASTING number, not only the episode count.",
+   "status": "running, rides on the existing sauerkraut washout. n=6 is thin. Not proof."
+  },
   {
    "id": "magnesium-run-gut",
    "opened": "2026-08-20",
@@ -282,7 +290,7 @@
    "vitc_am",
    "vitc_pm"
   ],
-  "SUPPS_tickNote": "'kraut' removed Aug 20 for the washout. Restore on Aug 28 with { id:'kraut', name:'Sauerkraut', dose:'One tablespoon' } after the vitc_pm line.",
+  "SUPPS_tickNote": "kraut removed Aug 20 for the washout. Restore on Aug 28 with { id:\"kraut\", name:\"Sauerkraut\", dose:\"One tablespoon\" } after the vitc_pm line. Note the fasting signal before you do.",
   "FOOD_addedByScans": {
    "green": [
     "Stevia (pure leaf)",
@@ -347,7 +355,8 @@
   "FIXED Aug 20 (3rd scan): sauerkraut tick tile removed from SUPPS. Announcing the pause was not enough, she ticked it at 9:34 AM on the 20th.",
   "FIXED Aug 20 (3rd scan): Tylenol and gummy tile labels changed from 'Tap one box per pill you took' to 'Tap the box that matches your TOTAL pills so far today'. The old wording is why evening taps DROPPED the count.",
   "FIXED Aug 20 (3rd scan): glucose tile now says 'Morning fasting, and 2 hours after supper' and the help text spells out the fixed gap.",
-  "FIXED Aug 20 (evening): magnesium tile offered 400mg and 600mg boxes, doses her own gut closed on Aug 14, and never checked whether she took it last night. Cut to a single 200mg box with a skip-night reminder."
+  "FIXED Aug 20 (evening): magnesium tile offered 400mg and 600mg boxes, doses her own gut closed on Aug 14, and never checked whether she took it last night. Cut to a single 200mg box with a skip-night reminder.",
+  "SHIPPED Aug 20 (evening): gut ache tile added to INPUTS as a 0-10 scale with zeroOk. It is not in REPEATABLE_IDS, so it is a once-a-day metric and shows in all three sessions. Gut ache had only 4 recorded days in 39 because it existed only inside her typed notes."
  ],
  "traps": [
   "TIME: timeLocal is her wall clock. The ISO timestamp is 2 hours ahead of America/Vancouver because her device sits at UTC-5. stamp() builds both from the device. Her own typed times (Jul 22 'about 10:00 pm' on a 10:41 PM row, Jul 24 '8;00 pm' on an 8:01 PM row, Jul 26 '12:00' on a 12:24 PM row, Jul 27 '9:00 pm' on a 9:13 PM row) prove timeLocal is the real one. Use timeLocal for everything. Never convert the ISO field.",
@@ -364,10 +373,12 @@
   "python is not on PATH in git-bash on this machine. node is. Use node for the analysis.",
   "The local clone can sit behind origin/main while its working index.html already matches live, because a prior session curl'd the live file. Run git status -sb before you commit.",
   "MAGNESIUM: her dose is 200mg every SECOND night. Check the RUN, not the night. Four nights in a row is a different exposure from one night. Cross every supplement against gut days at lag 0, lag 1 and lag 2, and as a run length.",
-  "NEVER let the app stop her recording what actually happened. The Tylenol boxes did it, the sauerkraut tile did it, and the magnesium skip night nearly did it. An interface that argues with the patient produces a record that lies. Tell her the rule, then let her log the truth."
+  "NEVER let the app stop her recording what actually happened. The Tylenol boxes did it, the sauerkraut tile did it, and the magnesium skip night nearly did it. An interface that argues with the patient produces a record that lies. Tell her the rule, then let her log the truth.",
+  "A BLANK IS NOT A ZERO. A day she did not tick her supplements is unknown, not empty. Comparing against those days makes every daily supplement look like a cause, because the comparison group is really days she did not open the app. The day table enforces this per variable. Never do this analysis by eye."
  ],
  "todo": [
-  "BUILD: gut ache tile approved by Christopher Aug 20. Then fh-daily.json, fh-events.json, fh-signals.md per claude/PLAN-ROOTCAUSE.md.",
+  "Aug 28: sauerkraut readout now covers BOTH the gut and the fasting number.",
+  "NEXT BUILD: put the signals report into the coach view so Christopher can open it without me.",
   "Salt is not a tracked variable and she just told Christopher she stopped it. Log it before testing it. Do not test it against the magnesium at the same time.",
   "Aug 23 readout on magnesium-run-gut.",
   "Readout Aug 27 on underfeeding-fasting and meal-timing-window. Aug 28 on sauerkraut-gut.",
@@ -389,5 +400,21 @@
    "The second Tylenol before bed rather than after the pain wakes her. Two a day is her record, and it is not much for pain she calls debilitating."
   ],
   "shippedToHer": "Focus card on the Home screen, corrected Aug 20 2026"
+ },
+ "dataLayer": {
+  "build": "node claude/tools/build-day-table.js   (add --cache to reuse the last pull)",
+  "outputs": [
+   "claude/fh-daily.json",
+   "claude/fh-events.json",
+   "claude/fh-signals.md"
+  ],
+  "readFirst": "claude/fh-signals.md. It is arithmetic, not conclusion. Read it BEFORE FINDINGS.md and before touching raw rows.",
+  "rules": [
+   "A blank is not a zero. Days she did not record the cause or the outcome are dropped, per variable.",
+   "Every exposure tested at lag 0, 1 and 2, and as a run length.",
+   "Nothing reported under 5 exposed days and 5 clean days.",
+   "All outputs live in claude/, which is gitignored. The repo is public and these are her medical record."
+  ],
+  "tokenNote": "The scan reads a 3 KB signals file instead of 180 KB of raw rows. The arithmetic is in the script, where it cannot be misremembered."
  }
 }
