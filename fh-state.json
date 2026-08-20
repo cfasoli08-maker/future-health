@@ -377,6 +377,7 @@
   "A BLANK IS NOT A ZERO. A day she did not tick her supplements is unknown, not empty. Comparing against those days makes every daily supplement look like a cause, because the comparison group is really days she did not open the app. The day table enforces this per variable. Never do this analysis by eye."
  ],
  "todo": [
+  "FOR CHRISTOPHER, one click only he can make: the Updates tab still carries the Aug 20 tile titled \"It Is The Clock, Not The Food\". That story is retracted. The backend has no delete_update action and the Apps Script IDE rejects programmatic edits, so the row has to be deleted by hand in the Sheet. The correcting tile sits above it in the meantime.",
   "Aug 28: sauerkraut readout now covers BOTH the gut and the fasting number.",
   "NEXT BUILD: put the signals report into the coach view so Christopher can open it without me.",
   "Salt is not a tracked variable and she just told Christopher she stopped it. Log it before testing it. Do not test it against the magnesium at the same time.",
@@ -415,6 +416,24 @@
    "Nothing reported under 5 exposed days and 5 clean days.",
    "All outputs live in claude/, which is gitignored. The repo is public and these are her medical record."
   ],
-  "tokenNote": "The scan reads a 3 KB signals file instead of 180 KB of raw rows. The arithmetic is in the script, where it cannot be misremembered."
+  "tokenNote": "The scan reads a 3 KB signals file instead of 180 KB of raw rows. The arithmetic is in the script, where it cannot be misremembered.",
+  "timezone": "Self-calibrating. calibrate() reads the offset back out of her own rows by comparing each ISO instant to the wall clock her device wrote. Current reading: UTC-5, 962 votes to 1. Never hardcode it again.",
+  "confoundGuard": "If an exposure's days sit in one contiguous recent block, the row is marked TIME CONFOUND. Sauerkraut vs fasting scored 10x and is confounded: sauerkraut started Aug 11 and the fasting drift started Aug 11. Treat marked rows as questions."
+ },
+ "uxTest": {
+  "date": "2026-08-20",
+  "how": "Clicked through the live page with sheetCall stubbed so no write could reach her sheet. Row counts checked before and after: logs 531, food 81, supps 354, whooshes 24, unchanged. Zero test rows in her data.",
+  "passed": [
+   "Gut ache tile opens in all three sessions, 0 to 10 buttons, saves field gutache with the right session, tile then reads Logged 6.",
+   "Five rapid Tylenol taps wrote ONE row at the settled value. The debounce holds.",
+   "Tylenol tile reads \"2 pills today, 1300mg\", so the running total is unambiguous.",
+   "Magnesium shows a single 200mg box. 400 and 600 are gone.",
+   "No sauerkraut tick tile.",
+   "Meal button writes one row. The eat-time field (meal-when) appends \"· ate 6:30 tonight\", which is the format the day table parses.",
+   "Wins hero reads 30 and the array holds 30. The blood pressure win is at the top.",
+   "Updates page shows 5 questions and 3 update tiles. Tiles expand and collapse.",
+   "Coach chat renders.",
+   "No console errors. No horizontal overflow at 375px."
+  ]
  }
 }
