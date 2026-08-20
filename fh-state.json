@@ -22,7 +22,7 @@
   "note": "logs is 531 after deleting the corrupt Aug 14 noon glucose row. Pull to a FILE with curl -o, diff in python against rowCounts, print only the delta."
  },
  "deploy": {
-  "liveMd5": "4e9bad26575a469b2cdff4114a2197fe",
+  "liveMd5": "bec0a6f2c7ea464d5239755b9ce23468",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -269,7 +269,9 @@
   "Pain counters wrote junk '0mg (0 pills)' rows before Aug 18. Ignore zero-dose rows; the counter is a running daily total, so use the final state per session.",
   "FIXED Aug 20: deleted corrupt row, Aug 14 1:26pm noon glucose logged as 71, should have read 7.1.",
   "FIXED Aug 20: counter buttons (Tylenol, magnesium, gummy) wrote a Sheet row on EVERY increment tap. Aug 18 10:26pm shows three identical 650/1300 cycles in 25 seconds. Now debounced 2500ms via suppLogDebounced(), one row per settled count. Rows before Aug 20 still need last-value-per-session de-duplication.",
-  "FIXED Aug 20: deleted a blank 'Weekly Update' row from the Updates tab (empty timestamp and body) that rendered as a dead tile."
+  "FIXED Aug 20: deleted a blank 'Weekly Update' row from the Updates tab (empty timestamp and body) that rendered as a dead tile.",
+  "FIXED Aug 20: Wins hero said '20 milestones' hardcoded while the array held 29. Now reads wins.length at render.",
+  "FIXED Aug 20: the first nav tap after load could land before showPage() parsed (main script is 90KB at the bottom) and silently do nothing. A head-level stub now queues the tap and DOMContentLoaded replays it."
  ],
  "traps": [
   "api.github.com repo endpoints are BLOCKED from the cloud sandbox. The stored token is ALIVE (200 on /user) - the old note saying it is dead with 401 is WRONG. The 403 is the sandbox, not the token.",

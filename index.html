@@ -337,6 +337,13 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
 </style>
 </head>
 <body>
+<script>
+/* The main script sits at the bottom of a 140KB file. On a slow phone the first
+   nav tap can land before showPage exists, and the tap does nothing. Hold it
+   here and replay it once the app is ready. */
+var __pendingNav = null;
+function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
+</script>
 <div id="app">
 
   <div class="topbar">
@@ -503,7 +510,7 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
   <div class="page" id="page-wins">
     <div class="wins-hero">
       <div style="font-size:0.78rem;letter-spacing:0.25em;text-transform:uppercase;opacity:0.75;margin-bottom:0.4rem;">Valerie's results — Future Health protocol</div>
-      <div class="wins-big">20</div>
+      <div class="wins-big" id="wins-count">20</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;font-style:italic;opacity:0.95;margin-top:0.2rem;text-align:center;">milestones since March 7, 2026</div>
       <div style="font-size:0.82rem;letter-spacing:0.2em;text-transform:uppercase;opacity:0.8;margin-top:0.3rem;text-align:center;" id="wins-days-line">— days on protocol · 3 chronic medications eliminated</div>
     </div>
@@ -1762,6 +1769,8 @@ const wins = [
 ];
 
 function initWins() {
+  const wc = document.getElementById('wins-count');
+  if (wc) wc.textContent = wins.length;
   document.getElementById('wins-list').innerHTML = wins.map(w=>`
     <div class="win-card">
       <div class="win-emoji">${w.icon}</div>
@@ -2164,11 +2173,14 @@ document.addEventListener('DOMContentLoaded', function() {
   safeRun('foodlists', renderFoodLists);
   safeRun('foodtoday', renderFoodToday);
   safeRun('wins', initWins);
-  if (coachMode) { safeRun('coachmode', initCoachMode); safeRun('coachupdates', loadCoachUpdates); return; }
+  if (coachMode) { safeRun('coachmode', initCoachMode); safeRun('coachupdates', loadCoachUpdates);
+    if (__pendingNav) { const p = __pendingNav; __pendingNav = null; safeRun('pendingnav', function(){ showPage(p.id, p.btn); }); }
+    return; }
   safeRun('coachchat', initCoach);
   safeRun('hydrate', hydrateFromSheet);
   safeRun('reviewlists', loadReviewLists);
   safeRun('questions', loadQuestionsClient);
+  if (__pendingNav) { const p = __pendingNav; __pendingNav = null; safeRun('pendingnav', function(){ showPage(p.id, p.btn); }); }
 });
 </script>
 </body>
