@@ -22,7 +22,7 @@
   "note": "logs is 531 after deleting the corrupt Aug 14 noon glucose row. Pull to a FILE with curl -o, diff in python against rowCounts, print only the delta."
  },
  "deploy": {
-  "liveMd5": "PENDING-AUG20",
+  "liveMd5": "53e63fbf335f2569029a07e17b51a331",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
