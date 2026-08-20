@@ -22,7 +22,7 @@
   "note": "logs is 531 after deleting the corrupt Aug 14 noon glucose row. Pull to a FILE with curl -o, diff in python against rowCounts, print only the delta."
  },
  "deploy": {
-  "liveMd5": "53e63fbf335f2569029a07e17b51a331",
+  "liveMd5": "4e9bad26575a469b2cdff4114a2197fe",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -268,7 +268,8 @@
   "FIXED Aug 18: whoosh sheet now has a tap-a-number count. Notes written from Aug 18 lead with 'N episodes today'. Rows BEFORE Aug 18 still carry the count in prose and must be read from the note text.",
   "Pain counters wrote junk '0mg (0 pills)' rows before Aug 18. Ignore zero-dose rows; the counter is a running daily total, so use the final state per session.",
   "FIXED Aug 20: deleted corrupt row, Aug 14 1:26pm noon glucose logged as 71, should have read 7.1.",
-  "FIXED Aug 20: counter buttons (Tylenol, magnesium, gummy) wrote a Sheet row on EVERY increment tap. Aug 18 10:26pm shows three identical 650/1300 cycles in 25 seconds. Now debounced 2500ms via suppLogDebounced(), one row per settled count. Rows before Aug 20 still need last-value-per-session de-duplication."
+  "FIXED Aug 20: counter buttons (Tylenol, magnesium, gummy) wrote a Sheet row on EVERY increment tap. Aug 18 10:26pm shows three identical 650/1300 cycles in 25 seconds. Now debounced 2500ms via suppLogDebounced(), one row per settled count. Rows before Aug 20 still need last-value-per-session de-duplication.",
+  "FIXED Aug 20: deleted a blank 'Weekly Update' row from the Updates tab (empty timestamp and body) that rendered as a dead tile."
  ],
  "traps": [
   "api.github.com repo endpoints are BLOCKED from the cloud sandbox. The stored token is ALIVE (200 on /user) - the old note saying it is dead with 401 is WRONG. The 403 is the sandbox, not the token.",
