@@ -4,25 +4,25 @@
  "meta": {
   "client": "valerie",
   "schema": 3,
-  "lastScan": "2026-08-18",
-  "scanCount": 6
+  "lastScan": "2026-08-20",
+  "scanCount": 7
  },
  "watermark": {
-  "lastLogTimestamp": "2026-08-18T05:24:00.000Z",
-  "lastLogLocal": "Mon Aug 17, 10:24 PM night",
+  "lastLogTimestamp": "2026-08-20T14:33:35.778Z",
+  "lastLogLocal": "Thu Aug 20, 9:33 AM morning",
   "rowCounts": {
-   "logs": 491,
-   "whooshes": 23,
-   "foodSearches": 27,
-   "coachMessages": 60,
-   "questions": 4,
-   "updates": 13,
-   "supplementLog": 312
+   "logs": 531,
+   "whooshes": 24,
+   "foodSearches": 28,
+   "coachMessages": 64,
+   "questions": 6,
+   "updates": 15,
+   "supplementLog": 354
   },
-  "note": "Pull to a FILE with curl -o, diff in python against rowCounts, print only the delta."
+  "note": "logs is 531 after deleting the corrupt Aug 14 noon glucose row. Pull to a FILE with curl -o, diff in python against rowCounts, print only the delta."
  },
  "deploy": {
-  "liveMd5": "e5eb7bb7ca8b239c87ea36e15f0ac263",
+  "liveMd5": "PENDING-AUG20",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -44,9 +44,34 @@
   {
    "id": "pain-sleep-glucose-chain",
    "opened": "2026-08-18",
-   "readout": "next scan",
+   "readout": "2026-08-20",
    "why": "Left knee + back pain, regular Tylenol 1300-2600mg/day, sleep quality 2-4 with 2-3 wakeups nightly, fasting glucose up 1.0 mmol/L. Her own Aug 6 data: 2+ wakeups = 7.74 fasting vs 0 wakeups = 7.20.",
    "success": "If pain is managed and sleep consolidates, fasting should fall back toward 7.5 without any diet change.",
+   "status": "DEMOTED",
+   "result": "Aug 19 was her best night in 2 weeks (8.5h, quality 5, ONE wakeup). Aug 20 morning came in 9.6, the highest morning ever recorded. Sleep consolidated and the number went UP. Sleep is a contributor, not the driver."
+  },
+  {
+   "id": "meal-timing-window",
+   "opened": "2026-08-20",
+   "readout": "2026-08-27",
+   "why": "Night glucose Aug 17/18/19 = 9.8 / 11.7 / 10.4, the three worst nights on record, consecutive. Morning tracks the night before. Aug 18 she barely ate and still hit 11.7, so volume is ruled out. Her logged eating times: Aug 12 10:44pm, Aug 13 11:55pm, Aug 18 10:29pm, Aug 19 9:37pm. Aug 1 supper 6:30pm WITH sourdough and rhubarb crisp = 6.6 bedtime.",
+   "success": "Kitchen closes 6:30pm. If night readings fall under 8 within 7 days, timing is confirmed as the dominant lever.",
+   "status": "running"
+  },
+  {
+   "id": "sauerkraut-gut",
+   "opened": "2026-08-20",
+   "readout": "2026-08-27",
+   "why": "Whoosh on 5 of 9 sauerkraut days (Aug 11,12,14,17,18) vs 2 of the 8 days before it (Aug 3, Aug 9). Aug 18 was an isolated natural experiment: empty gut, only sauerkraut and coffee, big whoosh no warning. She pointed at it herself.",
+   "success": "7-day pause. If episodes drop to 0-1, reintroduce and confirm. One variable only.",
+   "status": "running, sauerkraut PAUSED Aug 20"
+  },
+  {
+   "id": "acetaminophen-load",
+   "opened": "2026-08-20",
+   "readout": "2026-08-27",
+   "why": "De-duplicated dose by last committed value per session: Aug 9-16 ran 1300-1950mg/day, Aug 17/18/19 all ran 2600mg/day. Fasting rose over the same three days. Sustained 2600mg acetaminophen drains glutathione, which sits upstream of hepatic insulin sensitivity. Resting pulse also hit 82 on Aug 19, highest in record.",
+   "success": "If gait work drops the pain and the Tylenol falls back to 1300mg/day, fasting should follow without a diet change.",
    "status": "running"
   }
  ],
@@ -99,7 +124,8 @@
    7.84,
    7.88,
    7.52,
-   8.52
+   8.52,
+   8.84
   ],
   "sleepQuality": [
    6.2,
@@ -111,10 +137,12 @@
    "bpLow": "115/60 Aug 7",
    "glucoseLow": 4.9,
    "glucoseHigh": 12.3,
-   "fastingHigh": "9.0 Aug 12",
-   "weightLow": 140.4,
+   "fastingHigh": "9.6 Aug 20",
+   "weightLow": 139.0,
    "kneeSince": "3-4 since Aug 7",
-   "lowestDiastolic": "55 on Aug 16 night"
+   "lowestDiastolic": "55 on Aug 16 night",
+   "nightHigh": "11.7 Aug 18 (2nd only to 12.3)",
+   "pulseHigh": "82 Aug 19"
   },
   "flareDays": {
    "Jul20": 2,
@@ -133,10 +161,28 @@
    "Aug14": 3,
    "Aug15": 0,
    "Aug16": 0,
-   "Aug17": 3
+   "Aug17": 3,
+   "Aug18": 1,
+   "Aug19": 0,
+   "Aug20": 0
   },
   "flareCountRule": "Count episodes from the NOTE TEXT, not the row count. She logs multi-episode days in one row.",
-  "fastingNote": "Aug 18: stepped up, not drifting. Last5 8.52 vs prior5 7.52. Aug 17 night 9.8, second highest ever."
+  "fastingNote": "Aug 18: stepped up, not drifting. Last5 8.52 vs prior5 7.52. Aug 17 night 9.8, second highest ever.",
+  "nightGlucoseNote": "Aug 17/18/19 nights = 9.8 / 11.7 / 10.4. Three worst consecutive nights on record. This is now the lead indicator, watch it before the morning number.",
+  "tylenolMgPerDay": {
+   "Aug9": 1300,
+   "Aug10": 1950,
+   "Aug11": 1300,
+   "Aug12": 1950,
+   "Aug13": 1950,
+   "Aug14": 1950,
+   "Aug15": 1300,
+   "Aug16": 1300,
+   "Aug17": 2600,
+   "Aug18": 2600,
+   "Aug19": 2600,
+   "rule": "Count the LAST committed value per session and ignore repeat taps within the same minute. Raw row sums over-count by 2-3x."
+  }
  },
  "tiers": {
   "SUPP_GREEN": [
@@ -146,10 +192,10 @@
    "Vitamin D3",
    "Vitamin K2 MK-7",
    "Vitamin C",
-   "Sauerkraut",
    "Whey Protein Isolate (Diesel)"
   ],
   "SUPP_YELLOW": [
+   "Sauerkraut (PAUSED Aug 20, 7-day washout)",
    "Magnesium above 200mg (under test)",
    "Melatonin",
    "Indica gummy 2.5mg",
@@ -180,7 +226,6 @@
   "FOOD_addedByScans": {
    "green": [
     "Stevia (pure leaf)",
-    "Sauerkraut",
     "Old Dutch bacon puffs"
    ],
    "red": [
@@ -192,7 +237,8 @@
    ],
    "yellow": [
     "Beets small portions",
-    "Beet chips"
+    "Beet chips",
+    "Sauerkraut (paused Aug 20)"
    ]
   }
  },
@@ -202,13 +248,27 @@
    "q": "Left knee and back giving grief, had to lie down an hour, Tylenol regularly",
    "answeredIn": "Aug 18 update tile",
    "byChristopher": false
+  },
+  {
+   "date": "2026-08-20",
+   "q": "Can you do the five knee and hip exercises, and if not which one stops you?",
+   "answeredIn": "pending",
+   "byChristopher": false
+  },
+  {
+   "date": "2026-08-20",
+   "q": "What time did you actually finish eating last night?",
+   "answeredIn": "pending",
+   "byChristopher": false
   }
  ],
  "hygiene": [
   "FIXED Aug 18: pulse Jul 20 corrected from 7.3 to 73.",
   "FIXED Aug 18: whoosh note Jul 21 1:58 PM corrected from the 1899 epoch string to 'happened around 9:15 pm'.",
   "FIXED Aug 18: whoosh sheet now has a tap-a-number count. Notes written from Aug 18 lead with 'N episodes today'. Rows BEFORE Aug 18 still carry the count in prose and must be read from the note text.",
-  "Pain counters wrote junk '0mg (0 pills)' rows before Aug 18. Ignore zero-dose rows; the counter is a running daily total, so use the final state per session."
+  "Pain counters wrote junk '0mg (0 pills)' rows before Aug 18. Ignore zero-dose rows; the counter is a running daily total, so use the final state per session.",
+  "FIXED Aug 20: deleted corrupt row, Aug 14 1:26pm noon glucose logged as 71, should have read 7.1.",
+  "FIXED Aug 20: counter buttons (Tylenol, magnesium, gummy) wrote a Sheet row on EVERY increment tap. Aug 18 10:26pm shows three identical 650/1300 cycles in 25 seconds. Now debounced 2500ms via suppLogDebounced(), one row per settled count. Rows before Aug 20 still need last-value-per-session de-duplication."
  ],
  "traps": [
   "api.github.com repo endpoints are BLOCKED from the cloud sandbox. The stored token is ALIVE (200 on /user) - the old note saying it is dead with 401 is WRONG. The 403 is the sandbox, not the token.",
@@ -217,9 +277,13 @@
   "GitHub commit summary over 50 chars shifts the Commit button. Keep it short.",
   "Valerie logs late in the day. 2:27 PM lands in the Noon session. Never assume Morning.",
   "There is no invisible-AI rule. Valerie knows. Retired Aug 14 2026.",
-  "Never hand Christopher a task. Check for a tool first. Questions for Valerie go to her via save_question."
+  "Never hand Christopher a task. Check for a tool first. Questions for Valerie go to her via save_question.",
+  "Do NOT re-assert sleep as the primary glucose driver. Demoted Aug 20: her best night of the fortnight produced her highest morning ever."
  ],
- "todo": [],
+ "todo": [
+  "Readout Aug 27 on meal-timing-window, sauerkraut-gut and acetaminophen-load.",
+  "Food matrix (Italy vs Kelowna) still queued. Do not start it while three tests are running."
+ ],
  "_purpose": "This app tracks Valerie's health and finds root causes. That is the entire scope. No business, no clients, no brand, no landing page, no other hosting.",
  "goal": {
   "target": "fasting glucose under 7.0 mmol/L",
