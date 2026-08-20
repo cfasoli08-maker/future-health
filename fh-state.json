@@ -24,8 +24,8 @@
   "note": "Real counts, written back by the third Aug 20 scan. questions and updates include the 2 questions and 1 update that scan wrote."
  },
  "deploy": {
-  "liveMd5": "30fce527caa2817514375b48b5ea5432",
-  "prevMd5": "10d69acafd7430df2a65b996bd65c9dc",
+  "liveMd5": "307ecf54f676c63d22ea3ae9950264bc",
+  "prevMd5": "30fce527caa2817514375b48b5ea5432",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -37,6 +37,16 @@
   "gitNote": "Aug 20: the local clone was 15 commits BEHIND origin/main while its working index.html already matched live, because a prior session curl'd the live file instead of pulling. Fixed with git reset --mixed origin/main. Check `git status -sb` before committing."
  },
  "tests": [
+  {
+   "id": "magnesium-run-gut",
+   "opened": "2026-08-20",
+   "readout": "2026-08-23",
+   "why": "Her settled dose is 200mg every SECOND night, closed Aug 14. Her log shows 200mg on Aug 16, 17, 18 and 19, four consecutive nights, double the agreed load. Her sore gut starts the morning of the 18th with a big whoosh and no food on board. She is on day three of it. Her gut already proved it responds to magnesium LOAD: 400mg Aug 10 gave a sore gut Aug 11, 400mg Aug 12 gave a sore gut Aug 13.",
+   "rootCause": "The app, not her. The tile said \"Tap how many 200mg pills you took\", offered 200/400/600 boxes including two doses her own evidence closed on Aug 14, and never looked at whether she took it last night.",
+   "fix": "MAG.max cut 3 to 1. magTookLastNight() added. On a skip night the tile says so and there is nothing to tap.",
+   "success": "If the ache settles within three days on the correct every-second-night schedule, magnesium load is confirmed as a driver of her gut, not only of her blood pressure.",
+   "status": "running, act-now tier. This was an agreed rule broken by the interface, not a new experiment. Magnesium does NOT stop, it holds her blood pressure in the 120s off all medication."
+  },
   {
    "id": "underfeeding-fasting",
    "opened": "2026-08-20",
@@ -142,31 +152,94 @@
    "hardWeekMorningMean": "124/69 across Aug 17,18,19,20, the four worst pain days. Unmoved.",
    "note": "night runs higher than morning"
   },
-  "morningFastingSeries": [6.5, 7.4, 6.6, 8.1, 7.1, 7.7, 8.2, 7.8, 7.8, 7.2, 7.6, 7.8, 8.1, 7.7, 7.9, 7.4, 8.1, 7.0, 7.2, 8.6, 7.6, 9.0, 8.7, 8.7, 7.8, 8.5, 9.6],
+  "morningFastingSeries": [
+   6.5,
+   7.4,
+   6.6,
+   8.1,
+   7.1,
+   7.7,
+   8.2,
+   7.8,
+   7.8,
+   7.2,
+   7.6,
+   7.8,
+   8.1,
+   7.7,
+   7.9,
+   7.4,
+   8.1,
+   7,
+   7.2,
+   8.6,
+   7.6,
+   9,
+   8.7,
+   8.7,
+   7.8,
+   8.5,
+   9.6
+  ],
   "morningFastingLast5Mean": 8.66,
   "morningFastingPrev5Mean": 7.88,
-  "sleepQuality": [6.2, 5.0, 4.57, 3.33],
+  "sleepQuality": [
+   6.2,
+   5,
+   4.57,
+   3.33
+  ],
   "records": {
    "bpLow": "115/60 Aug 7",
    "glucoseLow": 4.9,
    "glucoseHigh": "12.3 Aug 3, taken 9:34pm one minute before she logged corn on the cob and sourdough. Post-meal, not fasting.",
    "fastingHigh": "9.6 Aug 20",
-   "weightLow": 139.0,
+   "weightLow": 139,
    "kneeSince": "3-4 since Aug 7",
    "lowestDiastolic": "55 on Aug 16 night",
    "pulseHigh": "82 Aug 19"
   },
   "flareDays": {
-   "Jul20": 2, "Jul21": 1, "Jul22": 1, "Jul23": 2, "Jul24": 2, "Jul26": 1, "Jul27": 1, "Jul30": 3,
-   "Aug3": 4, "Aug9": 3, "Aug11": 3, "Aug12": 3, "Aug13": 0, "Aug14": 3, "Aug15": 0, "Aug16": 0,
-   "Aug17": 3, "Aug18": 1, "Aug19": 0, "Aug20": 0
+   "Jul20": 2,
+   "Jul21": 1,
+   "Jul22": 1,
+   "Jul23": 2,
+   "Jul24": 2,
+   "Jul26": 1,
+   "Jul27": 1,
+   "Jul30": 3,
+   "Aug3": 4,
+   "Aug9": 3,
+   "Aug11": 3,
+   "Aug12": 3,
+   "Aug13": 0,
+   "Aug14": 3,
+   "Aug15": 0,
+   "Aug16": 0,
+   "Aug17": 3,
+   "Aug18": 1,
+   "Aug19": 0,
+   "Aug20": 0
   },
   "flareCountRule": "Count episodes from the NOTE TEXT for rows before Aug 18. From Aug 18 the note leads with 'N episodes today'.",
   "nightGlucoseNote": "DO NOT rank night readings against each other before Aug 21. They were taken 0 to 6 hours after eating with no fixed gap. From Aug 21 the instruction is 2 hours after her last bite.",
   "tylenolMgPerDay": {
-   "Aug1": 650, "Aug2": 1300, "Aug3": 1300, "Aug4": 1300, "Aug6": 1300, "Aug7": 1300,
-   "Aug9": 1300, "Aug11": 1300, "Aug12": 1300, "Aug13": 1300, "Aug14": 1300, "Aug15": 1300,
-   "Aug16": 1300, "Aug17": 1300, "Aug18": 1300, "Aug19": 1300,
+   "Aug1": 650,
+   "Aug2": 1300,
+   "Aug3": 1300,
+   "Aug4": 1300,
+   "Aug6": 1300,
+   "Aug7": 1300,
+   "Aug9": 1300,
+   "Aug11": 1300,
+   "Aug12": 1300,
+   "Aug13": 1300,
+   "Aug14": 1300,
+   "Aug15": 1300,
+   "Aug16": 1300,
+   "Aug17": 1300,
+   "Aug18": 1300,
+   "Aug19": 1300,
    "rule": "RUNNING DAILY TOTAL. The day's dose is the LAST non-zero row of that local day. Never sum rows. Never sum sessions. Ignore '0mg (0 pills)' and 'cleared, none today'. Aug 11 last row reads 650 but max reads 1300 in an out-of-order pre-debounce write, so 1300 is used.",
    "ceiling": "Max ever recorded is 2 pills. The tile allows 4. She has never tapped box 3."
   }
@@ -273,7 +346,8 @@
   "FIXED Aug 20 (3rd scan): focus card claimed she ate at 9:37, 10:29 and 11:55pm and takes four Tylenol a day. Both false and both visible to her. Rewritten with the true numbers and an apology in her own words.",
   "FIXED Aug 20 (3rd scan): sauerkraut tick tile removed from SUPPS. Announcing the pause was not enough, she ticked it at 9:34 AM on the 20th.",
   "FIXED Aug 20 (3rd scan): Tylenol and gummy tile labels changed from 'Tap one box per pill you took' to 'Tap the box that matches your TOTAL pills so far today'. The old wording is why evening taps DROPPED the count.",
-  "FIXED Aug 20 (3rd scan): glucose tile now says 'Morning fasting, and 2 hours after supper' and the help text spells out the fixed gap."
+  "FIXED Aug 20 (3rd scan): glucose tile now says 'Morning fasting, and 2 hours after supper' and the help text spells out the fixed gap.",
+  "FIXED Aug 20 (evening): magnesium tile offered 400mg and 600mg boxes, doses her own gut closed on Aug 14, and never checked whether she took it last night. Cut to a single 200mg box with a skip-night reminder."
  ],
  "traps": [
   "TIME: timeLocal is her wall clock. The ISO timestamp is 2 hours ahead of America/Vancouver because her device sits at UTC-5. stamp() builds both from the device. Her own typed times (Jul 22 'about 10:00 pm' on a 10:41 PM row, Jul 24 '8;00 pm' on an 8:01 PM row, Jul 26 '12:00' on a 12:24 PM row, Jul 27 '9:00 pm' on a 9:13 PM row) prove timeLocal is the real one. Use timeLocal for everything. Never convert the ISO field.",
@@ -288,9 +362,13 @@
   "Do NOT re-assert sleep as the primary glucose driver. Demoted Aug 20.",
   "Do NOT re-open acetaminophen load. Closed Aug 20, negative, arithmetic error.",
   "python is not on PATH in git-bash on this machine. node is. Use node for the analysis.",
-  "The local clone can sit behind origin/main while its working index.html already matches live, because a prior session curl'd the live file. Run git status -sb before you commit."
+  "The local clone can sit behind origin/main while its working index.html already matches live, because a prior session curl'd the live file. Run git status -sb before you commit.",
+  "MAGNESIUM: her dose is 200mg every SECOND night. Check the RUN, not the night. Four nights in a row is a different exposure from one night. Cross every supplement against gut days at lag 0, lag 1 and lag 2, and as a run length."
  ],
  "todo": [
+  "BUILD: gut ache tile approved by Christopher Aug 20. Then fh-daily.json, fh-events.json, fh-signals.md per claude/PLAN-ROOTCAUSE.md.",
+  "Salt is not a tracked variable and she just told Christopher she stopped it. Log it before testing it. Do not test it against the magnesium at the same time.",
+  "Aug 23 readout on magnesium-run-gut.",
   "Readout Aug 27 on underfeeding-fasting and meal-timing-window. Aug 28 on sauerkraut-gut.",
   "Aug 28: restore the sauerkraut tick tile to SUPPS if the washout reads clean.",
   "Check on Aug 21 that at least one night glucose reading arrives with a 2-hour gap. If she is still testing right after eating, the meal-timing test cannot read out and needs a different ask.",

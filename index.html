@@ -1274,7 +1274,17 @@ const SUPPS = [
 //   { id:'kraut', name:'Sauerkraut', dose:'One tablespoon' }
 
 // Magnesium is a separate count tile: each tap logs one 200mg pill (1=200, 2=400, 3=600)
-const MAG = { id:'mag_pm', name:'Magnesium glycinate — bedtime', pill:200, max:3 };
+const MAG = { id:'mag_pm', name:'Magnesium glycinate — bedtime', pill:200, max:1 };
+// max was 3. Her gut closed 400mg and 600mg on 14 Aug, twice over, and the tile
+// kept offering them. 200mg is the dose. There is nothing above it to tap.
+// Her dose is 200mg every SECOND night. The tile never said so and never looked
+// at last night, so it ran four nights straight into the 18 Aug gut ache.
+function magTookLastNight(){
+  try {
+    const y = JSON.parse(localStorage.getItem('fh_' + localDayStr(new Date(Date.now() - 86400000)))) || {};
+    return (y.magCount || 0) > 0;
+  } catch(e) { return false; }
+}
 // Pain relief counters, same tap-the-boxes pattern. They log to the Supplement Log so
 // Christopher's dashboard and the weekly scan pick them up automatically.
 const TYL = { name:'Tylenol 650', pill:650, max:4, sub:'Tap the box that matches your TOTAL pills so far today' };
@@ -1334,7 +1344,9 @@ function renderSupps() {
         <div class="supp-tick-box">${magCount>0?'✓':''}</div>
         <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">${magCount>0
           ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${magCount*MAG.pill}mg ${day.magTime?'· '+day.magTime:''}</span> · tap a box to change it`
-          : 'Tap how many 200mg pills you took (none yet)'}</div></div>
+          : (magTookLastNight()
+              ? '<span style="color:var(--gold);font-weight:700;">You took it last night, so tonight is a skip night.</span> 200mg every second night. Nothing to tap.'
+              : 'Tap the box when you take your 200mg pill. Every second night, not every night.')}</div></div>
       </div>
       <div class="mag-row">${boxes}</div>
     </div>`;
