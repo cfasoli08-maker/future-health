@@ -1,28 +1,31 @@
 {
  "_legend": "READ THIS LINE ONLY FIRST. Sections: meta=what/when | watermark=last row seen per tab, pull only newer | deploy=live md5 + how to verify | tests=open hypotheses w/ readout dates | closed=settled questions, do not reopen | baselines=rolling trend numbers, compare do not recompute | tiers=exact tier list contents for building edit strings | asked=open client questions | hygiene=known bad data | traps=things that will waste your time | todo=pending work",
- "_howto": "curl the file, then extract ONE section with python json. Never print the whole file. Update it at the end of every scan and redeploy alongside index.html.",
+ "_howto": "curl the file, then extract ONE section. Never print the whole file. Update it at the end of every scan and redeploy alongside index.html. python is NOT on PATH in the git-bash shell on this machine, node is. Use node.",
  "meta": {
   "client": "valerie",
   "schema": 3,
   "lastScan": "2026-08-20",
-  "scanCount": 7
+  "scanCount": 8,
+  "scanNote": "Third scan of Aug 20. Mostly a retraction. Two of the three chains opened by the earlier scans that day were instrumentation errors, not biology. See FINDINGS.md."
  },
  "watermark": {
   "lastLogTimestamp": "2026-08-20T14:33:35.778Z",
-  "lastLogLocal": "Thu Aug 20, 9:33 AM morning",
+  "lastLogLocal": "Thu, Aug 20 at 9:33 AM · morning",
   "rowCounts": {
    "logs": 531,
+   "food": 81,
+   "supps": 354,
    "whooshes": 24,
    "foodSearches": 28,
    "coachMessages": 64,
-   "questions": 6,
-   "updates": 15,
-   "supplementLog": 354
+   "questions": 8,
+   "updates": 15
   },
-  "note": "logs is 531 after deleting the corrupt Aug 14 noon glucose row. Pull to a FILE with curl -o, diff in python against rowCounts, print only the delta."
+  "note": "Real counts, written back by the third Aug 20 scan. questions and updates include the 2 questions and 1 update that scan wrote."
  },
  "deploy": {
-  "liveMd5": "10d69acafd7430df2a65b996bd65c9dc",
+  "liveMd5": "30fce527caa2817514375b48b5ea5432",
+  "prevMd5": "10d69acafd7430df2a65b996bd65c9dc",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -30,52 +33,56 @@
   "verifyWith": "md5 of https://cfasoli08-maker.github.io/future-health/index.html?cb=RANDOM",
   "doNotTrust": "raw.githubusercontent lags several minutes behind. Never verify with it.",
   "commitRule": "Commit summary MUST be under 50 characters. Over 50 GitHub inserts a ProTip line that shifts the Commit button ~22px and the click misses.",
-  "pagesNote": "Rebuild is normally under 2 min. If stalled past 10, check /deployments/github-pages for a failed build and push a fresh commit to clear it."
+  "pagesNote": "Rebuild is normally under 2 min. If stalled past 10, check /deployments/github-pages for a failed build and push a fresh commit to clear it.",
+  "gitNote": "Aug 20: the local clone was 15 commits BEHIND origin/main while its working index.html already matched live, because a prior session curl'd the live file instead of pulling. Fixed with git reset --mixed origin/main. Check `git status -sb` before committing."
  },
  "tests": [
+  {
+   "id": "underfeeding-fasting",
+   "opened": "2026-08-20",
+   "readout": "2026-08-27",
+   "why": "Her four highest fasting mornings each follow a day she barely ate. Aug 11 'only water today except coffee' -> Aug 12 morning 9.0. Aug 14 'ate lightly, not hungry' -> Aug 15 8.7. Aug 18 'have not eaten yet, sore gut' -> Aug 19 8.5. Aug 19 cottage cheese and pork rinds -> Aug 20 9.6, the record. The mornings after a real early supper (Jul 31, Aug 2, Aug 10) all behaved. Under-eating plus pain plus inflammation drives cortisol and glucagon, and both tell the liver to make glucose. Weight fell 142.2 to 139.0 in three days and resting pulse hit a record 82 over the same window.",
+   "success": "A real supper eaten by 6:30 every day for seven days. If the fasting rolling-5 falls back under 8.0 without any change to what she eats, the driver is intake, not content or timing.",
+   "status": "running, PRIMARY"
+  },
+  {
+   "id": "meal-timing-window",
+   "opened": "2026-08-20",
+   "readout": "2026-08-27",
+   "why": "RE-SCOPED. The original evidence was wrong. It used food-row write times as eating times, and she had typed her real eating time into the app's eat-time field. Corrected table: ate 6:30pm tested 6.2h later = 6.6; ate 7:00pm tested 6.5h later = 7.8; ate 7:00pm tested 4.9h later = 7.1; ate 7:30pm tested 3.0h later = 11.7. All four suppers within one hour of each other. The spread is the test gap, not the supper clock.",
+   "success": "Seven nights of a reading taken two hours after her last bite. Only then is the night number comparable night to night.",
+   "status": "running, evidence withdrawn, measurement standardised this scan"
+  },
+  {
+   "id": "sauerkraut-gut",
+   "opened": "2026-08-20",
+   "readout": "2026-08-28",
+   "why": "Whoosh on 5 of 9 sauerkraut days (Aug 11,12,14,17,18) vs 2 of the 8 days before it (Aug 3, Aug 9). Aug 18 was an isolated natural experiment: empty gut, only sauerkraut and coffee, big whoosh no warning. She pointed at it herself.",
+   "success": "7-day pause. If episodes drop to 0-1, reintroduce and confirm. One variable only.",
+   "status": "running. Washout starts Aug 21, not Aug 20: she ticked sauerkraut at 9:34 AM on the 20th, before the pause was published at 10:50 AM. Readout moved back one day. Tick tile REMOVED from SUPPS so it cannot be ticked during the washout."
+  },
   {
    "id": "food-matrix",
    "opened": "2026-08-13",
    "readout": "open",
    "change": "none yet",
    "why": "12 days pizza/bread/beer in Italy = 0 episodes. One night pizza/beer here = 3 next day. Points at the North American ingredient list, not the food.",
-   "status": "queued, now the primary open thread"
-  },
-  {
-   "id": "pain-sleep-glucose-chain",
-   "opened": "2026-08-18",
-   "readout": "2026-08-20",
-   "why": "Left knee + back pain, regular Tylenol 1300-2600mg/day, sleep quality 2-4 with 2-3 wakeups nightly, fasting glucose up 1.0 mmol/L. Her own Aug 6 data: 2+ wakeups = 7.74 fasting vs 0 wakeups = 7.20.",
-   "success": "If pain is managed and sleep consolidates, fasting should fall back toward 7.5 without any diet change.",
-   "status": "DEMOTED",
-   "result": "Aug 19 was her best night in 2 weeks (8.5h, quality 5, ONE wakeup). Aug 20 morning came in 9.6, the highest morning ever recorded. Sleep consolidated and the number went UP. Sleep is a contributor, not the driver."
-  },
-  {
-   "id": "meal-timing-window",
-   "opened": "2026-08-20",
-   "readout": "2026-08-27",
-   "why": "Night glucose Aug 17/18/19 = 9.8 / 11.7 / 10.4, the three worst nights on record, consecutive. Morning tracks the night before. Aug 18 she barely ate and still hit 11.7, so volume is ruled out. Her logged eating times: Aug 12 10:44pm, Aug 13 11:55pm, Aug 18 10:29pm, Aug 19 9:37pm. Aug 1 supper 6:30pm WITH sourdough and rhubarb crisp = 6.6 bedtime.",
-   "success": "Kitchen closes 6:30pm. If night readings fall under 8 within 7 days, timing is confirmed as the dominant lever.",
-   "status": "running"
-  },
-  {
-   "id": "sauerkraut-gut",
-   "opened": "2026-08-20",
-   "readout": "2026-08-27",
-   "why": "Whoosh on 5 of 9 sauerkraut days (Aug 11,12,14,17,18) vs 2 of the 8 days before it (Aug 3, Aug 9). Aug 18 was an isolated natural experiment: empty gut, only sauerkraut and coffee, big whoosh no warning. She pointed at it herself.",
-   "success": "7-day pause. If episodes drop to 0-1, reintroduce and confirm. One variable only.",
-   "status": "running, sauerkraut PAUSED Aug 20"
-  },
-  {
-   "id": "acetaminophen-load",
-   "opened": "2026-08-20",
-   "readout": "2026-08-27",
-   "why": "De-duplicated dose by last committed value per session: Aug 9-16 ran 1300-1950mg/day, Aug 17/18/19 all ran 2600mg/day. Fasting rose over the same three days. Sustained 2600mg acetaminophen drains glutathione, which sits upstream of hepatic insulin sensitivity. Resting pulse also hit 82 on Aug 19, highest in record.",
-   "success": "If gait work drops the pain and the Tylenol falls back to 1300mg/day, fasting should follow without a diet change.",
-   "status": "running"
+   "status": "queued. Do not start while underfeeding, meal-timing and sauerkraut are all running."
   }
  ],
  "closed": [
+  {
+   "id": "acetaminophen-load",
+   "closed": "2026-08-20",
+   "verdict": "NEGATIVE. The dose step never happened. It was an arithmetic error.",
+   "evidence": "The counter is a RUNNING DAILY TOTAL, so the day's dose is the last non-zero row of that day. Every day from Aug 1 to Aug 19 reads 1300mg or less. There is no day above 2 pills anywhere in the record. The 1950 and 2600 figures came from adding the last value of the midday session to the last value of the evening session. The evening rows are the same running total being re-tapped, not a second dose. 1300mg/day in a 75-year-old is well under half the usual ceiling, so there is no glutathione argument at that dose. Do not reopen without a day that actually reads above 1300mg."
+  },
+  {
+   "id": "pain-sleep-glucose-chain",
+   "closed": "2026-08-20",
+   "verdict": "DEMOTED. Sleep is a contributor, not the driver.",
+   "evidence": "Aug 19 was her best night in 2 weeks (8.5h, quality 5, ONE wakeup). Aug 20 morning came in 9.6, the highest morning ever recorded. Sleep consolidated and the number went UP."
+  },
   {
    "id": "nsaids-primary-driver",
    "closed": "2026-08-13",
@@ -97,9 +104,24 @@
  ],
  "corrections": [
   {
+   "date": "2026-08-20",
+   "was": "Tylenol ran 1300-1950mg/day Aug 9-16 and stepped to 2600mg/day Aug 17-19",
+   "now": "WRONG. Never above 1300mg on any day. The counter is a running daily total and the sessions were being added together. The acetaminophen chain is closed negative and the live focus card, which was telling her 'your Tylenol is at four a day this week', has been corrected."
+  },
+  {
+   "date": "2026-08-20",
+   "was": "She ate at 9:37pm, 10:29pm and 11:55pm this week",
+   "now": "WRONG. Those are the times she pressed the save button. On Aug 18 she typed 'ate 7:30!tonight' into the app's eat-time field and the scan read past it. Her real suppers that week were 7:00 to 7:30pm."
+  },
+  {
+   "date": "2026-08-20",
+   "was": "9.8 / 11.7 / 10.4 are the three worst nights on record, against a 6.6 gold standard on Aug 1",
+   "now": "Not comparable. Those three were taken 0 to 3 hours after eating. The 6.6 was taken 6.2 hours after eating. The night reading has never been a fixed measurement. Standardised this scan to 2 hours after her last bite."
+  },
+  {
    "date": "2026-08-13",
    "was": "Aug 10 claim that the fasting glucose drift had stopped",
-   "now": "It had not. Aug 12 hit 9.0, the record high."
+   "now": "It had not. Aug 12 hit 9.0, and Aug 20 hit 9.6."
   },
   {
    "date": "2026-08-13",
@@ -117,71 +139,36 @@
    "trend": "131/73 -> 130/73 -> 126/68 -> 129/68. Mean holding, spread widening.",
    "morningMean": "128/70",
    "nightMean": "132/73",
+   "hardWeekMorningMean": "124/69 across Aug 17,18,19,20, the four worst pain days. Unmoved.",
    "note": "night runs higher than morning"
   },
-  "fastingGlucoseRolling5": [
-   7.64,
-   7.84,
-   7.88,
-   7.52,
-   8.52,
-   8.84
-  ],
-  "sleepQuality": [
-   6.2,
-   5.0,
-   4.57,
-   3.33
-  ],
+  "morningFastingSeries": [6.5, 7.4, 6.6, 8.1, 7.1, 7.7, 8.2, 7.8, 7.8, 7.2, 7.6, 7.8, 8.1, 7.7, 7.9, 7.4, 8.1, 7.0, 7.2, 8.6, 7.6, 9.0, 8.7, 8.7, 7.8, 8.5, 9.6],
+  "morningFastingLast5Mean": 8.66,
+  "morningFastingPrev5Mean": 7.88,
+  "sleepQuality": [6.2, 5.0, 4.57, 3.33],
   "records": {
    "bpLow": "115/60 Aug 7",
    "glucoseLow": 4.9,
-   "glucoseHigh": 12.3,
+   "glucoseHigh": "12.3 Aug 3, taken 9:34pm one minute before she logged corn on the cob and sourdough. Post-meal, not fasting.",
    "fastingHigh": "9.6 Aug 20",
    "weightLow": 139.0,
    "kneeSince": "3-4 since Aug 7",
    "lowestDiastolic": "55 on Aug 16 night",
-   "nightHigh": "11.7 Aug 18 (2nd only to 12.3)",
    "pulseHigh": "82 Aug 19"
   },
   "flareDays": {
-   "Jul20": 2,
-   "Jul21": 1,
-   "Jul22": 1,
-   "Jul23": 2,
-   "Jul24": 2,
-   "Jul26": 1,
-   "Jul27": 1,
-   "Jul30": 3,
-   "Aug3": 4,
-   "Aug9": 3,
-   "Aug11": 3,
-   "Aug12": 3,
-   "Aug13": 0,
-   "Aug14": 3,
-   "Aug15": 0,
-   "Aug16": 0,
-   "Aug17": 3,
-   "Aug18": 1,
-   "Aug19": 0,
-   "Aug20": 0
+   "Jul20": 2, "Jul21": 1, "Jul22": 1, "Jul23": 2, "Jul24": 2, "Jul26": 1, "Jul27": 1, "Jul30": 3,
+   "Aug3": 4, "Aug9": 3, "Aug11": 3, "Aug12": 3, "Aug13": 0, "Aug14": 3, "Aug15": 0, "Aug16": 0,
+   "Aug17": 3, "Aug18": 1, "Aug19": 0, "Aug20": 0
   },
-  "flareCountRule": "Count episodes from the NOTE TEXT, not the row count. She logs multi-episode days in one row.",
-  "fastingNote": "Aug 18: stepped up, not drifting. Last5 8.52 vs prior5 7.52. Aug 17 night 9.8, second highest ever.",
-  "nightGlucoseNote": "Aug 17/18/19 nights = 9.8 / 11.7 / 10.4. Three worst consecutive nights on record. This is now the lead indicator, watch it before the morning number.",
+  "flareCountRule": "Count episodes from the NOTE TEXT for rows before Aug 18. From Aug 18 the note leads with 'N episodes today'.",
+  "nightGlucoseNote": "DO NOT rank night readings against each other before Aug 21. They were taken 0 to 6 hours after eating with no fixed gap. From Aug 21 the instruction is 2 hours after her last bite.",
   "tylenolMgPerDay": {
-   "Aug9": 1300,
-   "Aug10": 1950,
-   "Aug11": 1300,
-   "Aug12": 1950,
-   "Aug13": 1950,
-   "Aug14": 1950,
-   "Aug15": 1300,
-   "Aug16": 1300,
-   "Aug17": 2600,
-   "Aug18": 2600,
-   "Aug19": 2600,
-   "rule": "Count the LAST committed value per session and ignore repeat taps within the same minute. Raw row sums over-count by 2-3x."
+   "Aug1": 650, "Aug2": 1300, "Aug3": 1300, "Aug4": 1300, "Aug6": 1300, "Aug7": 1300,
+   "Aug9": 1300, "Aug11": 1300, "Aug12": 1300, "Aug13": 1300, "Aug14": 1300, "Aug15": 1300,
+   "Aug16": 1300, "Aug17": 1300, "Aug18": 1300, "Aug19": 1300,
+   "rule": "RUNNING DAILY TOTAL. The day's dose is the LAST non-zero row of that local day. Never sum rows. Never sum sessions. Ignore '0mg (0 pills)' and 'cleared, none today'. Aug 11 last row reads 650 but max reads 1300 in an out-of-order pre-debounce write, so 1300 is used.",
+   "ceiling": "Max ever recorded is 2 pills. The tile allows 4. She has never tapped box 3."
   }
  },
  "tiers": {
@@ -195,8 +182,8 @@
    "Whey Protein Isolate (Diesel)"
   ],
   "SUPP_YELLOW": [
-   "Sauerkraut (PAUSED Aug 20, 7-day washout)",
-   "Magnesium above 200mg (under test)",
+   "Sauerkraut (PAUSED Aug 20, washout Aug 21-27, tick tile removed)",
+   "Magnesium above 200mg (closed, no)",
    "Melatonin",
    "Indica gummy 2.5mg",
    "Enterogermina",
@@ -220,9 +207,9 @@
    "d3",
    "k2",
    "vitc_am",
-   "vitc_pm",
-   "kraut"
+   "vitc_pm"
   ],
+  "SUPPS_tickNote": "'kraut' removed Aug 20 for the washout. Restore on Aug 28 with { id:'kraut', name:'Sauerkraut', dose:'One tablespoon' } after the vitc_pm line.",
   "FOOD_addedByScans": {
    "green": [
     "Stevia (pure leaf)",
@@ -238,17 +225,11 @@
    "yellow": [
     "Beets small portions",
     "Beet chips",
-    "Sauerkraut (paused Aug 20)"
+    "Sauerkraut (paused until Aug 27)"
    ]
   }
  },
  "asked": [
-  {
-   "date": "2026-08-17",
-   "q": "Left knee and back giving grief, had to lie down an hour, Tylenol regularly",
-   "answeredIn": "Aug 18 update tile",
-   "byChristopher": false
-  },
   {
    "date": "2026-08-20",
    "q": "Can you do the five knee and hip exercises, and if not which one stops you?",
@@ -258,46 +239,76 @@
   {
    "date": "2026-08-20",
    "q": "What time did you actually finish eating last night?",
+   "answeredIn": "pending, and partly answered by the data: she uses the app's eat-time field",
+   "byChristopher": false
+  },
+  {
+   "date": "2026-08-20",
+   "q": "Your app shows two Tylenol on most days. Is two right, or are you taking more and the boxes will not let you record it?",
    "answeredIn": "pending",
+   "byChristopher": false
+  },
+  {
+   "date": "2026-08-20",
+   "q": "On a day your stomach is sore, do you skip meals to settle it?",
+   "answeredIn": "pending",
+   "byChristopher": false
+  },
+  {
+   "date": "2026-08-17",
+   "q": "Left knee and back giving grief, had to lie down an hour, Tylenol regularly",
+   "answeredIn": "Aug 18 update tile",
    "byChristopher": false
   }
  ],
  "hygiene": [
   "FIXED Aug 18: pulse Jul 20 corrected from 7.3 to 73.",
   "FIXED Aug 18: whoosh note Jul 21 1:58 PM corrected from the 1899 epoch string to 'happened around 9:15 pm'.",
-  "FIXED Aug 18: whoosh sheet now has a tap-a-number count. Notes written from Aug 18 lead with 'N episodes today'. Rows BEFORE Aug 18 still carry the count in prose and must be read from the note text.",
-  "Pain counters wrote junk '0mg (0 pills)' rows before Aug 18. Ignore zero-dose rows; the counter is a running daily total, so use the final state per session.",
+  "FIXED Aug 18: whoosh sheet now has a tap-a-number count. Notes from Aug 18 lead with 'N episodes today'. Rows BEFORE Aug 18 carry the count in prose.",
   "FIXED Aug 20: deleted corrupt row, Aug 14 1:26pm noon glucose logged as 71, should have read 7.1.",
-  "FIXED Aug 20: counter buttons (Tylenol, magnesium, gummy) wrote a Sheet row on EVERY increment tap. Aug 18 10:26pm shows three identical 650/1300 cycles in 25 seconds. Now debounced 2500ms via suppLogDebounced(), one row per settled count. Rows before Aug 20 still need last-value-per-session de-duplication.",
-  "FIXED Aug 20: deleted a blank 'Weekly Update' row from the Updates tab (empty timestamp and body) that rendered as a dead tile.",
-  "FIXED Aug 20: Wins hero said '20 milestones' hardcoded while the array held 29. Now reads wins.length at render.",
-  "FIXED Aug 20: the first nav tap after load could land before showPage() parsed (main script is 90KB at the bottom) and silently do nothing. A head-level stub now queues the tap and DOMContentLoaded replays it.",
-  "FIXED Aug 20: sauerkraut moved out of SUPP_GREEN and FOOD_GREEN in index.html into yellow and marked PAUSED until Aug 27, so the app no longer tells her to tick it daily while the focus card tells her to stop."
+  "FIXED Aug 20: counter buttons debounced 2500ms via suppLogDebounced(). Rows before Aug 20 arrive out of order.",
+  "FIXED Aug 20: deleted a blank 'Weekly Update' row from the Updates tab.",
+  "FIXED Aug 20: Wins hero count now reads wins.length at render.",
+  "FIXED Aug 20: head-level showPage stub queues a nav tap that lands before the bottom script parses.",
+  "FIXED Aug 20 (3rd scan): focus card claimed she ate at 9:37, 10:29 and 11:55pm and takes four Tylenol a day. Both false and both visible to her. Rewritten with the true numbers and an apology in her own words.",
+  "FIXED Aug 20 (3rd scan): sauerkraut tick tile removed from SUPPS. Announcing the pause was not enough, she ticked it at 9:34 AM on the 20th.",
+  "FIXED Aug 20 (3rd scan): Tylenol and gummy tile labels changed from 'Tap one box per pill you took' to 'Tap the box that matches your TOTAL pills so far today'. The old wording is why evening taps DROPPED the count.",
+  "FIXED Aug 20 (3rd scan): glucose tile now says 'Morning fasting, and 2 hours after supper' and the help text spells out the fixed gap."
  ],
  "traps": [
-  "api.github.com repo endpoints are BLOCKED from the cloud sandbox. The stored token is ALIVE (200 on /user) - the old note saying it is dead with 401 is WRONG. The 403 is the sandbox, not the token.",
+  "TIME: timeLocal is her wall clock. The ISO timestamp is 2 hours ahead of America/Vancouver because her device sits at UTC-5. stamp() builds both from the device. Her own typed times (Jul 22 'about 10:00 pm' on a 10:41 PM row, Jul 24 '8;00 pm' on an 8:01 PM row, Jul 26 '12:00' on a 12:24 PM row, Jul 27 '9:00 pm' on a 9:13 PM row) prove timeLocal is the real one. Use timeLocal for everything. Never convert the ISO field.",
+  "FOOD: a food row's time is when she pressed save, NOT when she ate. The meal log has an eat-time field that lands in the row as '· ate 7:30'. When it is there it wins.",
+  "COUNTERS: Tylenol, magnesium and gummy tiles are running daily totals. Last non-zero row of the local day IS the day's dose. Never add sessions.",
   "Apps Script endpoint returns 302. POST, then GET the redirect_url manually. curl -L turns it into a 405.",
-  "The Apps Script IDE ignores programmatic Monaco edits. setValue and executeEdits both apply visually but Save writes the old content. Only real keyboard or clipboard input registers.",
+  "The Apps Script IDE ignores programmatic Monaco edits. Only real keyboard or clipboard input registers.",
   "GitHub commit summary over 50 chars shifts the Commit button. Keep it short.",
   "Valerie logs late in the day. 2:27 PM lands in the Noon session. Never assume Morning.",
   "There is no invisible-AI rule. Valerie knows. Retired Aug 14 2026.",
   "Never hand Christopher a task. Check for a tool first. Questions for Valerie go to her via save_question.",
-  "Do NOT re-assert sleep as the primary glucose driver. Demoted Aug 20: her best night of the fortnight produced her highest morning ever."
+  "Do NOT re-assert sleep as the primary glucose driver. Demoted Aug 20.",
+  "Do NOT re-open acetaminophen load. Closed Aug 20, negative, arithmetic error.",
+  "python is not on PATH in git-bash on this machine. node is. Use node for the analysis.",
+  "The local clone can sit behind origin/main while its working index.html already matches live, because a prior session curl'd the live file. Run git status -sb before you commit."
  ],
  "todo": [
-  "Readout Aug 27 on meal-timing-window, sauerkraut-gut and acetaminophen-load.",
-  "Food matrix (Italy vs Kelowna) still queued. Do not start it while three tests are running."
+  "Readout Aug 27 on underfeeding-fasting and meal-timing-window. Aug 28 on sauerkraut-gut.",
+  "Aug 28: restore the sauerkraut tick tile to SUPPS if the washout reads clean.",
+  "Check on Aug 21 that at least one night glucose reading arrives with a 2-hour gap. If she is still testing right after eating, the meal-timing test cannot read out and needs a different ask.",
+  "Watch the weight. If it has not come back to 141-142 by Aug 27 that supports the underfeeding chain and stops being a win.",
+  "Food matrix (Italy vs Kelowna) still queued. Do not start it while three tests are running.",
+  "PRIVACY, for Christopher to decide: fh-state.json is published at a public URL and carries her full medical detail. FINDINGS.md, claude/ and .claude/ are gitignored for exactly that reason. If the state file does not need to be public, move it behind the Apps Script endpoint."
  ],
  "_purpose": "This app tracks Valerie's health and finds root causes. That is the entire scope. No business, no clients, no brand, no landing page, no other hosting.",
  "goal": {
   "target": "fasting glucose under 7.0 mmol/L",
-  "current": "last 5 fasting mean 8.52",
-  "baseline": "7.52 the 5 before that",
+  "current": "last 5 morning fasting mean 8.66",
+  "baseline": "7.88 the 5 before that",
   "levers": [
-   "supper by 6:30 pm, her Aug 1 record: supper 6:30 with bread and dessert gave a 6.6 bedtime reading",
-   "ten minutes walking after supper",
-   "Tylenol before bed rather than after pain wakes her, because her 0-wakeup nights ran 7.20 fasting vs 7.74 at 2+ wakeups"
+   "A real supper, eaten by 6:30. Not a smaller one. Her four highest fasting mornings each follow a day she barely ate.",
+   "Night reading two hours after the last bite, every night, so the number can be read at all.",
+   "Ten minutes walking after supper.",
+   "The second Tylenol before bed rather than after the pain wakes her. Two a day is her record, and it is not much for pain she calls debilitating."
   ],
-  "shippedToHer": "Focus card on the Home screen, Aug 18 2026"
+  "shippedToHer": "Focus card on the Home screen, corrected Aug 20 2026"
  }
 }
