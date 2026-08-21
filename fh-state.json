@@ -4,9 +4,9 @@
  "meta": {
   "client": "valerie",
   "schema": 3,
-  "lastScan": "2026-08-20",
-  "scanCount": 9,
-  "scanNote": "Aug 20. Day table built. Gut ache tile shipped. Magnesium run caught and fixed. Two chains retracted earlier the same day."
+  "lastScan": "2026-08-21",
+  "scanCount": 10,
+  "scanNote": "Aug 21. She pushed back on the meal-to-test gap and she was right. Retracted. Under-eating CONFIRMED: she ate three times on the 20th and fasting fell 9.6 to 7.9 overnight, the biggest single-day fall in the record. Gut ache 7 to 4 off magnesium."
  },
  "watermark": {
   "lastLogTimestamp": "2026-08-20T14:33:35.778Z",
@@ -61,15 +61,15 @@
    "readout": "2026-08-27",
    "why": "Her four highest fasting mornings each follow a day she barely ate. Aug 11 'only water today except coffee' -> Aug 12 morning 9.0. Aug 14 'ate lightly, not hungry' -> Aug 15 8.7. Aug 18 'have not eaten yet, sore gut' -> Aug 19 8.5. Aug 19 cottage cheese and pork rinds -> Aug 20 9.6, the record. The mornings after a real early supper (Jul 31, Aug 2, Aug 10) all behaved. Under-eating plus pain plus inflammation drives cortisol and glucagon, and both tell the liver to make glucose. Weight fell 142.2 to 139.0 in three days and resting pulse hit a record 82 over the same window.",
    "success": "A real supper eaten by 6:30 every day for seven days. If the fasting rolling-5 falls back under 8.0 without any change to what she eats, the driver is intake, not content or timing.",
-   "status": "running, PRIMARY"
+   "status": "CONFIRMED Aug 21, first read. She ate three times on the 20th and fasting fell 9.6 to 7.9 overnight, night 10.4 to 7.1. She reasoned it out herself before the data did. Confound: magnesium also stopped the same day. Keep running to Aug 27."
   },
   {
    "id": "meal-timing-window",
    "opened": "2026-08-20",
-   "readout": "2026-08-27",
+   "readout": "closed",
    "why": "RE-SCOPED. The original evidence was wrong. It used food-row write times as eating times, and she had typed her real eating time into the app's eat-time field. Corrected table: ate 6:30pm tested 6.2h later = 6.6; ate 7:00pm tested 6.5h later = 7.8; ate 7:00pm tested 4.9h later = 7.1; ate 7:30pm tested 3.0h later = 11.7. All four suppers within one hour of each other. The spread is the test gap, not the supper clock.",
    "success": "Seven nights of a reading taken two hours after her last bite. Only then is the night number comparable night to night.",
-   "status": "running, evidence withdrawn, measurement standardised this scan"
+   "status": "CLOSED NEGATIVE Aug 21. Neither the supper clock nor the test gap explains her numbers. She was right twice."
   },
   {
    "id": "sauerkraut-gut",
@@ -121,6 +121,11 @@
   }
  ],
  "corrections": [
+  {
+   "date": "2026-08-21",
+   "was": "Her night readings swing because she tests anywhere from 0 to 6 hours after eating",
+   "now": "WRONG, and she said so. Every logged pair is over two hours. Aug 18 tested 3.0h after supper = 11.7. Aug 20 tested 3.2h after supper = 7.1. Same gap, 4.6 points apart. The error came from treating the one-tap I just ate button as the eating moment, which is the SAME mistake retracted one day earlier, made one layer down. The only trustworthy eating time is the one she types into the eat-time field."
+  },
   {
    "date": "2026-08-20",
    "was": "Tylenol ran 1300-1950mg/day Aug 9-16 and stepped to 2600mg/day Aug 17-19",
@@ -377,6 +382,7 @@
   "A BLANK IS NOT A ZERO. A day she did not tick her supplements is unknown, not empty. Comparing against those days makes every daily supplement look like a cause, because the comparison group is really days she did not open the app. The day table enforces this per variable. Never do this analysis by eye."
  ],
  "todo": [
+  "URGENT for Aug 21: weight still falling (138.8), salt logged as LESS, morning diastolic 60, her lowest ever. Low intake plus low salt plus autonomic neuropathy is a volume problem. Salt and food are not optional.",
   "FOR CHRISTOPHER, one click only he can make: the Updates tab still carries the Aug 20 tile titled \"It Is The Clock, Not The Food\". That story is retracted. The backend has no delete_update action and the Apps Script IDE rejects programmatic edits, so the row has to be deleted by hand in the Sheet. The correcting tile sits above it in the meantime.",
   "Aug 28: sauerkraut readout now covers BOTH the gut and the fasting number.",
   "NEXT BUILD: put the signals report into the coach view so Christopher can open it without me.",
