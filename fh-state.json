@@ -19,13 +19,13 @@
    "foodSearches": 28,
    "coachMessages": 64,
    "questions": 8,
-   "updates": 15
+   "updates": 16
   },
   "note": "Real counts, written back by the third Aug 20 scan. questions and updates include the 2 questions and 1 update that scan wrote."
  },
  "deploy": {
-  "liveMd5": "53fde901d73ad7cd30448adc843a72da",
-  "prevMd5": "6dd72a4424b177acb486c4f76269f493",
+  "liveMd5": "5c643e93b92f7d67d521bf2d81d3cba1",
+  "prevMd5": "53fde901d73ad7cd30448adc843a72da",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -361,7 +361,8 @@
   "FIXED Aug 20 (3rd scan): Tylenol and gummy tile labels changed from 'Tap one box per pill you took' to 'Tap the box that matches your TOTAL pills so far today'. The old wording is why evening taps DROPPED the count.",
   "FIXED Aug 20 (3rd scan): glucose tile now says 'Morning fasting, and 2 hours after supper' and the help text spells out the fixed gap.",
   "FIXED Aug 20 (evening): magnesium tile offered 400mg and 600mg boxes, doses her own gut closed on Aug 14, and never checked whether she took it last night. Cut to a single 200mg box with a skip-night reminder.",
-  "SHIPPED Aug 20 (evening): gut ache tile added to INPUTS as a 0-10 scale with zeroOk. It is not in REPEATABLE_IDS, so it is a once-a-day metric and shows in all three sessions. Gut ache had only 4 recorded days in 39 because it existed only inside her typed notes."
+  "SHIPPED Aug 20 (evening): gut ache tile added to INPUTS as a 0-10 scale with zeroOk. It is not in REPEATABLE_IDS, so it is a once-a-day metric and shows in all three sessions. Gut ache had only 4 recorded days in 39 because it existed only inside her typed notes.",
+  "FIXED Aug 21: focus card still said \"The kitchen closes at 6:30\" and asked her to test two hours after her last bite. Both retracted. Card is now: eat three times a day, put the salt back, magnesium and sauerkraut stay off."
  ],
  "traps": [
   "TIME: timeLocal is her wall clock. The ISO timestamp is 2 hours ahead of America/Vancouver because her device sits at UTC-5. stamp() builds both from the device. Her own typed times (Jul 22 'about 10:00 pm' on a 10:41 PM row, Jul 24 '8;00 pm' on an 8:01 PM row, Jul 26 '12:00' on a 12:24 PM row, Jul 27 '9:00 pm' on a 9:13 PM row) prove timeLocal is the real one. Use timeLocal for everything. Never convert the ISO field.",
@@ -398,15 +399,15 @@
  "_purpose": "This app tracks Valerie's health and finds root causes. That is the entire scope. No business, no clients, no brand, no landing page, no other hosting.",
  "goal": {
   "target": "fasting glucose under 7.0 mmol/L",
-  "current": "last 5 morning fasting mean 8.66",
+  "current": "last morning fasting 7.9, down from 9.6 the day before",
   "baseline": "7.88 the 5 before that",
   "levers": [
-   "A real supper, eaten by 6:30. Not a smaller one. Her four highest fasting mornings each follow a day she barely ate.",
-   "Night reading two hours after the last bite, every night, so the number can be read at all.",
-   "Ten minutes walking after supper.",
-   "The second Tylenol before bed rather than after the pain wakes her. Two a day is her record, and it is not much for pain she calls debilitating."
+   "Three meals a day. Not less food. Her four highest fasting mornings each followed a day she barely ate, and eating three times dropped her 1.7 points overnight.",
+   "Salt back in. Diastolic 60 and weight still falling on Aug 21.",
+   "Magnesium off until the gut is quiet. Sauerkraut off until Aug 28.",
+   "The second Tylenol before bed rather than after the pain wakes her."
   ],
-  "shippedToHer": "Focus card on the Home screen, corrected Aug 20 2026"
+  "shippedToHer": "Focus card on the Home screen, rewritten Aug 21 2026 after she proved the clock wrong"
  },
  "dataLayer": {
   "build": "node claude/tools/build-day-table.js   (add --cache to reuse the last pull)",
