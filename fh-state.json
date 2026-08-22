@@ -4,28 +4,28 @@
  "meta": {
   "client": "valerie",
   "schema": 3,
-  "lastScan": "2026-08-21",
-  "scanCount": 10,
-  "scanNote": "Aug 21. She pushed back on the meal-to-test gap and she was right. Retracted. Under-eating CONFIRMED: she ate three times on the 20th and fasting fell 9.6 to 7.9 overnight, the biggest single-day fall in the record. Gut ache 7 to 4 off magnesium."
+  "lastScan": "2026-08-22",
+  "scanCount": 11,
+  "scanNote": "Scan 11. The number HELD at 7.9. Found and fixed an app bug: the focus card said magnesium off while the tile said every second night, and she followed the tile. Salt is now the top physical risk."
  },
  "watermark": {
-  "lastLogTimestamp": "2026-08-20T14:33:35.778Z",
-  "lastLogLocal": "Thu, Aug 20 at 9:33 AM · morning",
+  "lastLogTimestamp": "2026-08-22T03:32:55.948Z",
+  "lastLogLocal": "Fri, Aug 21 at 10:32 PM · night",
   "rowCounts": {
-   "logs": 531,
-   "food": 81,
-   "supps": 354,
-   "whooshes": 24,
+   "logs": 558,
+   "food": 90,
+   "supps": 373,
+   "whooshes": 26,
    "foodSearches": 28,
-   "coachMessages": 64,
-   "questions": 8,
-   "updates": 16
+   "coachMessages": 65,
+   "questions": 10,
+   "updates": 17
   },
-  "note": "Real counts, written back by the third Aug 20 scan. questions and updates include the 2 questions and 1 update that scan wrote."
+  "note": "Written by scan 11. questions and updates include what scan 11 wrote. Christopher deleted the retracted \"It Is The Clock\" update by hand on Aug 21."
  },
  "deploy": {
-  "liveMd5": "5c643e93b92f7d67d521bf2d81d3cba1",
-  "prevMd5": "53fde901d73ad7cd30448adc843a72da",
+  "liveMd5": "984849c31dbb3626959e51b5a1bebddc",
+  "prevMd5": "5c643e93b92f7d67d521bf2d81d3cba1",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -37,6 +37,14 @@
   "gitNote": "Aug 20: the local clone was 15 commits BEHIND origin/main while its working index.html already matched live, because a prior session curl'd the live file instead of pulling. Fixed with git reset --mixed origin/main. Check `git status -sb` before committing."
  },
  "tests": [
+  {
+   "id": "salt-volume",
+   "opened": "2026-08-22",
+   "readout": "2026-08-25",
+   "why": "Water and salt logged as LESS on Aug 18 and Aug 21. Morning diastolic 60 on the 21st and 61 at night, the two lowest in the record. Night systolic 116. Weight 138.8, the lowest. Low intake plus low sodium in a 75-year-old with diabetic autonomic neuropathy and no antihypertensive is a volume problem, and low sodium also slows the gut.",
+   "success": "Salt back in daily. Diastolic back over 65 and weight stops falling. If it does not, escalate, because a falling blood pressure in someone barely eating is not a win.",
+   "status": "running, URGENT. She has been asked what a normal salt day looks like and whether she has what she needs in the house."
+  },
   {
    "id": "sauerkraut-fasting",
    "opened": "2026-08-20",
@@ -207,9 +215,9 @@
    "glucoseLow": 4.9,
    "glucoseHigh": "12.3 Aug 3, taken 9:34pm one minute before she logged corn on the cob and sourdough. Post-meal, not fasting.",
    "fastingHigh": "9.6 Aug 20",
-   "weightLow": 139,
+   "weightLow": 138.8,
    "kneeSince": "3-4 since Aug 7",
-   "lowestDiastolic": "55 on Aug 16 night",
+   "lowestDiastolic": "60 on Aug 21 morning, 61 that night. The two lowest in the record.",
    "pulseHigh": "82 Aug 19"
   },
   "flareDays": {
@@ -362,7 +370,8 @@
   "FIXED Aug 20 (3rd scan): glucose tile now says 'Morning fasting, and 2 hours after supper' and the help text spells out the fixed gap.",
   "FIXED Aug 20 (evening): magnesium tile offered 400mg and 600mg boxes, doses her own gut closed on Aug 14, and never checked whether she took it last night. Cut to a single 200mg box with a skip-night reminder.",
   "SHIPPED Aug 20 (evening): gut ache tile added to INPUTS as a 0-10 scale with zeroOk. It is not in REPEATABLE_IDS, so it is a once-a-day metric and shows in all three sessions. Gut ache had only 4 recorded days in 39 because it existed only inside her typed notes.",
-  "FIXED Aug 21: focus card still said \"The kitchen closes at 6:30\" and asked her to test two hours after her last bite. Both retracted. Card is now: eat three times a day, put the salt back, magnesium and sauerkraut stay off."
+  "FIXED Aug 21: focus card still said \"The kitchen closes at 6:30\" and asked her to test two hours after her last bite. Both retracted. Card is now: eat three times a day, put the salt back, magnesium and sauerkraut stay off.",
+  "FIXED Aug 22: the focus card said magnesium was off while the magnesium tile still said \"every second night\". Because she correctly skipped Aug 20, magTookLastNight() returned false and the tile INVITED her to take it. She took it at 10:27pm Aug 21. Her fault in no way. Now driven by one MAG_PAUSED constant so the two screens cannot disagree."
  ],
  "traps": [
   "TIME: timeLocal is her wall clock. The ISO timestamp is 2 hours ahead of America/Vancouver because her device sits at UTC-5. stamp() builds both from the device. Her own typed times (Jul 22 'about 10:00 pm' on a 10:41 PM row, Jul 24 '8;00 pm' on an 8:01 PM row, Jul 26 '12:00' on a 12:24 PM row, Jul 27 '9:00 pm' on a 9:13 PM row) prove timeLocal is the real one. Use timeLocal for everything. Never convert the ISO field.",
@@ -380,10 +389,13 @@
   "The local clone can sit behind origin/main while its working index.html already matches live, because a prior session curl'd the live file. Run git status -sb before you commit.",
   "MAGNESIUM: her dose is 200mg every SECOND night. Check the RUN, not the night. Four nights in a row is a different exposure from one night. Cross every supplement against gut days at lag 0, lag 1 and lag 2, and as a run length.",
   "NEVER let the app stop her recording what actually happened. The Tylenol boxes did it, the sauerkraut tile did it, and the magnesium skip night nearly did it. An interface that argues with the patient produces a record that lies. Tell her the rule, then let her log the truth.",
-  "A BLANK IS NOT A ZERO. A day she did not tick her supplements is unknown, not empty. Comparing against those days makes every daily supplement look like a cause, because the comparison group is really days she did not open the app. The day table enforces this per variable. Never do this analysis by eye."
+  "A BLANK IS NOT A ZERO. A day she did not tick her supplements is unknown, not empty. Comparing against those days makes every daily supplement look like a cause, because the comparison group is really days she did not open the app. The day table enforces this per variable. Never do this analysis by eye.",
+  "ONE INSTRUCTION, ONE SOURCE. An instruction written in two places will eventually contradict itself, and she follows the TILE, not the card, because the tile is where she taps. Drive both from one switch or do not write it twice.",
+  "Her night reading needs NOTHING from us. Her gaps are 3.0, 3.2 and 2.9 hours. She always tests past two hours, exactly as she said on Aug 21. Never ask her for a fixed gap again."
  ],
  "todo": [
-  "URGENT for Aug 21: weight still falling (138.8), salt logged as LESS, morning diastolic 60, her lowest ever. Low intake plus low salt plus autonomic neuropathy is a volume problem. Salt and food are not optional.",
+  "Breakfast is the untested half of the eating ask. On Aug 21 her first food was 3:30pm and the number still held. Watch what happens when she actually eats in the morning.",
+  "Aug 25: salt readout. Diastolic back over 65 and weight stopped falling, or escalate.",
   "FOR CHRISTOPHER, one click only he can make: the Updates tab still carries the Aug 20 tile titled \"It Is The Clock, Not The Food\". That story is retracted. The backend has no delete_update action and the Apps Script IDE rejects programmatic edits, so the row has to be deleted by hand in the Sheet. The correcting tile sits above it in the meantime.",
   "Aug 28: sauerkraut readout now covers BOTH the gut and the fasting number.",
   "NEXT BUILD: put the signals report into the coach view so Christopher can open it without me.",
@@ -399,7 +411,7 @@
  "_purpose": "This app tracks Valerie's health and finds root causes. That is the entire scope. No business, no clients, no brand, no landing page, no other hosting.",
  "goal": {
   "target": "fasting glucose under 7.0 mmol/L",
-  "current": "last morning fasting 7.9, down from 9.6 the day before",
+  "current": "morning fasting 7.9 on Aug 21, held down from 9.6 on Aug 20",
   "baseline": "7.88 the 5 before that",
   "levers": [
    "Three meals a day. Not less food. Her four highest fasting mornings each followed a day she barely ate, and eating three times dropped her 1.7 points overnight.",
