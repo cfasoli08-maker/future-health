@@ -24,8 +24,8 @@
   "note": "Written by scan 11. questions and updates include what scan 11 wrote. Christopher deleted the retracted \"It Is The Clock\" update by hand on Aug 21."
  },
  "deploy": {
-  "liveMd5": "7b04b4e14675994eee3a575d799038f6",
-  "prevMd5": "984849c31dbb3626959e51b5a1bebddc",
+  "liveMd5": "9e8b95a4c1ccb372b49f926c401876d2",
+  "prevMd5": "7b04b4e14675994eee3a575d799038f6",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -393,7 +393,8 @@
   "A BLANK IS NOT A ZERO. A day she did not tick her supplements is unknown, not empty. Comparing against those days makes every daily supplement look like a cause, because the comparison group is really days she did not open the app. The day table enforces this per variable. Never do this analysis by eye.",
   "ONE INSTRUCTION, ONE SOURCE. An instruction written in two places will eventually contradict itself, and she follows the TILE, not the card, because the tile is where she taps. Drive both from one switch or do not write it twice.",
   "Her night reading needs NOTHING from us. Her gaps are 3.0, 3.2 and 2.9 hours. She always tests past two hours, exactly as she said on Aug 21. Never ask her for a fixed gap again.",
-  "EVERY PAUSE NEEDS AN END POINT ON THE SCREEN. Sauerkraut had a date and she followed it. Magnesium did not and she had to ask. If you take something away from her, the tile must say what brings it back."
+  "EVERY PAUSE NEEDS AN END POINT ON THE SCREEN. Sauerkraut had a date and she followed it. Magnesium did not and she had to ask. If you take something away from her, the tile must say what brings it back.",
+  "EDIT SCRIPTS MUST WRITE BEFORE THEY CAN FAIL, or verify after. On Aug 22 an edit script applied change A, then hit a no-match on change B and process.exit(1) before fs.writeFileSync. Change A was silently lost and the tile shipped with the old text while the card shipped with the new one. The md5 changed, the deploy verified, and the screens still disagreed. ALWAYS re-read the live page for the actual STRINGS, never just the md5."
  ],
  "todo": [
   "When gut ache reads 2 or less with no episode for three days running, set MAG_PAUSED = false and put magnesium back alone at every second night. Sauerkraut waits until that reads clean.",
