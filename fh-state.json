@@ -24,8 +24,8 @@
   "note": "Written by scan 11. questions and updates include what scan 11 wrote. Christopher deleted the retracted \"It Is The Clock\" update by hand on Aug 21."
  },
  "deploy": {
-  "liveMd5": "984849c31dbb3626959e51b5a1bebddc",
-  "prevMd5": "5c643e93b92f7d67d521bf2d81d3cba1",
+  "liveMd5": "7b04b4e14675994eee3a575d799038f6",
+  "prevMd5": "984849c31dbb3626959e51b5a1bebddc",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -371,7 +371,8 @@
   "FIXED Aug 20 (evening): magnesium tile offered 400mg and 600mg boxes, doses her own gut closed on Aug 14, and never checked whether she took it last night. Cut to a single 200mg box with a skip-night reminder.",
   "SHIPPED Aug 20 (evening): gut ache tile added to INPUTS as a 0-10 scale with zeroOk. It is not in REPEATABLE_IDS, so it is a once-a-day metric and shows in all three sessions. Gut ache had only 4 recorded days in 39 because it existed only inside her typed notes.",
   "FIXED Aug 21: focus card still said \"The kitchen closes at 6:30\" and asked her to test two hours after her last bite. Both retracted. Card is now: eat three times a day, put the salt back, magnesium and sauerkraut stay off.",
-  "FIXED Aug 22: the focus card said magnesium was off while the magnesium tile still said \"every second night\". Because she correctly skipped Aug 20, magTookLastNight() returned false and the tile INVITED her to take it. She took it at 10:27pm Aug 21. Her fault in no way. Now driven by one MAG_PAUSED constant so the two screens cannot disagree."
+  "FIXED Aug 22: the focus card said magnesium was off while the magnesium tile still said \"every second night\". Because she correctly skipped Aug 20, magTookLastNight() returned false and the tile INVITED her to take it. She took it at 10:27pm Aug 21. Her fault in no way. Now driven by one MAG_PAUSED constant so the two screens cannot disagree.",
+  "FIXED Aug 22: the magnesium tile said PAUSED but never said for how long or what ended it. Sauerkraut carries a date, magnesium carried nothing, and she wrote to Christopher asking whether to skip a night or pause for a while. A pause with no end is not an instruction. The tile and the card now both carry the end point and the order things go back in."
  ],
  "traps": [
   "TIME: timeLocal is her wall clock. The ISO timestamp is 2 hours ahead of America/Vancouver because her device sits at UTC-5. stamp() builds both from the device. Her own typed times (Jul 22 'about 10:00 pm' on a 10:41 PM row, Jul 24 '8;00 pm' on an 8:01 PM row, Jul 26 '12:00' on a 12:24 PM row, Jul 27 '9:00 pm' on a 9:13 PM row) prove timeLocal is the real one. Use timeLocal for everything. Never convert the ISO field.",
@@ -391,9 +392,11 @@
   "NEVER let the app stop her recording what actually happened. The Tylenol boxes did it, the sauerkraut tile did it, and the magnesium skip night nearly did it. An interface that argues with the patient produces a record that lies. Tell her the rule, then let her log the truth.",
   "A BLANK IS NOT A ZERO. A day she did not tick her supplements is unknown, not empty. Comparing against those days makes every daily supplement look like a cause, because the comparison group is really days she did not open the app. The day table enforces this per variable. Never do this analysis by eye.",
   "ONE INSTRUCTION, ONE SOURCE. An instruction written in two places will eventually contradict itself, and she follows the TILE, not the card, because the tile is where she taps. Drive both from one switch or do not write it twice.",
-  "Her night reading needs NOTHING from us. Her gaps are 3.0, 3.2 and 2.9 hours. She always tests past two hours, exactly as she said on Aug 21. Never ask her for a fixed gap again."
+  "Her night reading needs NOTHING from us. Her gaps are 3.0, 3.2 and 2.9 hours. She always tests past two hours, exactly as she said on Aug 21. Never ask her for a fixed gap again.",
+  "EVERY PAUSE NEEDS AN END POINT ON THE SCREEN. Sauerkraut had a date and she followed it. Magnesium did not and she had to ask. If you take something away from her, the tile must say what brings it back."
  ],
  "todo": [
+  "When gut ache reads 2 or less with no episode for three days running, set MAG_PAUSED = false and put magnesium back alone at every second night. Sauerkraut waits until that reads clean.",
   "Breakfast is the untested half of the eating ask. On Aug 21 her first food was 3:30pm and the number still held. Watch what happens when she actually eats in the morning.",
   "Aug 25: salt readout. Diastolic back over 65 and weight stopped falling, or escalate.",
   "FOR CHRISTOPHER, one click only he can make: the Updates tab still carries the Aug 20 tile titled \"It Is The Clock, Not The Food\". That story is retracted. The backend has no delete_update action and the Apps Script IDE rejects programmatic edits, so the row has to be deleted by hand in the Sheet. The correcting tile sits above it in the meantime.",
@@ -454,5 +457,12 @@
    "Coach chat renders.",
    "No console errors. No horizontal overflow at 375px."
   ]
+ },
+ "reintroductionOrder": {
+  "rule": "Magnesium and sauerkraut are BOTH out. They go back one at a time or neither answer means anything.",
+  "quiet": "Gut ache 2 or less with no episode, three days running.",
+  "step1": "Magnesium back first, 200mg every SECOND night, alone. Watch 5 days. It goes first because her blood pressure benefits from it and because she raised the suspicion herself.",
+  "step2": "Sauerkraut back after magnesium reads clean, alone. Watch 5 days. This pushes the Aug 28 sauerkraut readout later and that is correct.",
+  "flip": "Set MAG_PAUSED = false in index.html to restore the every-second-night wording. One switch drives both the tile and the focus card."
  }
 }
