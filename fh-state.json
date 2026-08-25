@@ -402,6 +402,7 @@
   "EDIT SCRIPTS MUST WRITE BEFORE THEY CAN FAIL, or verify after. On Aug 22 an edit script applied change A, then hit a no-match on change B and process.exit(1) before fs.writeFileSync. Change A was silently lost and the tile shipped with the old text while the card shipped with the new one. The md5 changed, the deploy verified, and the screens still disagreed. ALWAYS re-read the live page for the actual STRINGS, never just the md5."
  ],
  "todo": [
+  "The agent build is done. Next scan runs node claude/tools/scan.js and reads claude/SCAN.md first.",
   "Waiting on her answer about how long after eating an episode comes. That single answer decides the next protocol change.",
   "DOCTOR CONVERSATION, raised with Christopher Aug 25: weight 143.0 Aug 16 to 137.6 Aug 23, 5.4 lb in a week during daily liquid episodes, night diastolic drifting 70 to 58, last three episodes no warning including one in the shower. Clinician call, not a coaching one.",
   "When gut ache reads 2 or less with no episode for three days running, set MAG_PAUSED = false and put magnesium back alone at every second night. Sauerkraut waits until that reads clean.",
@@ -472,5 +473,27 @@
   "step1": "Magnesium back first, 200mg every SECOND night, alone. Watch 5 days. It goes first because her blood pressure benefits from it and because she raised the suspicion herself.",
   "step2": "Sauerkraut back after magnesium reads clean, alone. Watch 5 days. This pushes the Aug 28 sauerkraut readout later and that is correct.",
   "flip": "Set MAG_PAUSED = false in index.html to restore the every-second-night wording. One switch drives both the tile and the focus card."
+ },
+ "agent": {
+  "built": "2026-08-25",
+  "why": "Six wrong calls in five days, all the same shape: a conclusion written before the arithmetic that would test it. None was a gap in knowledge. Prose rules can be reasoned past. Code rules cannot.",
+  "readFirst": "claude/SCAN.md. Generated, cannot go stale. Read it BEFORE FINDINGS.md. Where they disagree, SCAN.md wins.",
+  "run": "node claude/tools/scan.js   (add --cache to reuse the last pull)",
+  "pieces": {
+   "claude/tools/guards.js": "7 guards, each named with the date it was earned and what it cost. The scan STOPS if one trips. Caught a real parser bug on its first run: a typed eat time of Noon was being thrown away, the third instance of reading a button press instead of her own words.",
+   "claude/tools/claim.js": "The claim gate. No causal statement reaches her screen except through it. Checks: enough event days, enough exposed and clean days, lift, a required mechanism, Fisher exact p, a multiple-comparison correction, a time-confound check, and a WASHOUT check that lets a removal beat a correlation.",
+   "claude/tools/scan.js": "The scan as a program. 861 cause and outcome pairs at three lags, all through the gate, into claude/SCAN.md.",
+   "claude/tools/verify-live.js": "Proves the live page says the exact words intended. A checksum proves something shipped, not the right thing.",
+   "claude/tools/test-gate.js": "Re-runs this week four wrong claims through the gate. All four are stopped. The one right claim ships. Run it after any change to claim.js."
+  },
+  "verdicts": {
+   "SHIP": "may change her protocol",
+   "LEAD": "state it out loud first, then test one thing. Never tell her it is a cause.",
+   "WATCH": "may be asked about, nothing else",
+   "REFUTED": "closed by a washout, do not reopen",
+   "BLOCKED": "not enough behind it to say anything"
+  },
+  "firstRun": "0 SHIP, 29 REFUTED, 1 WATCH, 826 BLOCKED from 861 pairs. Zero SHIP is the honest answer at 43 days and 861 comparisons, and it is the point. The pre-registered weight question Christopher asked DOES ship, because a question asked before looking is one test, not 861.",
+  "nextGuard": "Every future mistake becomes a guard. That count only goes up. Today it is 7 guards plus 8 gate checks."
  }
 }
