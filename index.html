@@ -160,9 +160,13 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .tier-item-name { font-size:1.1rem; font-weight:700; }
 .tier-item-note { font-size:0.95rem; color:var(--muted); margin-top:0.2rem; line-height:1.45; }
 .mag-row { display:flex; gap:0.6rem; width:100%; margin-top:0.9rem; padding-left:3.6rem; }
-.mag-box { flex:1; min-height:64px; border-radius:14px; border:3px solid #C9C4B5; background:var(--surface2); display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:1.4rem; color:var(--green); font-weight:700; cursor:pointer; }
+/* min-width:0 or a flex child will not shrink below its own text. Without it
+   the fourth Tylenol box, 2600mg, hung 14px off the right edge of a 375px
+   phone and the whole supplements page slid sideways. Found 25 Aug 2026 by
+   measuring every page at her screen width instead of looking at it. */
+.mag-box { flex:1; min-width:0; min-height:64px; border-radius:14px; border:3px solid #C9C4B5; background:var(--surface2); display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:1.4rem; color:var(--green); font-weight:700; cursor:pointer; }
 .mag-box.on { border-color:var(--green); background:var(--green-soft); }
-.mag-mg { font-size:0.8rem; color:var(--muted); font-weight:600; margin-top:2px; }
+.mag-mg { font-size:0.72rem; color:var(--muted); font-weight:600; margin-top:2px; }
 .mag-box.on .mag-mg { color:var(--green); }
 
 /* ── FOOD ── */

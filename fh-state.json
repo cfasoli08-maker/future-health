@@ -24,8 +24,8 @@
   "note": "Written by scan 12, Aug 25. Counts include what scan 12 wrote."
  },
  "deploy": {
-  "liveMd5": "0cad271ff49f9320eeebc0a750df064e",
-  "prevMd5": "9e8b95a4c1ccb372b49f926c401876d2",
+  "liveMd5": "49916e69fa102771af75276747a06c3b",
+  "prevMd5": "0cad271ff49f9320eeebc0a750df064e",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -377,7 +377,9 @@
   "SHIPPED Aug 20 (evening): gut ache tile added to INPUTS as a 0-10 scale with zeroOk. It is not in REPEATABLE_IDS, so it is a once-a-day metric and shows in all three sessions. Gut ache had only 4 recorded days in 39 because it existed only inside her typed notes.",
   "FIXED Aug 21: focus card still said \"The kitchen closes at 6:30\" and asked her to test two hours after her last bite. Both retracted. Card is now: eat three times a day, put the salt back, magnesium and sauerkraut stay off.",
   "FIXED Aug 22: the focus card said magnesium was off while the magnesium tile still said \"every second night\". Because she correctly skipped Aug 20, magTookLastNight() returned false and the tile INVITED her to take it. She took it at 10:27pm Aug 21. Her fault in no way. Now driven by one MAG_PAUSED constant so the two screens cannot disagree.",
-  "FIXED Aug 22: the magnesium tile said PAUSED but never said for how long or what ended it. Sauerkraut carries a date, magnesium carried nothing, and she wrote to Christopher asking whether to skip a night or pause for a while. A pause with no end is not an instruction. The tile and the card now both carry the end point and the order things go back in."
+  "FIXED Aug 22: the magnesium tile said PAUSED but never said for how long or what ended it. Sauerkraut carries a date, magnesium carried nothing, and she wrote to Christopher asking whether to skip a night or pause for a while. A pause with no end is not an instruction. The tile and the card now both carry the end point and the order things go back in.",
+  "FIXED Aug 25: the supplements page slid sideways on a 375px phone. The fourth Tylenol box, 2600mg, hung 14px off the right edge because a flex child will not shrink below its own text without min-width:0. Found by measuring every page at her screen width, not by looking at it.",
+  "FIXED Aug 25: the eat-time parser did not understand \"this morning\" or \"this afternoon\". \"ate 1:15 this afternoon\" was right only by luck and \"ate 1:15 this morning\" would have parsed as 13:15. Widened, and proved against every real string in her record."
  ],
  "traps": [
   "TIME: timeLocal is her wall clock. The ISO timestamp is 2 hours ahead of America/Vancouver because her device sits at UTC-5. stamp() builds both from the device. Her own typed times (Jul 22 'about 10:00 pm' on a 10:41 PM row, Jul 24 '8;00 pm' on an 8:01 PM row, Jul 26 '12:00' on a 12:24 PM row, Jul 27 '9:00 pm' on a 9:13 PM row) prove timeLocal is the real one. Use timeLocal for everything. Never convert the ISO field.",
