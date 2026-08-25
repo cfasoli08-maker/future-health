@@ -5,21 +5,21 @@
   "client": "valerie",
   "schema": 3,
   "lastScan": "2026-08-25",
-  "scanCount": 12,
-  "scanNote": "Scan 12. TARGET HIT: fasting 6.7 on Aug 23, under 7.0 for the first time, on eating more. Magnesium and sauerkraut both CLEARED as gut drivers by her own washout. New lead is a gastrocolic reflex, deliberately NOT shipped as an instruction yet. Weight and diastolic escalated to Christopher as a doctor conversation."
+  "scanCount": 13,
+  "scanNote": "Scan 13. First live run of the scan program. Gut ache 2 and a clear day. Weight recovered 137.6 to 140.0, corroborating the weight-follows-the-gut finding. Fasting bounced to 8.6 on a two-meal day. Bug check found and fixed a real page overflow and a parser gap."
  },
  "watermark": {
   "lastLogTimestamp": "2026-08-25T04:32:08.159Z",
   "lastLogLocal": "Mon, Aug 24 at 11:32 PM · night",
   "rowCounts": {
-   "logs": 594,
-   "food": 97,
-   "supps": 391,
-   "whooshes": 29,
+   "logs": 603,
+   "food": 99,
+   "supps": 395,
+   "whooshes": 26,
    "foodSearches": 28,
    "coachMessages": 65,
    "questions": 12,
-   "updates": 19
+   "updates": 20
   },
   "note": "Written by scan 12, Aug 25. Counts include what scan 12 wrote."
  },
@@ -223,7 +223,8 @@
    "kneeSince": "3-4 since Aug 7",
    "lowestDiastolic": "60 on Aug 21 morning, 61 that night. The two lowest in the record.",
    "pulseHigh": "82 Aug 19",
-   "fastingLow": "6.7 Aug 23, first reading under the 7.0 target"
+   "fastingLow": "6.7 Aug 23, first reading under the 7.0 target",
+   "pulseLow": "68 Aug 25"
   },
   "flareDays": {
    "Jul20": 2,
@@ -404,6 +405,7 @@
   "EDIT SCRIPTS MUST WRITE BEFORE THEY CAN FAIL, or verify after. On Aug 22 an edit script applied change A, then hit a no-match on change B and process.exit(1) before fs.writeFileSync. Change A was silently lost and the tile shipped with the old text while the card shipped with the new one. The md5 changed, the deploy verified, and the screens still disagreed. ALWAYS re-read the live page for the actual STRINGS, never just the md5."
  ],
  "todo": [
+  "Watch for a second day of weight recovery. 137.6 on Aug 23 to 140.0 on Aug 25 after a clear gut day.",
   "The agent build is done. Next scan runs node claude/tools/scan.js and reads claude/SCAN.md first.",
   "Waiting on her answer about how long after eating an episode comes. That single answer decides the next protocol change.",
   "DOCTOR CONVERSATION, raised with Christopher Aug 25: weight 143.0 Aug 16 to 137.6 Aug 23, 5.4 lb in a week during daily liquid episodes, night diastolic drifting 70 to 58, last three episodes no warning including one in the shower. Clinician call, not a coaching one.",
@@ -425,7 +427,7 @@
  "_purpose": "This app tracks Valerie's health and finds root causes. That is the entire scope. No business, no clients, no brand, no landing page, no other hosting.",
  "goal": {
   "target": "fasting glucose under 7.0 mmol/L",
-  "current": "6.7 on Aug 23. TARGET MET.",
+  "current": "6.7 hit Aug 23. Aug 25 back to 8.6 on a two-meal day.",
   "baseline": "7.88 the 5 before that",
   "levers": [
    "Three meals a day. Not less food. Her four highest fasting mornings each followed a day she barely ate, and eating three times dropped her 1.7 points overnight.",
