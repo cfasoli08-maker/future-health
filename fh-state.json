@@ -4,9 +4,9 @@
  "meta": {
   "client": "valerie",
   "schema": 3,
-  "lastScan": "2026-08-25",
-  "scanCount": 14,
-  "scanNote": "Scan 14, evening. Evening reading 5.9, only three lower in the whole record and the last was 16 days ago. Two clear gut days. Her appetite came back and she wrote very hungry. Gut ache 2. Salt still marked less, third time, and it is the last thing being asked about."
+  "lastScan": "2026-08-26",
+  "scanCount": 15,
+  "scanNote": "Aug 26. Valerie reviewed the app. All three of her comments verified and fixed, plus four more. The salt test is RE-SCOPED: the tile measured water and salt on one button and cannot read out."
  },
  "watermark": {
   "lastLogTimestamp": "2026-08-25T04:32:08.159Z",
@@ -24,8 +24,8 @@
   "note": "Written by scan 12, Aug 25. Counts include what scan 12 wrote."
  },
  "deploy": {
-  "liveMd5": "49916e69fa102771af75276747a06c3b",
-  "prevMd5": "0cad271ff49f9320eeebc0a750df064e",
+  "liveMd5": "964aac3a158be3b1df8e6c59f07c2715",
+  "prevMd5": "49916e69fa102771af75276747a06c3b",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -50,10 +50,10 @@
   {
    "id": "salt-volume",
    "opened": "2026-08-22",
-   "readout": "2026-08-25",
+   "readout": "restarts from the first day water and salt are logged separately",
    "why": "Water and salt logged as LESS on Aug 18 and Aug 21. Morning diastolic 60 on the 21st and 61 at night, the two lowest in the record. Night systolic 116. Weight 138.8, the lowest. Low intake plus low sodium in a 75-year-old with diabetic autonomic neuropathy and no antihypertensive is a volume problem, and low sodium also slows the gut.",
    "success": "Salt back in daily. Diastolic back over 65 and weight stops falling. If it does not, escalate, because a falling blood pressure in someone barely eating is not a win.",
-   "status": "running, URGENT. She has been asked what a normal salt day looks like and whether she has what she needs in the house."
+   "status": "RE-SCOPED Aug 26. The control never measured salt. The tile was labelled Water and salt, one tap for two substances, and on Aug 22 she said she salts her food, her coffee, her water and finger dips all day. Her three LESS marks were almost certainly about water. The Aug 18, 21 and 25 readings are uninterpretable and must not be used."
   },
   {
    "id": "sauerkraut-fasting",
@@ -381,7 +381,14 @@
   "FIXED Aug 22: the focus card said magnesium was off while the magnesium tile still said \"every second night\". Because she correctly skipped Aug 20, magTookLastNight() returned false and the tile INVITED her to take it. She took it at 10:27pm Aug 21. Her fault in no way. Now driven by one MAG_PAUSED constant so the two screens cannot disagree.",
   "FIXED Aug 22: the magnesium tile said PAUSED but never said for how long or what ended it. Sauerkraut carries a date, magnesium carried nothing, and she wrote to Christopher asking whether to skip a night or pause for a while. A pause with no end is not an instruction. The tile and the card now both carry the end point and the order things go back in.",
   "FIXED Aug 25: the supplements page slid sideways on a 375px phone. The fourth Tylenol box, 2600mg, hung 14px off the right edge because a flex child will not shrink below its own text without min-width:0. Found by measuring every page at her screen width, not by looking at it.",
-  "FIXED Aug 25: the eat-time parser did not understand \"this morning\" or \"this afternoon\". \"ate 1:15 this afternoon\" was right only by luck and \"ate 1:15 this morning\" would have parsed as 13:15. Widened, and proved against every real string in her record."
+  "FIXED Aug 25: the eat-time parser did not understand \"this morning\" or \"this afternoon\". \"ate 1:15 this afternoon\" was right only by luck and \"ate 1:15 this morning\" would have parsed as 13:15. Widened, and proved against every real string in her record.",
+  "FIXED Aug 26: the Water and salt tile was one button for two substances and it made a salt test unreadable. Split into a Water tile and a Salt tile.",
+  "FIXED Aug 26: her coach thread opened at her oldest message, 66 messages and about 14,000 pixels up. The jump to the newest sat inside the has-anything-changed guard and the 45-second poll always beat it. Moved outside the guard.",
+  "FIXED Aug 26: the Updates page had no box she could type into unless a question was unanswered. She had answered them all, so it offered her zero. A permanent comment box now posts into the coach thread.",
+  "FIXED Aug 26: K2 said two capsules for five days after she wrote that she takes one. Corrected.",
+  "SHIPPED Aug 26: how long since you last ate, four taps on the whoosh screen. She agreed on Aug 25 to start watching it.",
+  "SHIPPED Aug 26: Same as yesterday prefill on the entry sheet. It fills the box and never saves. Her day was about ninety taps.",
+  "FIXED Aug 26: refresh button was 30px, under a reliable thumb target. Now 44."
  ],
  "traps": [
   "TIME: timeLocal is her wall clock. The ISO timestamp is 2 hours ahead of America/Vancouver because her device sits at UTC-5. stamp() builds both from the device. Her own typed times (Jul 22 'about 10:00 pm' on a 10:41 PM row, Jul 24 '8;00 pm' on an 8:01 PM row, Jul 26 '12:00' on a 12:24 PM row, Jul 27 '9:00 pm' on a 9:13 PM row) prove timeLocal is the real one. Use timeLocal for everything. Never convert the ISO field.",
@@ -403,9 +410,13 @@
   "ONE INSTRUCTION, ONE SOURCE. An instruction written in two places will eventually contradict itself, and she follows the TILE, not the card, because the tile is where she taps. Drive both from one switch or do not write it twice.",
   "Her night reading needs NOTHING from us. Her gaps are 3.0, 3.2 and 2.9 hours. She always tests past two hours, exactly as she said on Aug 21. Never ask her for a fixed gap again.",
   "EVERY PAUSE NEEDS AN END POINT ON THE SCREEN. Sauerkraut had a date and she followed it. Magnesium did not and she had to ask. If you take something away from her, the tile must say what brings it back.",
-  "EDIT SCRIPTS MUST WRITE BEFORE THEY CAN FAIL, or verify after. On Aug 22 an edit script applied change A, then hit a no-match on change B and process.exit(1) before fs.writeFileSync. Change A was silently lost and the tile shipped with the old text while the card shipped with the new one. The md5 changed, the deploy verified, and the screens still disagreed. ALWAYS re-read the live page for the actual STRINGS, never just the md5."
+  "EDIT SCRIPTS MUST WRITE BEFORE THEY CAN FAIL, or verify after. On Aug 22 an edit script applied change A, then hit a no-match on change B and process.exit(1) before fs.writeFileSync. Change A was silently lost and the tile shipped with the old text while the card shipped with the new one. The md5 changed, the deploy verified, and the screens still disagreed. ALWAYS re-read the live page for the actual STRINGS, never just the md5.",
+  "A SUPPLEMENT ASK FROM HER IS A PROTOCOL CHANGE REQUEST, not a comment. Action it or answer it the same day. Her K2 correction sat unread for five days.",
+  "DO NOT NAG is a limit on MY guessing, not a veto on her asking. On Aug 26 she asked in capitals to be kept on about her salt, one day after I told her I would stop. She is the patient and she knows what helps her.",
+  "CHECK WHAT A CONTROL ACTUALLY MEASURES BEFORE BUILDING ON IT. Three times this month a control meant something other than its label: the Tylenol counter, the one-tap meal button, and the Water and salt tile."
  ],
  "todo": [
+  "Salt test restarts once she has logged the new Water and Salt tiles separately for a few days.",
   "Salt asked for the last time on Aug 25 evening. Do not ask again. If it stays LESS and diastolic stays under 65, raise it with Christopher, not her.",
   "Aug 26 morning is the real read on the eating: she ate six times on the 25th after a two-meal 24th that produced 8.6.",
   "Watch for a second day of weight recovery. 137.6 on Aug 23 to 140.0 on Aug 25 after a clear gut day.",
