@@ -94,7 +94,8 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .tile-stack-val { font-family:'Oswald',sans-serif; font-size:1.3rem; font-weight:600; color:var(--ink); }
 .tile-stack-when { font-size:0.9rem; color:var(--sage); font-weight:600; text-align:right; }
 .topbar-right { display:flex; align-items:center; gap:0.7rem; }
-.refresh-btn { display:inline-flex; align-items:center; gap:0.25rem; border:2px solid var(--sage); background:var(--surface); color:var(--sage); border-radius:20px; padding:0.32rem 0.7rem; font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; line-height:1; }
+/* 44px minimum. It was 30, which is under what a 75-year-old thumb reliably hits. */
+.refresh-btn { display:inline-flex; align-items:center; justify-content:center; min-height:44px; gap:0.25rem; border:2px solid var(--sage); background:var(--surface); color:var(--sage); border-radius:22px; padding:0.32rem 0.9rem; font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; line-height:1; }
 .refresh-btn.refreshing { background:var(--luff2); color:#fff; border-color:var(--luff2); }
 .tile.done .tile-check { display:block; }
 .tile-check { display:none; font-size:1.5rem; color:var(--luff1); flex-shrink:0; }
@@ -129,6 +130,10 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .sheet-field-label { font-size:1rem; font-weight:700; margin:1.2rem 0 0.5rem; }
 .sheet-text { width:100%; font-family:'DM Sans',sans-serif; font-size:1.15rem; padding:0.9rem 1rem; border-radius:14px; border:2px solid #D8D2C2; background:var(--surface2); outline:none; }
 .sheet-text:focus { border-color:var(--sage); }
+/* "Same as yesterday" on the entry sheet. Her day was about ninety taps.
+   This confirms a normal day instead of re-entering it, and removes nothing. */
+.same-btn { width:100%; margin:0 0 1rem; padding:0.9rem; border:3px dashed var(--sage); background:var(--surface2); color:var(--sage); border-radius:16px; font-family:'DM Sans',sans-serif; font-size:1.05rem; font-weight:600; cursor:pointer; min-height:52px; }
+.same-btn b { font-weight:800; }
 .save-btn { width:100%; padding:1.15rem; border:none; border-radius:16px; background:var(--sage); color:#fff; font-size:1.3rem; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; margin-top:1.6rem; }
 .cancel-btn { width:100%; padding:0.9rem; border:none; background:transparent; color:var(--muted); font-size:1.05rem; font-weight:500; font-family:'DM Sans',sans-serif; cursor:pointer; margin-top:0.5rem; }
 .saved-flash { text-align:center; font-size:1.15rem; color:var(--green); font-weight:700; padding:1rem 0 0; display:none; }
@@ -556,7 +561,11 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
       <div class="section-label" style="margin-top:0.2rem;">Christopher has a question for you</div>
       <div id="quest-wrap"></div>
     </div>
-    <div style="font-size:0.95rem;color:var(--muted);margin:-0.4rem 0 1rem;">Your progress report after every review. Tap any date to read it.</div>
+    <div class="section-label" style="margin-top:0.2rem;">Say something back</div>
+    <textarea class="reply-box" id="upd-comment" placeholder="Anything at all. A question, how you are feeling, or something you noticed."></textarea>
+    <button class="food-save" style="width:100%;margin-top:0.7rem;" onclick="sendUpdateComment()">Send to Christopher ✓</button>
+    <div class="food-hint" id="upd-comment-hint"></div>
+    <div style="font-size:0.95rem;color:var(--muted);margin:1.6rem 0 1rem;">Your progress report after every review. Tap any date to read it.</div>
     <div id="updates-wrap" class="updates-wrap"></div>
   </div>
 
@@ -704,8 +713,10 @@ const INPUTS = [
     help:'How is your stomach today? 0 means no ache at all. 10 means the worst it gets. Please tap 0 on the good days too. A clear day tells me as much as a sore one, and without it I cannot see when something is working.' },
   { id:'bowel', icon:'🚻', label:'Bowel movement', sub:'Bristol scale 1 to 7', type:'bristol',
     help:'Pick the type that best matches, then tap whether it came with warning or no warning. Type 3 and 4 are the healthy middle.' },
-  { id:'hydration', icon:'💧', label:'Water and salt', sub:'How was today?', type:'hydration',
-    help:'Compared to a normal day, how much water and salt did you have today?' }
+  { id:'hydration', icon:'💧', label:'Water', sub:'How much did you drink today?', type:'hydration', optWord:'water',
+    help:'Compared to a normal day, how much water did you drink today? Water only. Salt is its own tile now, because they were sharing one button and I could not tell them apart.' },
+  { id:'salt', icon:'🧂', label:'Salt', sub:'How much salt today?', type:'hydration', optWord:'salt',
+    help:'Compared to a normal day, how much salt did you have today? Count it all: on your food, in your coffee, in your water, and the finger dips. You told me on August 22 that you do all of those, so most days should be usual or more.' }
 ];
 
 // Metrics Valerie measures more than once a day. These keep every reading with its time instead of overwriting.
@@ -728,7 +739,7 @@ let activeSession = 'morning';
 let sheetSel = {};
 
 // Repeatable metrics logged morning, noon, and night. The rest are morning-only, once a day.
-const REPEATABLE_IDS = ['glucose','pulse','bp','kneepain','fibropain','energy','activity','stress','bowel','hydration'];
+const REPEATABLE_IDS = ['glucose','pulse','bp','kneepain','fibropain','energy','activity','stress','bowel','hydration','salt'];
 // Once-a-day metrics. They used to live under Morning only, so if she opened the app in
 // the afternoon they were invisible and looked deleted. Reported by Valerie Aug 13.
 // They now show in every session and share one reading across all three.
@@ -960,13 +971,17 @@ function openEntry(id, session) {
         <button class="opt-btn" onclick="pickOpt(this,'warning','No warning')">No warning<small>It came on suddenly</small></button>
       </div>`;
   } else if (inp.type==='hydration') {
+    const w = inp.optWord || 'water and salt';
     body = `<div class="opt-col">
-              <button class="opt-btn" onclick="pickOpt(this,'tag','usual')">Usual<small>A normal day of water and salt</small></button>
-              <button class="opt-btn" onclick="pickOpt(this,'tag','more')">More than usual</button>
-              <button class="opt-btn" onclick="pickOpt(this,'tag','less')">Less than usual</button>
+              <button class="opt-btn" onclick="pickOpt(this,'tag','usual')">Usual<small>A normal day of ${w}</small></button>
+              <button class="opt-btn" onclick="pickOpt(this,'tag','more')">More ${w} than usual</button>
+              <button class="opt-btn" onclick="pickOpt(this,'tag','less')">Less ${w} than usual</button>
             </div>`;
   }
   let priorReadings = '';
+  const yday = yesterdayValue(inp.id);
+  const sameAs = (yday === null || sheetHasTodayValue(inp.id)) ? '' :
+    `<button class="same-btn" onclick="useYesterday()">Same as yesterday: <b>${yday.disp}</b></button>`;
   const repeatable = REPEATABLE_IDS.indexOf(inp.id) > -1;
   const sessLog = sessionReadings(loadDay(), activeSession, inp.id);
   const sessName = activeSession.charAt(0).toUpperCase()+activeSession.slice(1);
@@ -982,6 +997,7 @@ function openEntry(id, session) {
     <div class="sheet-title">${inp.label} <span style="color:${sessColor};">· ${sessName}</span></div>
     <div class="sheet-help">${helpText}</div>
     ${priorReadings}
+    ${sameAs}
     ${body}
     <button class="save-btn" onclick="saveEntry()">Save ✓</button>
     <button class="cancel-btn" onclick="closeSheet()">Cancel</button>
@@ -989,6 +1005,55 @@ function openEntry(id, session) {
   showOverlay();
   const first = document.getElementById('entry-val');
   if (first) setTimeout(()=>first.focus(), 300);
+}
+
+// Yesterday's reading for a metric, whichever session she happened to log it in.
+function yesterdayValue(id) {
+  try {
+    const y = new Date(Date.now() - 86400000);
+    const key = 'fh_' + y.getFullYear() + '-' + String(y.getMonth()+1).padStart(2,'0') + '-' + String(y.getDate()).padStart(2,'0');
+    const day = JSON.parse(localStorage.getItem(key)) || {};
+    for (const sid of SESSION_ORDER) {
+      const arr = (day[sid] && day[sid][id]) ? day[sid][id] : [];
+      if (arr.length) return arr[arr.length - 1];
+    }
+  } catch(e) {}
+  return null;
+}
+function sheetHasTodayValue(id) {
+  const day = loadDay();
+  for (const sid of SESSION_ORDER) {
+    const arr = (day[sid] && day[sid][id]) ? day[sid][id] : [];
+    if (arr.length) return true;
+  }
+  return false;
+}
+// Fills the box in. It never saves for her. She still taps Save, so nothing
+// about her body is ever recorded that she did not put her thumb on.
+function useYesterday() {
+  const y = yesterdayValue(activeInput.id);
+  if (!y) return;
+  const raw = String(y.disp);
+  const num = parseFloat(raw);
+  const t = activeInput.type;
+  if (t === 'number') {
+    const el = document.getElementById('entry-val'); if (el) el.value = isNaN(num) ? raw : num;
+  } else if (t === 'bp') {
+    const m = raw.match(/(\d+)\s*\/\s*(\d+)/);
+    if (m) { document.getElementById('entry-sys').value = m[1]; document.getElementById('entry-dia').value = m[2]; }
+  } else if (t === 'scale' || t === 'count') {
+    const btn = [...document.querySelectorAll('.scale-btn')].find(b => b.textContent.trim() === String(isNaN(num) ? raw : num));
+    if (btn) btn.click();
+  } else if (t === 'hydration') {
+    const want = raw.toLowerCase();
+    const btn = [...document.querySelectorAll('.opt-btn')].find(b => b.textContent.toLowerCase().indexOf(want) === 0);
+    if (btn) btn.click();
+  } else if (t === 'bristol') {
+    const btn = [...document.querySelectorAll('.opt-btn,.bristol-btn')].find(b => b.textContent.trim().indexOf(raw) === 0);
+    if (btn) btn.click();
+  }
+  const hint = document.getElementById('same-hint');
+  if (hint) hint.textContent = 'Filled in. Tap Save if that is right.';
 }
 
 function pickScale(el, n) {
@@ -1123,6 +1188,13 @@ function openWhoosh() {
       <button class="opt-btn" onclick="pickWhoosh(this,'warning','Some warning')">Some warning</button>
       <button class="opt-btn" onclick="pickWhoosh(this,'warning','No warning')">No warning</button>
     </div>
+    <div class="sheet-field-label">How long since you last ate?</div>
+    <div class="opt-col">
+      <button class="opt-btn" onclick="pickWhoosh(this,'gap','under 1 hour since eating')">Less than an hour</button>
+      <button class="opt-btn" onclick="pickWhoosh(this,'gap','1 to 3 hours since eating')">One to three hours</button>
+      <button class="opt-btn" onclick="pickWhoosh(this,'gap','over 3 hours since eating')">More than three hours</button>
+      <button class="opt-btn" onclick="pickWhoosh(this,'gap','nothing eaten yet today')">Nothing yet today</button>
+    </div>
     <div class="sheet-field-label">Happened earlier? Type when: (optional)</div>
     <input class="sheet-text" id="whoosh-when" placeholder="For example: 9:15 last night">
     <div class="sheet-field-label">Anything to note? (optional)</div>
@@ -1144,6 +1216,7 @@ function saveWhooshSheet() {
   if (whooshSel.count) parts.push(whooshSel.count + (whooshSel.count === '1' ? ' episode today' : ' episodes today'));
   parts.push(whooshSel.severity);
   if (whooshSel.warning) parts.push(whooshSel.warning);
+  if (whooshSel.gap) parts.push(whooshSel.gap);
   let when = document.getElementById('whoosh-when').value.trim();
   if (when) {
     if (/^[\d:.\s]*\d[\d:.\s]*(am|pm|a\.m\.|p\.m\.)?$/i.test(when)) when = 'at ' + when;
@@ -1253,6 +1326,20 @@ async function answerQuestion(ts, i) {
   const r = await sheetCall({ action:'save_answer', clientId: currentClientId, timestamp: ts, answer: ans, timeLocal: t.local });
   if (r.success) loadQuestionsClient();
 }
+// Asked for by Valerie on 26 August. It posts into the same coach thread, so
+// nothing new has to be watched and she can reply from wherever she is reading.
+function sendUpdateComment() {
+  const box = document.getElementById('upd-comment');
+  const hint = document.getElementById('upd-comment-hint');
+  const txt = (box && box.value || '').trim();
+  if (!txt) { hint.textContent = 'Type something first, then tap send.'; return; }
+  const t = stamp();
+  sheetCall({ action:'send_message', clientId: currentClientId, message: txt, timestamp: t.iso, timeLocal: t.local });
+  box.value = '';
+  hint.textContent = 'Sent to Christopher. It is in your Coach tab too. 🌿';
+  setTimeout(function(){ hint.textContent = ''; }, 8000);
+}
+
 async function loadUpdatesClient() {
   const wrap = document.getElementById('updates-wrap');
   if (!wrap) return;
@@ -1270,7 +1357,7 @@ const SUPPS = [
   { id:'ala',      name:'Alpha lipoic acid 600mg', dose:'Six 100mg capsules together, with your largest meal' },
   { id:'florastor',name:'Florastor', dose:'1 capsule with breakfast' },
   { id:'d3',       name:'Vitamin D3', dose:'Four 1000 IU capsules in the morning (4000 IU)' },
-  { id:'k2',       name:'Vitamin K2 (MK-7)', dose:'Two 100mcg capsules (200mcg), with D3 at your largest meal' },
+  { id:'k2',       name:'Vitamin K2 (MK-7)', dose:'One 100mcg capsule in the morning, with your D3' },
   { id:'vitc_am',  name:'Vitamin C — morning', dose:'500mg chewable' },
   { id:'vitc_pm',  name:'Vitamin C — evening', dose:'500mg chewable' }
 ];
@@ -1305,7 +1392,7 @@ const SUPP_GREEN = [
   { name:'Florastor (Saccharomyces boulardii)', note:'1 capsule with breakfast daily.' },
   { name:'Magnesium Glycinate', note:'ONE PILL, 200mg. Settled. You proved this yourself twice: 400mg on Aug 10 gave you a sore gut on the 11th, 400mg again on the 12th gave you the same on the 13th, and at 200mg you have no trouble at all. Your read was right and your dose is now 200mg at bedtime every second night. No more increases. It is still doing the work on your blood pressure, which is sitting in the 120s.' },
   { name:'Vitamin D3', note:'4000 IU in the morning. Four 1000 IU capsules.' },
-  { name:'Vitamin K2 as MK-7', note:'200mcg daily, two 100mcg capsules, taken with D3 at the largest meal. Directs calcium into bone and away from arteries. Fat-soluble, always take with a fatty meal.' },
+  { name:'Vitamin K2 as MK-7', note:'One 100mcg capsule in the morning with your D3. You told me on August 21 that you take one, not two, and the app was still saying two. That is corrected. It directs calcium into your bones and away from your arteries, and it needs a little fat in the meal to be absorbed.' },
   { name:'Vitamin C', note:'500mg chewable, morning and evening.' },
   { name:'Whey Protein Isolate (Diesel)', note:'Cleared. The label question is settled: zero sugar, zero carbs per scoop, sweetened with stevia. One condition only, drink it before 4pm. Both high bedtime readings followed a late-day drink.' }
 ];
@@ -1818,7 +1905,7 @@ function renderChat(msgs) {
   // Skip the rebuild when nothing changed. The 45-second poll used to tear the whole
   // thread down and recreate it every time, which flickered and killed text selection.
   const sig = msgs.map(m => (m.from||'') + '|' + (m.date||'') + '|' + (m.text||'')).join('\u0001');
-  if (sig === lastChatSig) return;
+  if (sig === lastChatSig) { scrollChatToEnd(); return; }   // still go to the newest, even when nothing changed
   lastChatSig = sig;
   if (!msgs.length) { thread.innerHTML = '<div class="im-empty">No messages yet. Christopher will be in touch, and you can write to him any time below.</div>'; return; }
   // oldest at top, newest at bottom (iMessage order)
@@ -1832,8 +1919,14 @@ function renderChat(msgs) {
   // Only pull the view down when she is actually looking at the Coach tab.
   // This fired on every 45-second poll from any screen, which yanked the Home
   // page to the bottom while she was reading it. Reported Aug 6 2026.
+  scrollChatToEnd();
+}
+
+// Open her thread where a text message app opens it: at the newest one.
+function scrollChatToEnd() {
   const pm = document.getElementById('page-message');
-  if (pm && pm.classList.contains('active')) thread.scrollIntoView(false);
+  if (!pm || !pm.classList.contains('active')) return;
+  window.scrollTo(0, document.body.scrollHeight);
 }
 
 function fetchCoachMsgs() {
@@ -2170,7 +2263,8 @@ function showPage(id, btn) {
   window.scrollTo(0,0);
   if (id === 'message') {
     setCoachBadge(false);
-    if (typeof fetchCoachMsgs === 'function') fetchCoachMsgs();
+    if (typeof fetchCoachMsgs === 'function') Promise.resolve(fetchCoachMsgs()).then(function(){ setTimeout(scrollChatToEnd, 60); });
+    setTimeout(scrollChatToEnd, 120);   // and again once the thread has laid out
   }
   if (id === 'updates') {
     if (typeof loadUpdatesClient === 'function') loadUpdatesClient();
