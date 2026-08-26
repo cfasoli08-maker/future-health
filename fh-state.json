@@ -5,21 +5,21 @@
   "client": "valerie",
   "schema": 3,
   "lastScan": "2026-08-25",
-  "scanCount": 13,
-  "scanNote": "Scan 13. First live run of the scan program. Gut ache 2 and a clear day. Weight recovered 137.6 to 140.0, corroborating the weight-follows-the-gut finding. Fasting bounced to 8.6 on a two-meal day. Bug check found and fixed a real page overflow and a parser gap."
+  "scanCount": 14,
+  "scanNote": "Scan 14, evening. Evening reading 5.9, only three lower in the whole record and the last was 16 days ago. Two clear gut days. Her appetite came back and she wrote very hungry. Gut ache 2. Salt still marked less, third time, and it is the last thing being asked about."
  },
  "watermark": {
   "lastLogTimestamp": "2026-08-25T04:32:08.159Z",
   "lastLogLocal": "Mon, Aug 24 at 11:32 PM · night",
   "rowCounts": {
-   "logs": 603,
+   "logs": 608,
    "food": 99,
    "supps": 395,
    "whooshes": 26,
    "foodSearches": 28,
    "coachMessages": 65,
    "questions": 12,
-   "updates": 20
+   "updates": 21
   },
   "note": "Written by scan 12, Aug 25. Counts include what scan 12 wrote."
  },
@@ -224,7 +224,8 @@
    "lowestDiastolic": "60 on Aug 21 morning, 61 that night. The two lowest in the record.",
    "pulseHigh": "82 Aug 19",
    "fastingLow": "6.7 Aug 23, first reading under the 7.0 target",
-   "pulseLow": "68 Aug 25"
+   "pulseLow": "68 Aug 25",
+   "eveningLow": "5.9 Aug 25. Only Jul 15 (4.9), Aug 9 (5.1) and Jul 29 (5.8) are lower."
   },
   "flareDays": {
    "Jul20": 2,
@@ -405,6 +406,8 @@
   "EDIT SCRIPTS MUST WRITE BEFORE THEY CAN FAIL, or verify after. On Aug 22 an edit script applied change A, then hit a no-match on change B and process.exit(1) before fs.writeFileSync. Change A was silently lost and the tile shipped with the old text while the card shipped with the new one. The md5 changed, the deploy verified, and the screens still disagreed. ALWAYS re-read the live page for the actual STRINGS, never just the md5."
  ],
  "todo": [
+  "Salt asked for the last time on Aug 25 evening. Do not ask again. If it stays LESS and diastolic stays under 65, raise it with Christopher, not her.",
+  "Aug 26 morning is the real read on the eating: she ate six times on the 25th after a two-meal 24th that produced 8.6.",
   "Watch for a second day of weight recovery. 137.6 on Aug 23 to 140.0 on Aug 25 after a clear gut day.",
   "The agent build is done. Next scan runs node claude/tools/scan.js and reads claude/SCAN.md first.",
   "Waiting on her answer about how long after eating an episode comes. That single answer decides the next protocol change.",
