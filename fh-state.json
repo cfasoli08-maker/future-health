@@ -4,9 +4,9 @@
  "meta": {
   "client": "valerie",
   "schema": 3,
-  "lastScan": "2026-08-28",
-  "scanCount": 16,
-  "scanNote": "Handoff scan, Aug 28. She restarted sauerkraut this morning. BP 107/55 and pulse 60, all record lows, on no medication, with water and salt both usual. The whoosh timing taps are arriving and the first two disagree."
+  "lastScan": "2026-08-29",
+  "scanCount": 17,
+  "scanNote": "Scan 17. No new data since the 28 Aug handoff, and it still found four errors, all of them blanks read as values. The sauerkraut reintroduction could not be recorded at all: she restarted it on the 28th and the tick tile had been off her screen since the 20th. Restored and live. Gut ache 0 on the 28th was a coerced blank. The salt tile shipped 26 Aug and the day table never learned the field, so salt:less was still built from her water tile. Three new guards, G8 G9 G10."
  },
  "watermark": {
   "lastLogTimestamp": "2026-08-29T00:18:35.460Z",
@@ -24,8 +24,8 @@
   "note": "Written by scan 12, Aug 25. Counts include what scan 12 wrote."
  },
  "deploy": {
-  "liveMd5": "f12b458248fe63990129676c4897c0cb",
-  "prevMd5": "964aac3a158be3b1df8e6c59f07c2715",
+  "liveMd5": "eda0a689d9a06fb68e1592ec879f356a",
+  "prevMd5": "f12b458248fe63990129676c4897c0cb",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -43,7 +43,9 @@
    "readout": "2026-09-04",
    "why": "She restarted sauerkraut the morning of Aug 28 after an 8-day washout. The GUT question is already closed negative: she had an episode every day she was off it. The open question is her MORNING BLOOD SUGAR, which scored 6.4x at lag 1 but was flagged TIME CONFOUND because sauerkraut and the fasting drift started the same week. This reintroduction is the only thing that can separate them.",
    "success": "Seven days back on it. If her morning fasting climbs back over 8.5 the confound is broken and sauerkraut is real. If it holds under 8, the original signal was the calendar.",
-   "status": "running. ONE variable. Do not change anything else this week."
+   "status": "running. ONE variable. Do not change anything else this week. TILE RESTORED 29 Aug: it had been off her supplements page since 20 Aug, so days 1 and 2 of this test have no tick behind them. Her food note of 28 Aug, \"First day back on Saurkraut this morning\", is the only record that she restarted. From 29 Aug the tick tile carries it.",
+   "variable": "supps.Sauerkraut",
+   "confound": "CASINO BUFFET, 28 Aug 7:20pm: soup, pork roast, cabbage roll and THREE desserts. Day one of the week. Her 29 Aug morning number carries the buffet, not the sauerkraut. Read the sauerkraut window from 30 Aug. Do NOT raise the buffet with her as a fault."
   },
   {
    "id": "gastrocolic-reflex",
@@ -61,7 +63,8 @@
    "readout": "restarts from the first day water and salt are logged separately",
    "why": "Water and salt logged as LESS on Aug 18 and Aug 21. Morning diastolic 60 on the 21st and 61 at night, the two lowest in the record. Night systolic 116. Weight 138.8, the lowest. Low intake plus low sodium in a 75-year-old with diabetic autonomic neuropathy and no antihypertensive is a volume problem, and low sodium also slows the gut.",
    "success": "Salt back in daily. Diastolic back over 65 and weight stops falling. If it does not, escalate, because a falling blood pressure in someone barely eating is not a win.",
-   "status": "RE-SCOPED Aug 26. The control never measured salt. The tile was labelled Water and salt, one tap for two substances, and on Aug 22 she said she salts her food, her coffee, her water and finger dips all day. Her three LESS marks were almost certainly about water. The Aug 18, 21 and 25 readings are uninterpretable and must not be used."
+   "status": "STILL NOT RUNNING, and for a second reason found 29 Aug. The tile was split on 26 Aug and build-day-table.js had no case for the salt field, so every salt row fell on the floor and the exposure named \"salt: less\" was STILL being built from her WATER tile. Fixed 29 Aug, and water is now its own separate cause. Her real salt record is three rows: usual 26 Aug, usual 27 Aug, nothing on 28 Aug. No \"less\" anywhere, so there is nothing to test yet.",
+   "variable": "salt"
   },
   {
    "id": "sauerkraut-fasting",
@@ -69,7 +72,8 @@
    "readout": "2026-08-28",
    "why": "First run of the day table. Sauerkraut against a fasting reading of 8.5 or more, at lag 1: 83% on sauerkraut days against 8% on other days, 10x, n=6. Same day: 67% against 13%, 5.3x. Sauerkraut went on trial for her gut and it lines up harder with her morning blood sugar.",
    "success": "The washout already running from Aug 21 now reads out on two things. Watch the FASTING number, not only the episode count.",
-   "status": "running, rides on the existing sauerkraut washout. n=6 is thin. Not proof."
+   "status": "SUPERSEDED by sauerkraut-reintroduction. The 28 Aug readout could not run: she had no way to tick sauerkraut from 20 Aug. Rides on the reintroduction week now.",
+   "variable": "supps.Sauerkraut"
   },
   {
    "id": "underfeeding-fasting",
@@ -141,6 +145,26 @@
   }
  ],
  "corrections": [
+  {
+   "date": "2026-08-29",
+   "was": "Her gut ache was 0 on 28 August, her first clear day in nine (28 Aug handoff and STATE.md)",
+   "now": "WRONG. She never touched the gut ache tile on the 28th. Her last gut ache row is the 27th, a 3. build-day-table.js was coercing a null gut ache to 0 and the arc printed the 0 as a reading, while the blanks list in the same generated file correctly said 2026-08-28: gut ache. Coercion removed, guard G9 added."
+  },
+  {
+   "date": "2026-08-29",
+   "was": "Her water and salt both read usual on 28 August, so the 107/55 is not the volume problem we feared on the 25th (28 Aug handoff)",
+   "now": "WRONG on the salt. She logged WATER usual on the 28th and did not log salt at all. Her only salt rows are 26 and 27 Aug. The reassurance attached to the lowest blood pressure reading in her record rested on a value nobody recorded."
+  },
+  {
+   "date": "2026-08-29",
+   "was": "Her focus card: you have marked both usual three days running",
+   "now": "WRONG. Two days, the 26th and the 27th. Corrected live and verified by words."
+  },
+  {
+   "date": "2026-08-29",
+   "was": "Her focus card: you had an episode on every single day you were off sauerkraut",
+   "now": "WRONG. Off from the 21st to the 27th, episodes on the 21st, 22nd, 23rd, 24th, 26th and 27th. The 25th had none. Six of seven. Corrected in both places it appeared."
+  },
   {
    "date": "2026-08-21",
    "was": "Her night readings swing because she tests anywhere from 0 to 6 hours after eating",
@@ -223,16 +247,16 @@
    3.33
   ],
   "records": {
-   "bpLow": "115/60 Aug 7",
+   "bpLow": "107/55 Aug 28, the lowest systolic of 101 readings and the ONLY one at or below 110. Next lowest is 115. Previous holder 115/60 Aug 7.",
    "glucoseLow": 4.9,
    "glucoseHigh": "12.3 Aug 3, taken 9:34pm one minute before she logged corn on the cob and sourdough. Post-meal, not fasting.",
    "fastingHigh": "9.6 Aug 20",
    "weightLow": 137.6,
    "kneeSince": "3-4 since Aug 7",
-   "lowestDiastolic": "60 on Aug 21 morning, 61 that night. The two lowest in the record.",
+   "lowestDiastolic": "55, twice: Aug 16 night (118/55) and Aug 28 morning (107/55).",
    "pulseHigh": "82 Aug 19",
    "fastingLow": "6.7 Aug 23, first reading under the 7.0 target",
-   "pulseLow": "68 Aug 25",
+   "pulseLow": "60 Aug 28 morning, lowest of 101 pulse readings. Previous 61 on Jul 27 night.",
    "eveningLow": "5.9 Aug 25. Only Jul 15 (4.9), Aug 9 (5.1) and Jul 29 (5.8) are lower."
   },
   "flareDays": {
@@ -398,7 +422,12 @@
   "SHIPPED Aug 26: Same as yesterday prefill on the entry sheet. It fills the box and never saves. Her day was about ninety taps.",
   "FIXED Aug 26: refresh button was 30px, under a reliable thumb target. Now 44.",
   "CONFIRMED BY HER Aug 26: the coach scroll fix and the comment box both work. Her words: This is perfect! No more scrolling thru many texts!!! Good work!",
-  "WORKING Aug 26 onward: the split Water and Salt tiles. Both read usual on Aug 26, 27 and 28, which means the three earlier LESS marks were about water, exactly as suspected. She sometimes logs water and not salt, so salt has fewer rows."
+  "WORKING Aug 26 onward: the split Water and Salt tiles. Both read usual on Aug 26, 27 and 28, which means the three earlier LESS marks were about water, exactly as suspected. She sometimes logs water and not salt, so salt has fewer rows.",
+  "FIXED 29 Aug: the sauerkraut tick tile was still off her supplements page, eight days after the washout and one day after she restarted it herself. The reintroduction test had no variable behind it. Restored, live, and seen rendering on her page. Guard G10 added.",
+  "FIXED 29 Aug: build-day-table.js coerced a null gut ache to 0, so the SCAN.md arc printed \"08-28 0\" and the handoff published it as her first ache-free day. She never touched the tile. Coercion removed. Guard G9 added: a value may never appear without the source that recorded it.",
+  "FIXED 29 Aug: build-day-table.js had no case for the salt field, shipped to her 26 Aug. Three days of salt rows fell on the floor and the exposure named \"salt: less\" was still being built from her WATER tile, the exact mislabel the 26 Aug split was meant to end. Salt read, water separated. Guard G8 added: the scan fails if she can log a field this table cannot read.",
+  "FIXED 29 Aug: her focus card said she marked salt usual three days running. Two days. And it said she had an episode on every single day off sauerkraut. Six of seven. Both corrected live and verified by words.",
+  "FIXED 29 Aug: the supplements page still read \"Sauerkraut — PAUSED until Aug 27\" while the focus card said it was back. One instruction, two sources, and the tile is where she acts. Both now say the same thing."
  ],
  "traps": [
   "TIME: timeLocal is her wall clock. The ISO timestamp is 2 hours ahead of America/Vancouver because her device sits at UTC-5. stamp() builds both from the device. Her own typed times (Jul 22 'about 10:00 pm' on a 10:41 PM row, Jul 24 '8;00 pm' on an 8:01 PM row, Jul 26 '12:00' on a 12:24 PM row, Jul 27 '9:00 pm' on a 9:13 PM row) prove timeLocal is the real one. Use timeLocal for everything. Never convert the ISO field.",
@@ -423,32 +452,28 @@
   "EDIT SCRIPTS MUST WRITE BEFORE THEY CAN FAIL, or verify after. On Aug 22 an edit script applied change A, then hit a no-match on change B and process.exit(1) before fs.writeFileSync. Change A was silently lost and the tile shipped with the old text while the card shipped with the new one. The md5 changed, the deploy verified, and the screens still disagreed. ALWAYS re-read the live page for the actual STRINGS, never just the md5.",
   "A SUPPLEMENT ASK FROM HER IS A PROTOCOL CHANGE REQUEST, not a comment. Action it or answer it the same day. Her K2 correction sat unread for five days.",
   "DO NOT NAG is a limit on MY guessing, not a veto on her asking. On Aug 26 she asked in capitals to be kept on about her salt, one day after I told her I would stop. She is the patient and she knows what helps her.",
-  "CHECK WHAT A CONTROL ACTUALLY MEASURES BEFORE BUILDING ON IT. Three times this month a control meant something other than its label: the Tylenol counter, the one-tap meal button, and the Water and salt tile."
+  "CHECK WHAT A CONTROL ACTUALLY MEASURES BEFORE BUILDING ON IT. Three times this month a control meant something other than its label: the Tylenol counter, the one-tap meal button, and the Water and salt tile.",
+  "A TILE SHE CANNOT TICK IS A WEEK SHE CANNOT RECORD. The other half of \"never let the app stop her recording the truth\". On 29 Aug the sauerkraut reintroduction was two days old with no variable behind it, because the tick tile pulled for the washout was never restored. Guard G10 stops the scan when a running test names a variable with no recorded day.",
+  "WHEN YOU SHIP HER A NEW TILE, TEACH THE DAY TABLE THE FIELD IN THE SAME COMMIT. The salt tile shipped 26 Aug and the analysis could not see it until 29 Aug. Guard G8 now catches it.",
+  "A VALUE WITH NO SOURCE IS A BLANK WEARING A NUMBER. G5 guards the raw fields. G9 guards any field that carries its own provenance, because a coercion can leave the provenance null and still print a reading into an arc.",
+  "READ THE ARCS AND THE BLANKS LIST TOGETHER. On 28 Aug SCAN.md said \"gut ache 08-28 0\" in one section and \"2026-08-28: gut ache\" in the blanks four sections below. The generated file contradicted itself and the handoff copied the wrong half."
  ],
  "todo": [
-  "Every day: her blood pressure and pulse. 107/55 and 60 on Aug 28 are all record lows. Under 105 systolic or any dizziness goes to Christopher the same day.",
-  "Sept 4: sauerkraut reintroduction readout, on her MORNING number, not her gut.",
-  "Salt test restarts once she has logged the new Water and Salt tiles separately for a few days.",
-  "Salt asked for the last time on Aug 25 evening. Do not ask again. If it stays LESS and diastolic stays under 65, raise it with Christopher, not her.",
-  "Aug 26 morning is the real read on the eating: she ate six times on the 25th after a two-meal 24th that produced 8.6.",
-  "Watch for a second day of weight recovery. 137.6 on Aug 23 to 140.0 on Aug 25 after a clear gut day.",
-  "The agent build is done. Next scan runs node claude/tools/scan.js and reads claude/SCAN.md first.",
-  "Waiting on her answer about how long after eating an episode comes. That single answer decides the next protocol change.",
-  "DOCTOR CONVERSATION, raised with Christopher Aug 25: weight 143.0 Aug 16 to 137.6 Aug 23, 5.4 lb in a week during daily liquid episodes, night diastolic drifting 70 to 58, last three episodes no warning including one in the shower. Clinician call, not a coaching one.",
-  "When gut ache reads 2 or less with no episode for three days running, set MAG_PAUSED = false and put magnesium back alone at every second night. Sauerkraut waits until that reads clean.",
-  "Breakfast is the untested half of the eating ask. On Aug 21 her first food was 3:30pm and the number still held. Watch what happens when she actually eats in the morning.",
-  "Aug 25: salt readout. Diastolic back over 65 and weight stopped falling, or escalate.",
-  "FOR CHRISTOPHER, one click only he can make: the Updates tab still carries the Aug 20 tile titled \"It Is The Clock, Not The Food\". That story is retracted. The backend has no delete_update action and the Apps Script IDE rejects programmatic edits, so the row has to be deleted by hand in the Sheet. The correcting tile sits above it in the meantime.",
-  "Aug 28: sauerkraut readout now covers BOTH the gut and the fasting number.",
+  "EVERY DAY: her blood pressure and pulse. 107/55 and pulse 60 on 28 Aug are the lowest systolic of 101 readings, the only one at or below 110, and the lowest pulse of 101. Under 105 systolic or ANY dizziness on standing goes to Christopher the same day.",
+  "Her answer to the 29 Aug dizziness question. That is the safety readout and it is the one thing worth chasing.",
+  "CHECK SHE IS TICKING SAUERKRAUT. The tile went back on 29 Aug. If there is no tick by the 30th the reintroduction still cannot read out, and guard G10 will stop the scan.",
+  "DO NOT read her 29 Aug morning number as a sauerkraut reading. The casino buffet on the night of the 28th, three desserts, sits under it. The sauerkraut window is 30 Aug onward.",
+  "Sept 4: sauerkraut reintroduction readout, on her MORNING number, not her gut. Push it later if the ticks start late.",
+  "Salt test still cannot start. Three rows, all usual, no \"less\" anywhere. The tool can finally see the field as of 29 Aug.",
+  "The whoosh timing taps are two and they disagree. Keep collecting. Nothing concluded.",
+  "FOR CHRISTOPHER, one post the app refused to let me make: the 29 Aug Update tile is written and waiting. save_update was blocked twice by the tool permission layer this session. Her focus card already carries both messages, so nothing is lost, but the durable tile is not up.",
+  "FOR CHRISTOPHER, one click only he can make: the Updates tab still carries the Aug 20 tile titled \"It Is The Clock, Not The Food\". That story is retracted. There is no delete_update action and the Apps Script IDE rejects programmatic edits, so the row has to be deleted by hand in the Sheet.",
+  "DOCTOR. Raised 25 Aug. Weight has recovered to 140.8 so the urgency is lower, but the blood pressure has now taken its own turn. If systolic goes under 105, or the weight starts falling again, do not wait for the September or October booking. A walk-in can order bloods and a stool test.",
+  "When gut ache reads 2 or less with no episode for three days running, set MAG_PAUSED = false and put magnesium back alone at every second night. NOT during the sauerkraut week.",
+  "Breakfast is still the untested half of the eating ask.",
+  "Food matrix (Italy vs Kelowna) still queued. Do not start it while the sauerkraut week is running.",
   "NEXT BUILD: put the signals report into the coach view so Christopher can open it without me.",
-  "Salt is not a tracked variable and she just told Christopher she stopped it. Log it before testing it. Do not test it against the magnesium at the same time.",
-  "Aug 23 readout on magnesium-run-gut.",
-  "Readout Aug 27 on underfeeding-fasting and meal-timing-window. Aug 28 on sauerkraut-gut.",
-  "Aug 28: restore the sauerkraut tick tile to SUPPS if the washout reads clean.",
-  "Check on Aug 21 that at least one night glucose reading arrives with a 2-hour gap. If she is still testing right after eating, the meal-timing test cannot read out and needs a different ask.",
-  "Watch the weight. If it has not come back to 141-142 by Aug 27 that supports the underfeeding chain and stops being a win.",
-  "Food matrix (Italy vs Kelowna) still queued. Do not start it while three tests are running.",
-  "PRIVACY, for Christopher to decide: fh-state.json is published at a public URL and carries her full medical detail. FINDINGS.md, claude/ and .claude/ are gitignored for exactly that reason. If the state file does not need to be public, move it behind the Apps Script endpoint."
+  "PRIVACY, for Christopher to decide: fh-state.json is published at a public URL and carries her full medical detail. FINDINGS.md, claude/ and .claude/ are gitignored for exactly that reason."
  ],
  "_purpose": "This app tracks Valerie's health and finds root causes. That is the entire scope. No business, no clients, no brand, no landing page, no other hosting.",
  "goal": {
@@ -510,7 +535,7 @@
   "readFirst": "claude/SCAN.md. Generated, cannot go stale. Read it BEFORE FINDINGS.md. Where they disagree, SCAN.md wins.",
   "run": "node claude/tools/scan.js   (add --cache to reuse the last pull)",
   "pieces": {
-   "claude/tools/guards.js": "7 guards, each named with the date it was earned and what it cost. The scan STOPS if one trips. Caught a real parser bug on its first run: a typed eat time of Noon was being thrown away, the third instance of reading a button press instead of her own words.",
+   "claude/tools/guards.js": "10 guards, each named with the date it was earned and what it cost. The scan STOPS if one trips. G8 catches a field she can log that the table cannot read. G9 catches a value with no source. G10 catches a running test whose variable she has no way to record.",
    "claude/tools/claim.js": "The claim gate. No causal statement reaches her screen except through it. Checks: enough event days, enough exposed and clean days, lift, a required mechanism, Fisher exact p, a multiple-comparison correction, a time-confound check, and a WASHOUT check that lets a removal beat a correlation.",
    "claude/tools/scan.js": "The scan as a program. 861 cause and outcome pairs at three lags, all through the gate, into claude/SCAN.md.",
    "claude/tools/verify-live.js": "Proves the live page says the exact words intended. A checksum proves something shipped, not the right thing.",
@@ -524,10 +549,10 @@
    "BLOCKED": "not enough behind it to say anything"
   },
   "firstRun": "0 SHIP, 29 REFUTED, 1 WATCH, 826 BLOCKED from 861 pairs. Zero SHIP is the honest answer at 43 days and 861 comparisons, and it is the point. The pre-registered weight question Christopher asked DOES ship, because a question asked before looking is one test, not 861.",
-  "nextGuard": "Every future mistake becomes a guard. That count only goes up. Today it is 7 guards plus 8 gate checks."
+  "nextGuard": "Every future mistake becomes a guard. That count only goes up. Today it is 10 guards plus 8 gate checks. G8, G9 and G10 were earned on 29 Aug and each was proved against the real rows that produced the error."
  },
  "handoff": {
-  "date": "2026-08-28",
+  "date": "2026-08-29",
   "oneCommand": "/scan",
   "readOrder": [
    "claude/SCAN.md",
@@ -535,19 +560,21 @@
    "fh-state.json",
    "claude/STATE.md"
   ],
-  "rule": "Count before you conclude. Six wrong calls in five days, 20 to 25 Aug, every one a conclusion written before the arithmetic. None was a gap in knowledge.",
-  "firstThingToFix": "Done Aug 28. The focus card now leads the sauerkraut week and no longer names the old combined tile.",
+  "rule": "Count before you conclude. On 29 Aug that rule found four errors with no new data at all. Every one was a blank being read as a value.",
+  "firstThingToFix": "Check that she has ticked the sauerkraut tile. It went back on her page on 29 Aug and the whole week rides on it.",
   "doNot": [
    "Never ask her to eat less.",
    "Never re-open magnesium or sauerkraut as gut causes. Both closed by her own washout.",
+   "Never read her 29 Aug morning number as a sauerkraut reading. The casino buffet is under it.",
+   "Never raise the buffet with her as a fault. Her appetite coming back is the best thing on the board.",
    "Never assume the clock. The scan measures her UTC-5 offset from her own rows every run.",
    "Never tell Christopher something shipped until verify-live.js passes on the words."
   ],
   "readFirstToday": [
-   "She restarted SAUERKRAUT the morning of Aug 28. Gut side CLOSED NEGATIVE, do not reopen. FASTING side reads out from here.",
-   "BP 107/55 and pulse 60 on Aug 28, all record lows, no medication, water and salt both usual. Watch daily. Flag to Christopher under 105 systolic or any dizziness on standing. She is 75 and twelve weeks past a knee replacement.",
-   "The whoosh timing taps are arriving and the first two DISAGREE. Aug 26 was 1 to 3 hours since eating, Aug 27 was over 3 hours and happened at 4:30 in the morning. Two points. Conclude nothing.",
-   "She confirmed the app fixes herself on Aug 26: This is perfect! No more scrolling thru many texts!!! Good work!"
+   "BP 107/55 and pulse 60 on 28 Aug. Lowest systolic of 101 readings and the ONLY one at or below 110. Lowest pulse of 101. On no medication. She did NOT log salt that day, so the 28 Aug reassurance that water and salt were both usual is unsupported. A dizziness question is on her Updates page and her answer is the thing to chase.",
+   "The sauerkraut tick tile was restored 29 Aug. It had been off her page since 20 Aug and she restarted sauerkraut on the 28th, so the test had no variable behind it. Confirm she is ticking it.",
+   "The whoosh timing taps are still two and still disagree. Conclude nothing.",
+   "A 29 Aug Update tile is written and NOT posted. save_update was blocked by the tool permission layer twice. Her focus card carries the same two messages."
   ]
  }
 }
