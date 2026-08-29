@@ -24,8 +24,8 @@
   "note": "Written by scan 12, Aug 25. Counts include what scan 12 wrote."
  },
  "deploy": {
-  "liveMd5": "964aac3a158be3b1df8e6c59f07c2715",
-  "prevMd5": "49916e69fa102771af75276747a06c3b",
+  "liveMd5": "f12b458248fe63990129676c4897c0cb",
+  "prevMd5": "964aac3a158be3b1df8e6c59f07c2715",
   "repo": "cfasoli08-maker/future-health",
   "branch": "main",
   "file": "index.html",
@@ -426,7 +426,6 @@
   "CHECK WHAT A CONTROL ACTUALLY MEASURES BEFORE BUILDING ON IT. Three times this month a control meant something other than its label: the Tylenol counter, the one-tap meal button, and the Water and salt tile."
  ],
  "todo": [
-  "Focus card item 2 still names the old combined Water and salt tile. Reword it, and lead the card with the sauerkraut week.",
   "Every day: her blood pressure and pulse. 107/55 and 60 on Aug 28 are all record lows. Under 105 systolic or any dizziness goes to Christopher the same day.",
   "Sept 4: sauerkraut reintroduction readout, on her MORNING number, not her gut.",
   "Salt test restarts once she has logged the new Water and Salt tiles separately for a few days.",
@@ -462,7 +461,7 @@
    "Magnesium off until the gut is quiet. Sauerkraut off until Aug 28.",
    "The second Tylenol before bed rather than after the pain wakes her."
   ],
-  "shippedToHer": "Focus card on the Home screen, rewritten Aug 21 2026 after she proved the clock wrong"
+  "shippedToHer": "Focus card on the Home screen, refreshed Aug 28 2026 for the sauerkraut week"
  },
  "dataLayer": {
   "build": "node claude/tools/build-day-table.js   (add --cache to reuse the last pull)",
@@ -537,7 +536,7 @@
    "claude/STATE.md"
   ],
   "rule": "Count before you conclude. Six wrong calls in five days, 20 to 25 Aug, every one a conclusion written before the arithmetic. None was a gap in knowledge.",
-  "firstThingToFix": "Focus card item 2 still references the old combined Water and salt tile. Reword it on the next scan now that they are two tiles.",
+  "firstThingToFix": "Done Aug 28. The focus card now leads the sauerkraut week and no longer names the old combined tile.",
   "doNot": [
    "Never ask her to eat less.",
    "Never re-open magnesium or sauerkraut as gut causes. Both closed by her own washout.",
