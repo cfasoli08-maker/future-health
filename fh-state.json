@@ -4,22 +4,22 @@
  "meta": {
   "client": "valerie",
   "schema": 3,
-  "lastScan": "2026-08-26",
-  "scanCount": 15,
-  "scanNote": "Aug 26. Valerie reviewed the app. All three of her comments verified and fixed, plus four more. The salt test is RE-SCOPED: the tile measured water and salt on one button and cannot read out."
+  "lastScan": "2026-08-28",
+  "scanCount": 16,
+  "scanNote": "Handoff scan, Aug 28. She restarted sauerkraut this morning. BP 107/55 and pulse 60, all record lows, on no medication, with water and salt both usual. The whoosh timing taps are arriving and the first two disagree."
  },
  "watermark": {
-  "lastLogTimestamp": "2026-08-25T04:32:08.159Z",
-  "lastLogLocal": "Mon, Aug 24 at 11:32 PM · night",
+  "lastLogTimestamp": "2026-08-29T00:18:35.460Z",
+  "lastLogLocal": "Fri, Aug 28 at 7:18 PM · night",
   "rowCounts": {
-   "logs": 608,
-   "food": 99,
-   "supps": 395,
-   "whooshes": 26,
+   "logs": 659,
+   "food": 109,
+   "supps": 417,
+   "whooshes": 31,
    "foodSearches": 28,
-   "coachMessages": 65,
+   "coachMessages": 67,
    "questions": 12,
-   "updates": 21
+   "updates": 22
   },
   "note": "Written by scan 12, Aug 25. Counts include what scan 12 wrote."
  },
@@ -37,6 +37,14 @@
   "gitNote": "Aug 20: the local clone was 15 commits BEHIND origin/main while its working index.html already matched live, because a prior session curl'd the live file instead of pulling. Fixed with git reset --mixed origin/main. Check `git status -sb` before committing."
  },
  "tests": [
+  {
+   "id": "sauerkraut-reintroduction",
+   "opened": "2026-08-28",
+   "readout": "2026-09-04",
+   "why": "She restarted sauerkraut the morning of Aug 28 after an 8-day washout. The GUT question is already closed negative: she had an episode every day she was off it. The open question is her MORNING BLOOD SUGAR, which scored 6.4x at lag 1 but was flagged TIME CONFOUND because sauerkraut and the fasting drift started the same week. This reintroduction is the only thing that can separate them.",
+   "success": "Seven days back on it. If her morning fasting climbs back over 8.5 the confound is broken and sauerkraut is real. If it holds under 8, the original signal was the calendar.",
+   "status": "running. ONE variable. Do not change anything else this week."
+  },
   {
    "id": "gastrocolic-reflex",
    "opened": "2026-08-24",
@@ -388,7 +396,9 @@
   "FIXED Aug 26: K2 said two capsules for five days after she wrote that she takes one. Corrected.",
   "SHIPPED Aug 26: how long since you last ate, four taps on the whoosh screen. She agreed on Aug 25 to start watching it.",
   "SHIPPED Aug 26: Same as yesterday prefill on the entry sheet. It fills the box and never saves. Her day was about ninety taps.",
-  "FIXED Aug 26: refresh button was 30px, under a reliable thumb target. Now 44."
+  "FIXED Aug 26: refresh button was 30px, under a reliable thumb target. Now 44.",
+  "CONFIRMED BY HER Aug 26: the coach scroll fix and the comment box both work. Her words: This is perfect! No more scrolling thru many texts!!! Good work!",
+  "WORKING Aug 26 onward: the split Water and Salt tiles. Both read usual on Aug 26, 27 and 28, which means the three earlier LESS marks were about water, exactly as suspected. She sometimes logs water and not salt, so salt has fewer rows."
  ],
  "traps": [
   "TIME: timeLocal is her wall clock. The ISO timestamp is 2 hours ahead of America/Vancouver because her device sits at UTC-5. stamp() builds both from the device. Her own typed times (Jul 22 'about 10:00 pm' on a 10:41 PM row, Jul 24 '8;00 pm' on an 8:01 PM row, Jul 26 '12:00' on a 12:24 PM row, Jul 27 '9:00 pm' on a 9:13 PM row) prove timeLocal is the real one. Use timeLocal for everything. Never convert the ISO field.",
@@ -416,6 +426,9 @@
   "CHECK WHAT A CONTROL ACTUALLY MEASURES BEFORE BUILDING ON IT. Three times this month a control meant something other than its label: the Tylenol counter, the one-tap meal button, and the Water and salt tile."
  ],
  "todo": [
+  "Focus card item 2 still names the old combined Water and salt tile. Reword it, and lead the card with the sauerkraut week.",
+  "Every day: her blood pressure and pulse. 107/55 and 60 on Aug 28 are all record lows. Under 105 systolic or any dizziness goes to Christopher the same day.",
+  "Sept 4: sauerkraut reintroduction readout, on her MORNING number, not her gut.",
   "Salt test restarts once she has logged the new Water and Salt tiles separately for a few days.",
   "Salt asked for the last time on Aug 25 evening. Do not ask again. If it stays LESS and diastolic stays under 65, raise it with Christopher, not her.",
   "Aug 26 morning is the real read on the eating: she ate six times on the 25th after a two-meal 24th that produced 8.6.",
@@ -515,7 +528,7 @@
   "nextGuard": "Every future mistake becomes a guard. That count only goes up. Today it is 7 guards plus 8 gate checks."
  },
  "handoff": {
-  "date": "2026-08-26",
+  "date": "2026-08-28",
   "oneCommand": "/scan",
   "readOrder": [
    "claude/SCAN.md",
@@ -530,6 +543,12 @@
    "Never re-open magnesium or sauerkraut as gut causes. Both closed by her own washout.",
    "Never assume the clock. The scan measures her UTC-5 offset from her own rows every run.",
    "Never tell Christopher something shipped until verify-live.js passes on the words."
+  ],
+  "readFirstToday": [
+   "She restarted SAUERKRAUT the morning of Aug 28. Gut side CLOSED NEGATIVE, do not reopen. FASTING side reads out from here.",
+   "BP 107/55 and pulse 60 on Aug 28, all record lows, no medication, water and salt both usual. Watch daily. Flag to Christopher under 105 systolic or any dizziness on standing. She is 75 and twelve weeks past a knee replacement.",
+   "The whoosh timing taps are arriving and the first two DISAGREE. Aug 26 was 1 to 3 hours since eating, Aug 27 was over 3 hours and happened at 4:30 in the morning. Two points. Conclude nothing.",
+   "She confirmed the app fixes herself on Aug 26: This is perfect! No more scrolling thru many texts!!! Good work!"
   ]
  }
 }
