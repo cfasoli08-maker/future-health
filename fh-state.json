@@ -1,6 +1,6 @@
 {
- "_legend": "READ THIS LINE ONLY FIRST. Sections: meta=what/when | watermark=last row seen per tab, pull only newer | deploy=live md5 + how to verify | tests=open hypotheses w/ readout dates | closed=settled questions, do not reopen | baselines=rolling trend numbers, compare do not recompute | tiers=exact tier list contents for building edit strings | asked=open client questions | hygiene=known bad data | traps=things that will waste your time | todo=pending work",
- "_howto": "curl the file, then extract ONE section. Never print the whole file. Update it at the end of every scan and redeploy alongside index.html. python is NOT on PATH in the git-bash shell on this machine, node is. Use node.",
+ "_legend": "READ claude/SCAN.md FIRST, then FINDINGS.md, then this. Sections: meta | watermark=last row seen, pull only newer | deploy=live md5 and how to prove it | agent=the tools and what each verdict permits | tests=open hypotheses with readout dates | closed=settled, do not reopen | corrections=what was said and later retracted | baselines=rolling numbers | tiers=exact tier contents | asked=open client questions | hygiene=fixed data and UI faults | traps=things that will waste your time | todo=pending work",
+ "_howto": "Christopher types /scan and that runs .claude/commands/scan.md. Do not do the arithmetic by hand: node claude/tools/scan.js does it and writes claude/SCAN.md. python is NOT on PATH in git-bash here, node is.",
  "meta": {
   "client": "valerie",
   "schema": 3,
@@ -513,5 +513,23 @@
   },
   "firstRun": "0 SHIP, 29 REFUTED, 1 WATCH, 826 BLOCKED from 861 pairs. Zero SHIP is the honest answer at 43 days and 861 comparisons, and it is the point. The pre-registered weight question Christopher asked DOES ship, because a question asked before looking is one test, not 861.",
   "nextGuard": "Every future mistake becomes a guard. That count only goes up. Today it is 7 guards plus 8 gate checks."
+ },
+ "handoff": {
+  "date": "2026-08-26",
+  "oneCommand": "/scan",
+  "readOrder": [
+   "claude/SCAN.md",
+   "FINDINGS.md",
+   "fh-state.json",
+   "claude/STATE.md"
+  ],
+  "rule": "Count before you conclude. Six wrong calls in five days, 20 to 25 Aug, every one a conclusion written before the arithmetic. None was a gap in knowledge.",
+  "firstThingToFix": "Focus card item 2 still references the old combined Water and salt tile. Reword it on the next scan now that they are two tiles.",
+  "doNot": [
+   "Never ask her to eat less.",
+   "Never re-open magnesium or sauerkraut as gut causes. Both closed by her own washout.",
+   "Never assume the clock. The scan measures her UTC-5 offset from her own rows every run.",
+   "Never tell Christopher something shipped until verify-live.js passes on the words."
+  ]
  }
 }
