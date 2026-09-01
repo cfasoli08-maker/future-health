@@ -5,8 +5,8 @@
     "client": "valerie",
     "schema": 3,
     "lastScan": "2026-09-01",
-    "scanCount": 18,
-    "scanNote": "Scan 18. Three days of new data and one fault in the tool that reads all of it. The day table bucketed every glucose, pulse and blood pressure reading by the CLOCK SHE SAVED AT instead of the SESSION SHE TAPPED. 28 readings were filed in the wrong part of her day. Four late-night readings became the next morning's FASTING number, which is the primary outcome of this protocol. Her 31 Aug fasting 7.1 was dropped entirely, on day 3 of the sauerkraut week. Fixed, 15 day-rows corrected, guard G11 added and proved (10 failures on the old table, 0 on the new)."
+    "scanCount": 19,
+    "scanNote": "Scan 19, evening of 1 Sep. Zero protocol changes. Sauerkraut day 5, still ticking, mornings 7.4/7.8/7.1/8.4 (mean 7.68 vs 7.81 off it) which is not a result at n=4. The 8.4 sits on top of two confounds already CONFIRMED in the file: two episodes on 31 Aug, and a two-meal day. Weight 139.8, the expected post-episode dip, still 2.2 lb above the 23 Aug low. THE DAY MOVEMENT IS CARDIOVASCULAR: AM diastolic 55, 59, 60, 64 and systolic back to 120, pulse 76. One point under the 65 threshold that returns magnesium. Do not restore on one reading. Salt missed 4 of 7. Card refreshed and verified live; no second Update tile because the 12:06 PM one was still unread."
   },
   "watermark": {
     "lastLogTimestamp": "2026-08-29T00:18:35.460Z",
@@ -43,7 +43,7 @@
       "readout": "2026-09-04, push to 2026-09-07 if she misses a morning number",
       "why": "She restarted sauerkraut the morning of Aug 28 after an 8-day washout. The GUT question is already closed negative: she had an episode every day she was off it. The open question is her MORNING BLOOD SUGAR, which scored 6.4x at lag 1 but was flagged TIME CONFOUND because sauerkraut and the fasting drift started the same week. This reintroduction is the only thing that can separate them.",
       "success": "Seven days back on it. If her morning fasting climbs back over 8.5 the confound is broken and sauerkraut is real. If it holds under 8, the original signal was the calendar.",
-      "status": "running, day 4. SHE IS TICKING THE TILE: sauerkraut recorded 29, 30 and 31 Aug. Days 1 and 2 still have no tick behind them, and 28 Aug carries the casino buffet, so the readable window is 29 Aug onward. Her morning numbers on it: 7.4, 7.8, 7.1. The 7.1 was recovered on 1 Sep when the session-tap bug was fixed; before that day 3 read as a blank. Three days is not a readout. Do not change anything else.",
+      "status": "running, day 5. Ticked 29, 30, 31 Aug and 1 Sep. Readable window 29 Aug onward (28 Aug carries the casino buffet and had no tick). Mornings 7.4, 7.8, 7.1, 8.4. Mean 7.68 against 7.81 for 21-28 Aug off it. n=4, inside her ordinary spread, NOT a result. Do not change anything else.",
       "variable": "supps.Sauerkraut",
       "confound": "CASINO BUFFET, 28 Aug 7:20pm: soup, pork roast, cabbage roll and THREE desserts. Day one of the week. Her 29 Aug morning number carries the buffet, not the sauerkraut. Read the sauerkraut window from 30 Aug. Do NOT raise the buffet with her as a fault."
     },
@@ -475,21 +475,13 @@
     "READ THE ARCS AND THE BLANKS LIST TOGETHER. On 28 Aug SCAN.md said \"gut ache 08-28 0\" in one section and \"2026-08-28: gut ache\" in the blanks four sections below. The generated file contradicted itself and the handoff copied the wrong half."
   ],
   "todo": [
-    "EVERY DAY: her blood pressure and pulse. 107/55 and pulse 60 on 28 Aug are the lowest systolic of 101 readings, the only one at or below 110, and the lowest pulse of 101. Under 105 systolic or ANY dizziness on standing goes to Christopher the same day.",
-    "Her answer to the 29 Aug dizziness question. That is the safety readout and it is the one thing worth chasing.",
-    "CHECK SHE IS TICKING SAUERKRAUT. The tile went back on 29 Aug. If there is no tick by the 30th the reintroduction still cannot read out, and guard G10 will stop the scan.",
-    "DO NOT read her 29 Aug morning number as a sauerkraut reading. The casino buffet on the night of the 28th, three desserts, sits under it. The sauerkraut window is 30 Aug onward.",
-    "Sept 4: sauerkraut reintroduction readout, on her MORNING number, not her gut. Push it later if the ticks start late.",
-    "Salt test still cannot start. Three rows, all usual, no \"less\" anywhere. The tool can finally see the field as of 29 Aug.",
-    "The whoosh timing taps are two and they disagree. Keep collecting. Nothing concluded.",
-    "FOR CHRISTOPHER, one post the app refused to let me make: the 29 Aug Update tile is written and waiting. save_update was blocked twice by the tool permission layer this session. Her focus card already carries both messages, so nothing is lost, but the durable tile is not up.",
-    "FOR CHRISTOPHER, one click only he can make: the Updates tab still carries the Aug 20 tile titled \"It Is The Clock, Not The Food\". That story is retracted. There is no delete_update action and the Apps Script IDE rejects programmatic edits, so the row has to be deleted by hand in the Sheet.",
-    "DOCTOR. Raised 25 Aug. Weight has recovered to 140.8 so the urgency is lower, but the blood pressure has now taken its own turn. If systolic goes under 105, or the weight starts falling again, do not wait for the September or October booking. A walk-in can order bloods and a stool test.",
-    "When gut ache reads 2 or less with no episode for three days running, set MAG_PAUSED = false and put magnesium back alone at every second night. NOT during the sauerkraut week.",
-    "Breakfast is still the untested half of the eating ask.",
-    "Food matrix (Italy vs Kelowna) still queued. Do not start it while the sauerkraut week is running.",
-    "NEXT BUILD: put the signals report into the coach view so Christopher can open it without me.",
-    "PRIVACY, for Christopher to decide: fh-state.json is published at a public URL and carries her full medical detail. FINDINGS.md, claude/ and .claude/ are gitignored for exactly that reason."
+    "EVERY DAY: her blood pressure and pulse. Under 105 systolic or ANY dizziness on standing goes to Christopher the same day. Recovered from the 28 Aug low: 107/55, 107/59, 113/60, 120/64. Pulse 60 to 76.",
+    "MAGNESIUM RETURN WATCH. AM diastolic is 64 and the rule is over 65 for a few days. Do NOT restore on a single reading. When it holds, 200mg every SECOND night, alone, watch 5 days. Set MAG_PAUSED = false in index.html.",
+    "Sept 4: sauerkraut reintroduction readout, on her MORNING number, readable window 29 Aug onward. Push to 7 Sep if she misses a morning number.",
+    "HER SALT. Missed 28, 29, 30 Aug and 1 Sep. She asked in capitals on 26 Aug to be kept on about it. Keep the ask on the card. salt-volume cannot run until a \"less\" appears; every row so far reads \"usual\".",
+    "WEIGHT WATCH. 139.8 on 1 Sep, down 1.4 from 141.2, consistent with the CONFIRMED post-episode dip. If it falls two more days without an episode behind it, that is a different thing and it goes to Christopher.",
+    "Gastrocolic reflex: four timing taps, three say over 3 hours. Leaning negative. Do not close it and do not reopen food.",
+    "The 20 Aug tile \"It Is The Clock, Not The Food\" is still up and still retracted. Only Christopher can delete a tile."
   ],
   "_purpose": "This app tracks Valerie's health and finds root causes. That is the entire scope. No business, no clients, no brand, no landing page, no other hosting.",
   "goal": {
