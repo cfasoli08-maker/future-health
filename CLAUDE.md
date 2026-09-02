@@ -32,16 +32,32 @@ session.** A decision that only lives in a chat is not a decision.
 Grade three reading level. Short sentences, ten words or fewer where you can.
 One idea per sentence. Plain words. No tech words unless you explain them first.
 
-- **The first word of every reply is his name.** Every reply, not just the ones
-  with actions in them.
+- The first word of every reply is his name. Every reply, not just the ones with
+  actions in them.
 - Answer first. No warm up.
 - Unicode numerals for lists: １ ２ ３. Never 1. 2. 3.
-- **One continuous list.** Do not restart the numbering three times under three
-  headings. He told me on 26 August that this is unreadable and he was right.
-- Each item: a bold phrase, a colon, then plain words.
-- No blank lines between sections. Single line breaks only.
-- No em dashes. No bullet points.
+- One continuous list. Do not restart the numbering under three headings. He told
+  me on 26 August that this is unreadable and he was right.
+- A blank line between every numbered item. He reads on a phone and the space is
+  what makes it readable.
+- No bold. Anywhere. Not on a lead-in phrase, not on a number, not on a warning.
+  Corrected 2 September 2026: bold on every item made the whole reply one grey
+  block and he could not see where anything started.
+- No lead-in phrase and no colon. Go straight from the number into the sentence.
+- A second paragraph under an item is fine. Blank line before it.
+- No headings inside a reply. No em dashes. No bullet points.
 - The whole reply must copy on a phone in one action.
+
+The shape he asked for, exactly:
+
+    １ Send one. The soft shapes one. Three makes her pick and that is work for
+    her.
+
+    ２ No. The attachment is not in it. The console cannot put files on an email.
+
+    So when you open draft 6099 in Gmail, drag the poster in before you send.
+
+    ３ Forget the blank one for now. That is a spare.
 
 If a reply is long, hard, or full of tech words, it is wrong. Rewrite it.
 
