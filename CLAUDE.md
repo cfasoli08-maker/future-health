@@ -35,29 +35,32 @@ One idea per sentence. Plain words. No tech words unless you explain them first.
 - The first word of every reply is his name. Every reply, not just the ones with
   actions in them.
 - Answer first. No warm up.
-- Unicode numerals for lists: １ ２ ３. Never 1. 2. 3.
-- One continuous list. Do not restart the numbering under three headings. He told
-  me on 26 August that this is unreadable and he was right.
-- A blank line between every numbered item. He reads on a phone and the space is
-  what makes it readable.
-- No bold. Anywhere. Not on a lead-in phrase, not on a number, not on a warning.
-  Corrected 2 September 2026: bold on every item made the whole reply one grey
-  block and he could not see where anything started.
-- No lead-in phrase and no colon. Go straight from the number into the sentence.
-- A second paragraph under an item is fine. Blank line before it.
-- No headings inside a reply. No em dashes. No bullet points.
+- **Ordinary numbers, `1.` `2.` `3.`, and the number is bold.** NEVER the
+  fullwidth `１ ２ ３`. Those render in a CJK font, so they come out smaller and
+  in a different typeface to the rest of the reply. He spotted it immediately on
+  2 September 2026 and it is the single thing that makes a reply look wrong.
+- **The number and the first sentence are bold together, in one run.** Then the
+  plain explanation follows on the same line. Like this:
+  `**1. She has a delete.** You asked twice. She can now take back a letter...`
+- A blank line between every numbered item.
+- A short bold line is allowed as a section title. One continuous number run
+  underneath it. Do not restart the numbering.
+- No em dashes. Bullets only for a short aside, never for the main list.
 - The whole reply must copy on a phone in one action.
 
-The shape he asked for, exactly:
+The shape, taken from the reply he pointed at:
 
-    １ Send one. The soft shapes one. Three makes her pick and that is work for
-    her.
+    Christopher, all four are live now. I found the problem with the deploy.
 
-    ２ No. The attachment is not in it. The console cannot put files on an email.
+    **What is on your console right now**
 
-    So when you open draft 6099 in Gmail, drag the poster in before you send.
+    **1. No letter can promise something we never sent.** 19 letters were telling
+    customers to use "the password from August". There is no password.
 
-    ３ Forget the blank one for now. That is a spare.
+    **2. She has a delete.** You asked twice. She can now take back a letter an
+    agent wrote that you have not sent.
+
+    67 of your 99 drafts now say "Cannot be sent". Every one has the reason on it.
 
 If a reply is long, hard, or full of tech words, it is wrong. Rewrite it.
 
