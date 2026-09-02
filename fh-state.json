@@ -4,9 +4,9 @@
   "meta": {
     "client": "valerie",
     "schema": 3,
-    "lastScan": "2026-09-01",
-    "scanCount": 19,
-    "scanNote": "Scan 19, evening of 1 Sep. Zero protocol changes. Sauerkraut day 5, still ticking, mornings 7.4/7.8/7.1/8.4 (mean 7.68 vs 7.81 off it) which is not a result at n=4. The 8.4 sits on top of two confounds already CONFIRMED in the file: two episodes on 31 Aug, and a two-meal day. Weight 139.8, the expected post-episode dip, still 2.2 lb above the 23 Aug low. THE DAY MOVEMENT IS CARDIOVASCULAR: AM diastolic 55, 59, 60, 64 and systolic back to 120, pulse 76. One point under the 65 threshold that returns magnesium. Do not restore on one reading. Salt missed 4 of 7. Card refreshed and verified live; no second Update tile because the 12:06 PM one was still unread."
+    "lastScan": "2026-09-02",
+    "scanCount": 20,
+    "scanNote": "Scan 20, 2 Sep. Zero protocol changes. Her 1 Sep day completed overnight: fasting 8.4, noon 6.1, night 8.0, weight 139.8, BP 120/64, pulse 76, ZERO episodes, gut ache up to 3, magnesium 200mg logged. Her cream question was counted and gated REFUTED at both lags and she was told she keeps it. The magnesium instruction now sits on her card WITH ITS REASON, which is the fix for why she broke it. Sauerkraut day 6, n=4, not a result, and the 4 Sep readout is now confounded by the magnesium."
   },
   "watermark": {
     "lastLogTimestamp": "2026-08-29T00:18:35.460Z",
@@ -43,7 +43,7 @@
       "readout": "2026-09-04, push to 2026-09-07 if she misses a morning number",
       "why": "She restarted sauerkraut the morning of Aug 28 after an 8-day washout. The GUT question is already closed negative: she had an episode every day she was off it. The open question is her MORNING BLOOD SUGAR, which scored 6.4x at lag 1 but was flagged TIME CONFOUND because sauerkraut and the fasting drift started the same week. This reintroduction is the only thing that can separate them.",
       "success": "Seven days back on it. If her morning fasting climbs back over 8.5 the confound is broken and sauerkraut is real. If it holds under 8, the original signal was the calendar.",
-      "status": "running, day 5. Ticked 29, 30, 31 Aug and 1 Sep. Readable window 29 Aug onward (28 Aug carries the casino buffet and had no tick). Mornings 7.4, 7.8, 7.1, 8.4. Mean 7.68 against 7.81 for 21-28 Aug off it. n=4, inside her ordinary spread, NOT a result. Do not change anything else.",
+      "status": "running, day 6. Ticked 29, 30, 31 Aug and 1 Sep. Mornings 7.4, 7.8, 7.1, 8.4, mean 7.68 against 7.81 off it. n=4 and inside her spread, NOT a result. CONFOUNDED: she took 200mg magnesium on the night of 1 Sep, so her 2 Sep morning number is not a clean sauerkraut reading. Consider pushing the readout to 7 Sep.",
       "variable": "supps.Sauerkraut",
       "confound": "CASINO BUFFET, 28 Aug 7:20pm: soup, pork roast, cabbage roll and THREE desserts. Day one of the week. Her 29 Aug morning number carries the buffet, not the sauerkraut. Read the sauerkraut window from 30 Aug. Do NOT raise the buffet with her as a fault."
     },
@@ -101,6 +101,12 @@
     }
   ],
   "closed": [
+    {
+      "id": "heavy-cream-gut",
+      "closed": "2026-09-01",
+      "verdict": "NEGATIVE. She raised it herself and it is refuted.",
+      "evidence": "She asked on 1 Sep whether heavy cream was driving her gut. Gated at lag 0 and lag 1: REFUTED both times. An episode on 40% of her 10 cream days against 49% of the 41 days without, so it runs the WRONG WAY for her fear. Big episodes alone: 20% against 17%, nothing. Soft dairy scored 1.5x same day and 1.8x next day but came back BLOCKED, under the bar, and dairy_soft was already refuted by washout on 29 Aug. She was told she keeps her cream and was NOT handed a new food to fear."
+    },
     {
       "id": "sauerkraut-gut",
       "closed": "2026-08-24",
