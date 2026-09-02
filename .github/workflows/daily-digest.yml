@@ -1,12 +1,63 @@
 name: Daily Digest
+
+# 16:00 UTC. That is 9am Pacific for Christopher and 11am for Valerie, who is
+# UTC-5. If this is meant to land at 9am HER time the cron is '0 14 * * *'.
+# Left exactly as it was, on purpose. Changing when a 75-year-old gets her mail
+# is not a side effect of a bug fix.
 on:
   schedule:
     - cron: '0 16 * * *'
   workflow_dispatch:
+
 jobs:
   send-digest:
     runs-on: ubuntu-latest
     steps:
-      - name: Fire Future Health daily digest
+      # THIS RAN 52 TIMES, SENT NOTHING, AND WENT GREEN EVERY TIME.
+      #
+      # The old line was:
+      #   curl -s -L -X POST "$EP" -d '{"action":"run_digest"}'
+      #
+      # The endpoint answers a POST with a 302. `-L` follows it and Google
+      # rejects the followed request. Reproduced 2 September 2026: that pattern
+      # comes back with 1,564 bytes of "Error 411 (Length Required)" HTML.
+      # curl still exits 0, so the Action still passed. Fifty-two green check
+      # marks and not one email.
+      #
+      # CLAUDE.md in this same repo has documented this exact trap since August.
+      # The only piece of automation in the project did the one thing its own
+      # notes say never to do.
+      #
+      # Two things are fixed. It follows the 302 by hand, the way the notes say.
+      # And it now READS THE ANSWER and fails the job unless the endpoint reports
+      # success, so a green check means the digest actually sent.
+      - name: Send Valerie's daily digest
+        env:
+          EP: https://script.google.com/macros/s/AKfycbwc-FLnsJThCFmynUFb4m3KN3P895I-wATyPOxoGK4lWnIpVw6WGYkbBc3lCzJDMOymGg/exec
         run: |
-          curl -s -L -X POST "https://script.google.com/macros/s/AKfycbwc-FLnsJThCFmynUFb4m3KN3P895I-wATyPOxoGK4lWnIpVw6WGYkbBc3lCzJDMOymGg/exec" -d '{"action":"run_digest"}' --max-time 120
+          set -euo pipefail
+
+          echo "POSTing, then following the redirect by hand"
+          LOC=$(curl -sS -o /dev/null -w '%{redirect_url}' -X POST "$EP" \
+                  -d '{"action":"run_digest"}' --max-time 120)
+
+          if [ -z "$LOC" ]; then
+            echo "::error::The endpoint did not return a redirect. It normally answers a POST with a 302."
+            exit 1
+          fi
+
+          RESP=$(curl -sS "$LOC" --max-time 120)
+          echo "endpoint said: $RESP"
+
+          # It answers {"success":true,...} when it worked and
+          # {"success":false,"error":"..."} when it did not. Anything else,
+          # including a page of Google HTML, is a failure.
+          case "$RESP" in
+            *'"success":true'*)
+              echo "digest sent"
+              ;;
+            *)
+              echo "::error::The digest did NOT send. The endpoint returned: $RESP"
+              exit 1
+              ;;
+          esac
