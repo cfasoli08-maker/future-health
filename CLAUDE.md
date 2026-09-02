@@ -158,6 +158,13 @@ Twenty actions: `log_entry`, `log_supplement`, `log_food`, `food_photo`,
 **There is no way to delete or edit an Update or a Question.** Only Christopher
 can, by hand in the Sheet. Write the tile right the first time.
 
+**CHECK THE FIELD NAME AGAINST `index.html` BEFORE YOU POST.** `send_message` and
+`send_coach_message` take **`message`**, not `text`. `save_update` takes `title`
+and `body`. **A wrong field name still returns `{"success":true}` and writes a
+BLANK row onto her screen.** Earned 1 September 2026, when a blank message from
+Christopher landed in her thread at 11:35 PM and could not be deleted. Grep the
+action out of `index.html` first, then post, then read it back.
+
 **The endpoint returns a 302.** POST, read `redirect_url`, then GET it.
 `curl -L` turns it into a 405.
 
@@ -236,3 +243,28 @@ shipped. Do not tell him it shipped until this passes.**
 - `claude/`, `FINDINGS.md`, `.claude/` and `_to_delete/` are gitignored. The repo
   is public and all four carry patient detail.
 - `fh-state.json` IS published publicly. Flagged to Christopher, his call.
+
+
+## The business wiki. Run it, do not read it
+
+Personal and Future Health business knowledge lives at
+`C:\Users\Chris\Google Drive\Wiki\Christopher Fasoli`. Code knowledge stays here.
+Neither repeats the other.
+
+The wiki is a tool. Three commands, from `C:\Users\Chris\Google Drive\Wiki`:
+
+    claude\wiki.cmd read personal                    (Windows)
+    ./claude/wiki.sh read personal                    (bash, WSL, Cowork)
+    claude\wiki.cmd find <words>
+    claude\wiki.cmd learn personal "<Key>" "<what you learned>"
+
+Python is not installed on this Windows machine. The wrapper falls back to
+PowerShell automatically. Never call python directly.
+
+Ask the brain with `find` BEFORE you search the web, hunt a file, or ask
+Christopher anything. If a line answers it, answer from that line and stop.
+Write back with `learn` before the session ends. Never hand-edit an INDEX.md:
+it is generated and your edit is overwritten.
+
+Safe with many sessions at once. Every writer appends to its own journal file.
+Tested 2026-09-01 with 35 concurrent writers: nothing lost.

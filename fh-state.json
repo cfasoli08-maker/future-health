@@ -147,6 +147,11 @@
   "corrections": [
     {
       "date": "2026-09-01",
+      "was": "Her focus card said \"please do not add or drop anything else\" with no reason attached",
+      "now": "She added magnesium on the night of 1 Sep because the instruction did not say why. Her words: \"Your notes said Do Not Add anything and I did, not knowing to not make changes.\" An instruction with no reason behind it is not an instruction she can follow. Every hold on her card now carries its reason."
+    },
+    {
+      "date": "2026-09-01",
       "was": "August 25 Update tile, on her phone: \"5.9 this evening. Only three evening readings in your entire record are lower than that.\"",
       "now": "WRONG, and it is still on her screen. The 5.9 was her NOON reading. She tapped it into her noon session at 8:13 PM and the table filed it as an evening reading because it read the save clock. Her real 25 Aug evening reading is not in the record at all. The sentence compared a noon number against the list of evening numbers. The 5.9 itself is real and it is her second lowest noon reading ever. There is no way to edit or delete an Update tile."
     },
@@ -445,6 +450,7 @@
     "FIXED 29 Aug: the supplements page still read \"Sauerkraut — PAUSED until Aug 27\" while the focus card said it was back. One instruction, two sources, and the tile is where she acts. Both now say the same thing."
   ],
   "traps": [
+    "SEND FIELD NAMES: send_coach_message and send_message take \"message\", NOT \"text\". save_update takes \"title\" and \"body\". A wrong field name returns {\"success\":true} and writes a BLANK row into her thread. Earned 1 Sep 2026, when a blank message from Christopher landed on her phone at 11:35 PM. Read how index.html calls the action before calling it.",
     "SESSIONS: her app stamps the session she tapped into timeLocal as \"· morning\", \"· noon\" or \"· night\". THAT TAP IS THE TRUTH. The save clock is a fallback and only for 13-20 July, before the tag existed. She backfills her whole day in the evening: on 31 Aug at 6:28 PM she entered her morning reading, and reading it by the clock threw it away. Guard G11 stops this.",
     "TIME: timeLocal is her wall clock. The ISO timestamp is 2 hours ahead of America/Vancouver because her device sits at UTC-5. stamp() builds both from the device. Her own typed times (Jul 22 'about 10:00 pm' on a 10:41 PM row, Jul 24 '8;00 pm' on an 8:01 PM row, Jul 26 '12:00' on a 12:24 PM row, Jul 27 '9:00 pm' on a 9:13 PM row) prove timeLocal is the real one. Use timeLocal for everything. Never convert the ISO field.",
     "FOOD: a food row's time is when she pressed save, NOT when she ate. The meal log has an eat-time field that lands in the row as '· ate 7:30'. When it is there it wins.",
@@ -475,6 +481,7 @@
     "READ THE ARCS AND THE BLANKS LIST TOGETHER. On 28 Aug SCAN.md said \"gut ache 08-28 0\" in one section and \"2026-08-28: gut ache\" in the blanks four sections below. The generated file contradicted itself and the handoff copied the wrong half."
   ],
   "todo": [
+    "MAGNESIUM CONFOUND, night of 1 Sep. She took magnesium on her own, told us at 11:14 PM, and apologised. She was told to skip tomorrow night and told WHY (diastolic 55 on 28 Aug, magnesium lowers it, and one-thing-at-a-time during the sauerkraut week). HER 2 SEP MORNING NUMBER CARRIES MAGNESIUM. Do not read it as a sauerkraut number. Check she skipped on the 2nd.",
     "EVERY DAY: her blood pressure and pulse. Under 105 systolic or ANY dizziness on standing goes to Christopher the same day. Recovered from the 28 Aug low: 107/55, 107/59, 113/60, 120/64. Pulse 60 to 76.",
     "MAGNESIUM RETURN WATCH. AM diastolic is 64 and the rule is over 65 for a few days. Do NOT restore on a single reading. When it holds, 200mg every SECOND night, alone, watch 5 days. Set MAG_PAUSED = false in index.html.",
     "Sept 4: sauerkraut reintroduction readout, on her MORNING number, readable window 29 Aug onward. Push to 7 Sep if she misses a morning number.",
