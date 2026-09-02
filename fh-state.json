@@ -5,8 +5,8 @@
     "client": "valerie",
     "schema": 3,
     "lastScan": "2026-09-02",
-    "scanCount": 20,
-    "scanNote": "Scan 20, 2 Sep. Zero protocol changes. Her 1 Sep day completed overnight: fasting 8.4, noon 6.1, night 8.0, weight 139.8, BP 120/64, pulse 76, ZERO episodes, gut ache up to 3, magnesium 200mg logged. Her cream question was counted and gated REFUTED at both lags and she was told she keeps it. The magnesium instruction now sits on her card WITH ITS REASON, which is the fix for why she broke it. Sauerkraut day 6, n=4, not a result, and the 4 Sep readout is now confounded by the magnesium."
+    "scanCount": 21,
+    "scanNote": "Scan 21, 2 Sep, the audit-fix pass. Six things that were prose or nothing are now code. G12 compares what she LOGS to what the register says she is ON, and caught the 1 Sep magnesium on its first run. The scan now measures the three goals instead of leaving them in a document. Sleep hours (47 of 51 days), noon glucose, bowel warning, energy and blood pressure are in the engine for the first time. A Windows scheduled task, \"Future Health morning\", runs the whole thing daily at 7am and goes RED when a person is needed. Every private file mirrors to OneDrive on every push. Her digest email is fixed and sent for the first time in 52 runs. Still open and needing his hands: the endpoint has no lock."
   },
   "watermark": {
     "lastLogTimestamp": "2026-08-29T00:18:35.460Z",
@@ -487,13 +487,12 @@
     "READ THE ARCS AND THE BLANKS LIST TOGETHER. On 28 Aug SCAN.md said \"gut ache 08-28 0\" in one section and \"2026-08-28: gut ache\" in the blanks four sections below. The generated file contradicted itself and the handoff copied the wrong half."
   ],
   "todo": [
-    "MAGNESIUM CONFOUND, night of 1 Sep. She took magnesium on her own, told us at 11:14 PM, and apologised. She was told to skip tomorrow night and told WHY (diastolic 55 on 28 Aug, magnesium lowers it, and one-thing-at-a-time during the sauerkraut week). HER 2 SEP MORNING NUMBER CARRIES MAGNESIUM. Do not read it as a sauerkraut number. Check she skipped on the 2nd.",
-    "EVERY DAY: her blood pressure and pulse. Under 105 systolic or ANY dizziness on standing goes to Christopher the same day. Recovered from the 28 Aug low: 107/55, 107/59, 113/60, 120/64. Pulse 60 to 76.",
-    "MAGNESIUM RETURN WATCH. AM diastolic is 64 and the rule is over 65 for a few days. Do NOT restore on a single reading. When it holds, 200mg every SECOND night, alone, watch 5 days. Set MAG_PAUSED = false in index.html.",
-    "Sept 4: sauerkraut reintroduction readout, on her MORNING number, readable window 29 Aug onward. Push to 7 Sep if she misses a morning number.",
-    "HER SALT. Missed 28, 29, 30 Aug and 1 Sep. She asked in capitals on 26 Aug to be kept on about it. Keep the ask on the card. salt-volume cannot run until a \"less\" appears; every row so far reads \"usual\".",
-    "WEIGHT WATCH. 139.8 on 1 Sep, down 1.4 from 141.2, consistent with the CONFIRMED post-episode dip. If it falls two more days without an episode behind it, that is a different thing and it goes to Christopher.",
-    "Gastrocolic reflex: four timing taps, three say over 3 hours. Leaning negative. Do not close it and do not reopen food.",
+    "LOCK HER BACK END. claude/LOCK-HER-BACKEND.md. Christopher does the Apps Script half, I can do the app half and the Action half. Ship the app half FIRST or she is locked out of her own record.",
+    "Sept 4: sauerkraut readout, on her MORNING number. The watchdog will go red that morning if it is not read out. CONFOUNDED by the 1 Sep magnesium, so consider pushing to 7 Sep.",
+    "EVERY DAY: under 105 systolic or ANY dizziness on standing goes to Christopher the same day. The watchdog now checks this without anyone remembering.",
+    "MAGNESIUM RETURN WATCH. AM diastolic 55, 59, 60, 64. Rule is over 65 for a few days. Do NOT restore on one reading.",
+    "HER SALT. Missed 4 of the last 7. She asked in capitals to be kept on about it.",
+    "LABS: late September or early October, when she is back in Alberta. Do not keep asking before then.",
     "The 20 Aug tile \"It Is The Clock, Not The Food\" is still up and still retracted. Only Christopher can delete a tile."
   ],
   "_purpose": "This app tracks Valerie's health and finds root causes. That is the entire scope. No business, no clients, no brand, no landing page, no other hosting.",
@@ -597,5 +596,63 @@
       "The whoosh timing taps are still two and still disagree. Conclude nothing.",
       "A 29 Aug Update tile is written and NOT posted. save_update was blocked by the tool permission layer twice. Her focus card carries the same two messages."
     ]
+  },
+  "protocol": {
+    "_why": "Machine readable. G12 compares what she LOGS against this every scan. Names must match what index.html writes into the supplement rows, not the pretty names in tiers.",
+    "on": [
+      "Alpha lipoic acid",
+      "Florastor",
+      "Vitamin D3",
+      "Vitamin K2",
+      "Vitamin C",
+      "Sauerkraut"
+    ],
+    "held": [
+      {
+        "name": "Magnesium glycinate",
+        "since": "2026-08-21",
+        "why": "Blood pressure, not gut. Morning diastolic hit 55 on 28 Aug, the lowest of 101 readings. It returns at 200mg every second night when that number sits over 65 for a few days."
+      }
+    ],
+    "red": [
+      "Ibuprofen",
+      "Advil",
+      "Motrin",
+      "Robax",
+      "NSAID",
+      "Digestive Enzyme",
+      "Sublingual B12",
+      "5-HTP",
+      "Collagen-Biotin"
+    ],
+    "reviewedOn": "2026-09-02"
+  },
+  "labs": {
+    "status": "NONE IN THE RECORD. 177 days on protocol and not one blood test in this file.",
+    "expected": "Late September or early October 2026, when she is back in Alberta. Told by Christopher on 2 Sep 2026.",
+    "wanted": [
+      "A1c",
+      "eGFR and creatinine",
+      "B12",
+      "ferritin",
+      "CRP",
+      "albumin",
+      "lipids"
+    ],
+    "whyItMatters": "A1c is the only real check on whether 177 days of work moved her disease rather than her home readings. Kidney function gates several things. B12 is a straight measurement and she is on no supplement for it. Until these exist, every conclusion in this project rests on home equipment alone. DO NOT KEEP ASKING FOR THEM before late September."
+  },
+  "automation": {
+    "task": "Future Health morning",
+    "runs": "daily 07:00 Pacific, via claude/tools/watch.cmd",
+    "registered": "2026-09-02",
+    "what": "Runs the scan fresh, checks the safety triggers, checks whether a test has come due, reads the protocol-drift warnings, checks she has not stopped logging, writes claude/NEEDS-A-HUMAN.md and backs up every private file.",
+    "fails": "Exits 1 and the task goes RED when something needs a person today. A green run means the checks ran and found nothing, which is not the same as nobody looking.",
+    "digest": "The 9am GitHub Action is fixed as of 2 Sep. It had run 52 times and sent nothing, because curl -s -L against a 302 returns a Google Error 411 page and still exits 0. It now follows the redirect by hand and fails the job unless the endpoint reports success. Proved both branches."
+  },
+  "security": {
+    "status": "OPEN. Her endpoint answers anyone with no password. Confirmed 2 Sep by calling it with no credentials and receiving 56,203 characters of her health updates.",
+    "writeAccess": "UNKNOWN. The probe was refused by the safety layer and was not routed around. Assume it is open, because it is the same doPost with no check in front of it.",
+    "fix": "claude/LOCK-HER-BACKEND.md. Needs Christopher for the Apps Script half. A key in index.html cannot work because the repo is public.",
+    "alsoOpen": "fh-state.json is 47,141 characters of her readings and is in the public repo. Public since 19 Aug. His call."
   }
 }
