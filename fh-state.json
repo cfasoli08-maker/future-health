@@ -5,8 +5,8 @@
     "client": "valerie",
     "schema": 3,
     "lastScan": "2026-09-08",
-    "scanCount": 22,
-    "scanNote": "Scan 22, 8 Sep. THE SAUERKRAUT READOUT, four days overdue and read out now. Nine days on it. Mornings averaged 7.32 ON against 7.81 OFF. The pre-registered rule written 28 Aug said over 8.5 means sauerkraut is real and under 8 means the old signal was the calendar. It held at 7.32, so it is CLEARED on her fasting number as well as her gut. THREE mornings under 7.0 in five days: 6.9, 6.6, 6.8. Six in the whole record and half are this week. The 6.6 ties her best ever. Weight 142.6, best since 16 Aug. Salt logged six days running after she fixed it herself. Against that: wake-ups went to 3 for four nights and gut ache 2 to 4. One WATCH, sauerkraut to broken sleep at 5.1x but TIME CONFOUND. Asked her, changed nothing."
+    "scanCount": 23,
+    "scanNote": "8 Sep, the engine pass. Built the runner and the word miner. The program now runs the steps and calls the model instead of me deciding what to look at. Her own writing is a data source for the first time: ten new testable columns including cheese on 22 days and butter on 20, neither of which anything could ever see. 2,948 comparisons, up from 891 a week ago. One new lead from her words, and it is protective not harmful: fruit the day before, episodes 20% against 64%, 1 in 296. Almost certainly the underfeeding finding wearing another name, so it stays a lead. Two of my own guards caught my own new code today, which is the point of them."
   },
   "watermark": {
     "lastLogTimestamp": "2026-08-29T00:18:35.460Z",
@@ -651,5 +651,14 @@
     "writeAccess": "UNKNOWN. The probe was refused by the safety layer and was not routed around. Assume it is open, because it is the same doPost with no check in front of it.",
     "fix": "claude/LOCK-HER-BACKEND.md. Needs Christopher for the Apps Script half. A key in index.html cannot work because the repo is public.",
     "alsoOpen": "fh-state.json is 47,141 characters of her readings and is in the public repo. Public since 19 Aug. His call."
+  },
+  "engine": {
+    "built": "2026-09-08",
+    "runner": "claude/tools/run.js. Seven fixed steps. The program runs and calls the model, not the other way round. A step that does not complete fails the whole run and claude/RUN-LEDGER.md says which one. No partial updates.",
+    "wordMiner": "claude/tools/mine-words.js and claude/word-patterns.json. Reads her 15,213 characters of prose and turns them into columns. Ten variables she writes about constantly had no column at all: cheese_hard on 22 days, butter 20, red_meat 16, poultry 12, pickled 11, mayo 9, ginger 8, rice 6, plus appetite and being out of the house. She cannot tick a tile for the sun, but she WRITES it, so it becomes testable with no extra tap from her.",
+    "circularity": "Her whoosh notes feed the food and context groups only, never the symptom group. Mining \"no warning\" out of the episode record is the whooshNoWarning column wearing a second name.",
+    "anomalyChase": "Step 3 of the runner. Finds readings two or more deviations from HER OWN baseline on any variable, not from a threshold anyone typed, then pulls the whole record for the three days around each one. 40 strange readings across 29 days today.",
+    "scale": "891 comparisons on 1 Sep. 1,673 on 2 Sep. 2,948 today.",
+    "stillToBuild": "Auto-derive the question list from every column. Two-stage discovery and confirmation, so a suspect is written down first and tested on days that have not happened yet. A case file per suspect. Mechanism lookup."
   }
 }
