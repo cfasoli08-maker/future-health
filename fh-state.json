@@ -5,8 +5,8 @@
     "client": "valerie",
     "schema": 3,
     "lastScan": "2026-09-08",
-    "scanCount": 23,
-    "scanNote": "8 Sep, the engine pass. Built the runner and the word miner. The program now runs the steps and calls the model instead of me deciding what to look at. Her own writing is a data source for the first time: ten new testable columns including cheese on 22 days and butter on 20, neither of which anything could ever see. 2,948 comparisons, up from 891 a week ago. One new lead from her words, and it is protective not harmful: fruit the day before, episodes 20% against 64%, 1 in 296. Almost certainly the underfeeding finding wearing another name, so it stays a lead. Two of my own guards caught my own new code today, which is the point of them."
+    "scanCount": 24,
+    "scanNote": "8 Sep, the engine build, finished. Runner, word miner, anomaly chase, suspect register with discovery and confirmation split, 25 named mechanisms, and a test for each. 2,948 comparisons from 891 a week ago. Seven suspects registered with case files. Five gates on every push. Tested end to end including the failure path: deleting the wiki correctly fails the run at step 4 and marks the rest NOT RUN. Her app walked page by page on a 375px screen, all six pages, no errors, no overflow."
   },
   "watermark": {
     "lastLogTimestamp": "2026-08-29T00:18:35.460Z",
@@ -654,11 +654,17 @@
   },
   "engine": {
     "built": "2026-09-08",
-    "runner": "claude/tools/run.js. Seven fixed steps. The program runs and calls the model, not the other way round. A step that does not complete fails the whole run and claude/RUN-LEDGER.md says which one. No partial updates.",
-    "wordMiner": "claude/tools/mine-words.js and claude/word-patterns.json. Reads her 15,213 characters of prose and turns them into columns. Ten variables she writes about constantly had no column at all: cheese_hard on 22 days, butter 20, red_meat 16, poultry 12, pickled 11, mayo 9, ginger 8, rice 6, plus appetite and being out of the house. She cannot tick a tile for the sun, but she WRITES it, so it becomes testable with no extra tap from her.",
-    "circularity": "Her whoosh notes feed the food and context groups only, never the symptom group. Mining \"no warning\" out of the episode record is the whooshNoWarning column wearing a second name.",
-    "anomalyChase": "Step 3 of the runner. Finds readings two or more deviations from HER OWN baseline on any variable, not from a threshold anyone typed, then pulls the whole record for the three days around each one. 40 strange readings across 29 days today.",
-    "scale": "891 comparisons on 1 Sep. 1,673 on 2 Sep. 2,948 today.",
-    "stillToBuild": "Auto-derive the question list from every column. Two-stage discovery and confirmation, so a suspect is written down first and tested on days that have not happened yet. A case file per suspect. Mechanism lookup."
+    "command": "node claude/tools/run.js",
+    "steps": 8,
+    "runner": "Eight fixed steps. The program runs and calls the model, not the other way round. Any step that does not complete fails the whole run and claude/RUN-LEDGER.md names it and marks the rest NOT RUN. Proved by deleting claude/WIKI.md: the run failed at step 4 exactly as it should.",
+    "wordMiner": "claude/tools/mine-words.js + claude/word-patterns.json. Her 15,213 characters of prose become columns. Ten variables she writes about constantly had no column: cheese_hard 22 days, butter 20, red_meat 16, poultry 12, pickled 11, mayo 9, ginger 8, rice 6, appetite_up 7, out_of_house 5. She cannot tick a sun tile but she WRITES it, so heat, travel, effort and a bad night are all testable with no extra tap from her. Her whoosh notes feed food and context only, never symptom, because mining \"no warning\" out of the episode record is that column wearing a second name.",
+    "anomalyChase": "Step 3. Readings two or more deviations from HER OWN baseline on any variable, not a typed threshold, then the whole record for the three days around each. 40 strange readings across 29 days today.",
+    "suspects": "claude/tools/suspects.js, case files in claude/SUSPECTS.md, register in claude/suspects.json. Discovery trawls and produces suspects, which NEVER reach her. Confirmation tests each one only on days that did not exist when it was registered, at the ordinary bar, because it is one pre-registered question instead of three thousand at once. Nothing is ever quietly dropped: a dead suspect stays on file with the date it died.",
+    "freshDaysNeeded": "About six weeks. Proved: her one confirmed relationship reads 1 in 12 on 25 fresh days and correctly does not confirm, and 1 in 95 on 45 days and does.",
+    "mechanisms": "claude/mechanisms.json, 25 named biological pathways matched to her diagnosis. NO MECHANISM, NO CONFIRMATION, however good the numbers. Tested: the same true relationship with the pathway stripped out refuses to confirm.",
+    "tests": "claude/tools/suspects-test.js proves four cases including the two that matter, no-mechanism and registered-today. It runs against a scratch register and never touches hers.",
+    "gates": "Five on every push: private files, claim gate, publish gate, suspect register both ways, backup.",
+    "scale": "891 comparisons on 1 Sep. 1,673 on 2 Sep. 2,948 on 8 Sep.",
+    "next": "The list of outcomes and their thresholds is still hand-written. Her strange days are found against her own distribution but the named outcomes are a typed list. That is the next thing."
   }
 }
