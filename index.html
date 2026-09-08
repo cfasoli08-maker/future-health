@@ -604,7 +604,14 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     </div>
 
     <div class="coach-section" id="csec-updates" style="display:none">
-      <div class="section-label" style="margin-top:0.5rem;">Weekly update to Valerie</div>
+      <!-- ══ UPDATE MOM. The same two buttons that are on the Desktop, here on
+           his phone. The thinking runs on the PC, because that is where Node and
+           his Claude allowance are. This is the half that can live in the app:
+           read what the PC prepared, look at it, send it or throw it away. ══ -->
+      <div class="section-label" style="margin-top:0.5rem;">Update Mom</div>
+      <div id="pending-draft"><div class="coach-empty">Checking for a prepared update.</div></div>
+
+      <div class="section-label">Weekly update to Valerie</div>
       <div class="reply-card">
         <input class="reply-box" id="update-title-input" style="min-height:auto;margin-bottom:0.5rem;" placeholder="Title, e.g. Week of July 13">
         <textarea class="reply-box" id="update-body-input" placeholder="What changed, what moved to green, milestones, encouragement."></textarea>
@@ -2020,6 +2027,85 @@ async function publishUpdate() {
     loadCoachUpdates();
   }
 }
+// ══ THE PREPARED UPDATE ══
+//
+// The run happens on the PC. It cannot happen here: it needs Node, the day
+// table, the guards, the claim gate and the publish gate, and it costs money
+// against his Claude account. A key that could do it would have to sit in this
+// page, and this page is public.
+//
+// So the PC does the thinking and parks the result. This shows him what it
+// parked, on his phone, and gives him the same two buttons that are on his
+// Desktop: send it, or throw it away. Nothing here writes a word of its own.
+let pendingDraft = null;
+
+async function loadPendingDraft() {
+  const el = document.getElementById('pending-draft');
+  if (!el) return;
+  const r = await sheetCall({ action:'get_draft', clientId: currentClientId });
+  if (!r || !r.success || !r.draft) {
+    pendingDraft = null;
+    el.innerHTML = '<div class="coach-empty">Nothing prepared. Run "Update Mom" on the PC first.</div>';
+    return;
+  }
+  pendingDraft = r.draft;
+  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const parts = [];
+  parts.push('<div class="coach-log-time" style="margin-bottom:0.6rem;">Prepared ' +
+    esc(r.draft.preparedLocal || '') + '. It passed the gate. Nothing has been sent.</div>');
+  if (r.draft.tile) {
+    parts.push('<div class="coach-stat coach-stat-wide" style="margin-bottom:0.6rem;">' +
+      '<div class="coach-stat-label">Update tile. This cannot be deleted once it is sent.</div>' +
+      '<div class="coach-stat-sub">' + esc(r.draft.tile.title) + '</div>' +
+      '<div style="font-size:0.95rem;line-height:1.5;margin-top:0.4rem;">' + esc(r.draft.tile.body) + '</div></div>');
+  }
+  if (r.draft.question) {
+    parts.push('<div class="coach-stat coach-stat-wide" style="margin-bottom:0.6rem;">' +
+      '<div class="coach-stat-label">A question for her</div>' +
+      '<div style="font-size:0.95rem;line-height:1.5;margin-top:0.4rem;">' + esc(r.draft.question) + '</div></div>');
+  }
+  if (r.draft.toChristopher) {
+    parts.push('<div class="coach-stat coach-stat-wide" style="margin-bottom:0.6rem;">' +
+      '<div class="coach-stat-label">For you, not for her</div>' +
+      '<div style="font-size:0.92rem;line-height:1.5;margin-top:0.4rem;">' + esc(r.draft.toChristopher) + '</div></div>');
+  }
+  parts.push('<div class="reply-card">' +
+    '<button class="reply-send" onclick="sendPendingDraft()">Send this to Mom ✓</button>' +
+    '<button class="reply-send" style="background:var(--muted);margin-top:0.5rem;" ' +
+    'onclick="discardPendingDraft()">Throw it away</button>' +
+    '<div class="reply-sent" id="pending-sent">Sent 🌿</div></div>');
+  el.innerHTML = parts.join('');
+}
+
+async function sendPendingDraft() {
+  if (!pendingDraft) return;
+  const t = stamp();
+  let sent = 0;
+  if (pendingDraft.tile) {
+    const r = await sheetCall({ action:'save_update', clientId: currentClientId,
+      title: pendingDraft.tile.title, body: pendingDraft.tile.body,
+      timestamp: t.iso, timeLocal: t.local });
+    if (r.success) sent++;
+  }
+  if (pendingDraft.question) {
+    const r = await sheetCall({ action:'save_question', clientId: currentClientId,
+      question: pendingDraft.question, timestamp: t.iso, timeLocal: t.local });
+    if (r.success) sent++;
+  }
+  if (sent) {
+    await sheetCall({ action:'clear_draft', clientId: currentClientId });
+    const flash = document.getElementById('pending-sent');
+    if (flash) { flash.style.display='block'; setTimeout(()=>{flash.style.display='none';},3000); }
+    loadPendingDraft();
+    loadCoachUpdates();
+  }
+}
+
+async function discardPendingDraft() {
+  await sheetCall({ action:'clear_draft', clientId: currentClientId });
+  loadPendingDraft();
+}
+
 async function loadCoachUpdates() {
   const el = document.getElementById('coach-updates-list');
   if (!el) return;
@@ -2054,6 +2140,9 @@ function coachShowTab(name) {
     if (sec) sec.style.display = (t === name) ? '' : 'none';
     if (btn) btn.classList.toggle('active', t === name);
   });
+  // Look for a prepared update every time he opens the tab, so a run he did on
+  // the PC ten seconds ago is already sitting there when he picks up his phone.
+  if (name === 'updates') loadPendingDraft();
   if (name === 'trends') {
     // charts cannot size themselves while hidden, so (re)build them once the tab is visible
     // (setTimeout, not requestAnimationFrame: rAF never fires in a backgrounded browser tab)
