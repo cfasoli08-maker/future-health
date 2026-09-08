@@ -5,8 +5,8 @@
     "client": "valerie",
     "schema": 3,
     "lastScan": "2026-09-08",
-    "scanCount": 24,
-    "scanNote": "8 Sep, the engine build, finished. Runner, word miner, anomaly chase, suspect register with discovery and confirmation split, 25 named mechanisms, and a test for each. 2,948 comparisons from 891 a week ago. Seven suspects registered with case files. Five gates on every push. Tested end to end including the failure path: deleting the wiki correctly fails the run at step 4 and marks the rest NOT RUN. Her app walked page by page on a 375px screen, all six pages, no errors, no overflow."
+    "scanCount": 25,
+    "scanNote": "8 Sep, finished. The question list is derived from her own data now, not typed. Every numeric column gets outcomes at her own worst and best fifth, so a reading is caught for being extreme FOR HER rather than for crossing a number someone guessed. 9,482 comparisons, from 891 a week ago. 19 suspects on file with case files, 32 named pathways including several that say plainly there is no pathway. Two traps opened and closed the same day: seven same-column SHIPs (tylenol causes tylenol) now excluded at every lag, and the register could not read the auto outcomes so twelve leads made zero suspects until the spec was written out. All five gates pass, the runner does eight steps or fails loudly, her app walked page by page, everything backed up and pushed."
   },
   "watermark": {
     "lastLogTimestamp": "2026-08-29T00:18:35.460Z",
@@ -664,7 +664,8 @@
     "mechanisms": "claude/mechanisms.json, 25 named biological pathways matched to her diagnosis. NO MECHANISM, NO CONFIRMATION, however good the numbers. Tested: the same true relationship with the pathway stripped out refuses to confirm.",
     "tests": "claude/tools/suspects-test.js proves four cases including the two that matter, no-mechanism and registered-today. It runs against a scratch register and never touches hers.",
     "gates": "Five on every push: private files, claim gate, publish gate, suspect register both ways, backup.",
-    "scale": "891 comparisons on 1 Sep. 1,673 on 2 Sep. 2,948 on 8 Sep.",
-    "next": "The list of outcomes and their thresholds is still hand-written. Her strange days are found against her own distribution but the named outcomes are a typed list. That is the next thing."
+    "scale": "891 comparisons on 1 Sep. 1,673 on 2 Sep. 2,948 earlier on 8 Sep. 9,482 now.",
+    "next": "Nothing outstanding.",
+    "autoOutcomes": "Every numeric column gets outcomes at her own 20th and 80th centile, written to claude/auto-outcomes.json so the suspect register rebuilds the identical test. Thresholds are FROZEN at registration: if her distribution shifts, a suspect keeps being tested against the line it was registered on, not one that slid underneath it."
   }
 }
