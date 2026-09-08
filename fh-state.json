@@ -4,9 +4,9 @@
   "meta": {
     "client": "valerie",
     "schema": 3,
-    "lastScan": "2026-09-02",
-    "scanCount": 21,
-    "scanNote": "Scan 21, 2 Sep, the audit-fix pass. Six things that were prose or nothing are now code. G12 compares what she LOGS to what the register says she is ON, and caught the 1 Sep magnesium on its first run. The scan now measures the three goals instead of leaving them in a document. Sleep hours (47 of 51 days), noon glucose, bowel warning, energy and blood pressure are in the engine for the first time. A Windows scheduled task, \"Future Health morning\", runs the whole thing daily at 7am and goes RED when a person is needed. Every private file mirrors to OneDrive on every push. Her digest email is fixed and sent for the first time in 52 runs. Still open and needing his hands: the endpoint has no lock."
+    "lastScan": "2026-09-08",
+    "scanCount": 22,
+    "scanNote": "Scan 22, 8 Sep. THE SAUERKRAUT READOUT, four days overdue and read out now. Nine days on it. Mornings averaged 7.32 ON against 7.81 OFF. The pre-registered rule written 28 Aug said over 8.5 means sauerkraut is real and under 8 means the old signal was the calendar. It held at 7.32, so it is CLEARED on her fasting number as well as her gut. THREE mornings under 7.0 in five days: 6.9, 6.6, 6.8. Six in the whole record and half are this week. The 6.6 ties her best ever. Weight 142.6, best since 16 Aug. Salt logged six days running after she fixed it herself. Against that: wake-ups went to 3 for four nights and gut ache 2 to 4. One WATCH, sauerkraut to broken sleep at 5.1x but TIME CONFOUND. Asked her, changed nothing."
   },
   "watermark": {
     "lastLogTimestamp": "2026-08-29T00:18:35.460Z",
@@ -37,16 +37,6 @@
     "gitNote": "Aug 20: the local clone was 15 commits BEHIND origin/main while its working index.html already matched live, because a prior session curl'd the live file instead of pulling. Fixed with git reset --mixed origin/main. Check `git status -sb` before committing."
   },
   "tests": [
-    {
-      "id": "sauerkraut-reintroduction",
-      "opened": "2026-08-28",
-      "readout": "2026-09-04, push to 2026-09-07 if she misses a morning number",
-      "why": "She restarted sauerkraut the morning of Aug 28 after an 8-day washout. The GUT question is already closed negative: she had an episode every day she was off it. The open question is her MORNING BLOOD SUGAR, which scored 6.4x at lag 1 but was flagged TIME CONFOUND because sauerkraut and the fasting drift started the same week. This reintroduction is the only thing that can separate them.",
-      "success": "Seven days back on it. If her morning fasting climbs back over 8.5 the confound is broken and sauerkraut is real. If it holds under 8, the original signal was the calendar.",
-      "status": "running, day 6. Ticked 29, 30, 31 Aug and 1 Sep. Mornings 7.4, 7.8, 7.1, 8.4, mean 7.68 against 7.81 off it. n=4 and inside her spread, NOT a result. CONFOUNDED: she took 200mg magnesium on the night of 1 Sep, so her 2 Sep morning number is not a clean sauerkraut reading. Consider pushing the readout to 7 Sep.",
-      "variable": "supps.Sauerkraut",
-      "confound": "CASINO BUFFET, 28 Aug 7:20pm: soup, pork roast, cabbage roll and THREE desserts. Day one of the week. Her 29 Aug morning number carries the buffet, not the sauerkraut. Read the sauerkraut window from 30 Aug. Do NOT raise the buffet with her as a fault."
-    },
     {
       "id": "gastrocolic-reflex",
       "opened": "2026-08-24",
@@ -101,6 +91,12 @@
     }
   ],
   "closed": [
+    {
+      "id": "sauerkraut-reintroduction",
+      "closed": "2026-09-08",
+      "verdict": "CLEARED on her fasting number. The original signal was the calendar, not the sauerkraut.",
+      "evidence": "Pre-registered on 28 Aug, BEFORE the week ran: \"Seven days back on it. If her morning fasting climbs back over 8.5 the confound is broken and sauerkraut is real. If it holds under 8, the original signal was the calendar.\" She ran nine days, 29 Aug to 6 Sep, ticking it every day. Eight mornings recorded on it, mean 7.32 [7.4, 7.8, 7.1, 8.4, 6.9, 6.6, 7.6, 6.8] against seven mornings off it 21-28 Aug, mean 7.81. It went DOWN 0.49, not up. Through the gate at lag 1 the 8.5+ claim is BLOCKED at 1 in 9. The gut side closed NEGATIVE on 24 Aug. Both halves are now answered. One confound noted and it does not change the direction: she took 200mg magnesium on the night of 1 Sep. She stopped ticking on 7 Sep and has been asked whether she stopped or forgot."
+    },
     {
       "id": "heavy-cream-gut",
       "closed": "2026-09-01",
@@ -487,13 +483,14 @@
     "READ THE ARCS AND THE BLANKS LIST TOGETHER. On 28 Aug SCAN.md said \"gut ache 08-28 0\" in one section and \"2026-08-28: gut ache\" in the blanks four sections below. The generated file contradicted itself and the handoff copied the wrong half."
   ],
   "todo": [
-    "LOCK HER BACK END. claude/LOCK-HER-BACKEND.md. Christopher does the Apps Script half, I can do the app half and the Action half. Ship the app half FIRST or she is locked out of her own record.",
-    "Sept 4: sauerkraut readout, on her MORNING number. The watchdog will go red that morning if it is not read out. CONFOUNDED by the 1 Sep magnesium, so consider pushing to 7 Sep.",
-    "EVERY DAY: under 105 systolic or ANY dizziness on standing goes to Christopher the same day. The watchdog now checks this without anyone remembering.",
-    "MAGNESIUM RETURN WATCH. AM diastolic 55, 59, 60, 64. Rule is over 65 for a few days. Do NOT restore on one reading.",
-    "HER SALT. Missed 4 of the last 7. She asked in capitals to be kept on about it.",
+    "HER SLEEP. Wake-ups went to 3 a night on 4, 5, 6 and 7 Sep after sitting at 2, and her gut ache went 2 to 4 over the same days. A question went to her 8 Sep. This is the only thing moving the wrong way. WATCH says sauerkraut to broken sleep at 5.1x but TIME CONFOUND, so it may be nothing.",
+    "DID SHE STOP THE SAUERKRAUT? No tick on 7 Sep after nine days. Asked in the 8 Sep tile.",
+    "LOCK HER BACK END. claude/LOCK-HER-BACKEND.md. Christopher does the Apps Script half. Ship the app half FIRST or she is locked out.",
+    "MAGNESIUM RETURN WATCH. AM diastolic 64, 65, 75, 66, 66, 67 over the last six days. The rule is over 65 for a few days and it is now sitting there. NEXT SCAN SHOULD DECIDE. Restore ALONE, 200mg every second night, watch five days.",
+    "EVERY DAY: under 105 systolic or ANY dizziness on standing goes to Christopher the same day. The watchdog checks this without anyone remembering.",
+    "THE SCHEDULED TASK MISSED 7 SEP with error -2147020576, the machine was asleep. Fixed 8 Sep to wake the machine and to run when a missed start is detected.",
     "LABS: late September or early October, when she is back in Alberta. Do not keep asking before then.",
-    "The 20 Aug tile \"It Is The Clock, Not The Food\" is still up and still retracted. Only Christopher can delete a tile."
+    "She replied 7 Sep 11:44 PM about the peptides: \"I am on board but hope it is not injected.\" Christopher is talking to her."
   ],
   "_purpose": "This app tracks Valerie's health and finds root causes. That is the entire scope. No business, no clients, no brand, no landing page, no other hosting.",
   "goal": {
