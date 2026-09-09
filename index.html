@@ -2051,8 +2051,10 @@ async function loadPendingDraft() {
   pendingDraft = r.draft;
   const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
   const parts = [];
+  // "5:44 p.m." already ends in a full stop, so do not add a second one.
+  const when = String(r.draft.preparedLocal || '').replace(/\.\s*$/, '');
   parts.push('<div class="coach-log-time" style="margin-bottom:0.6rem;">Prepared ' +
-    esc(r.draft.preparedLocal || '') + '. It passed the gate. Nothing has been sent.</div>');
+    esc(when) + '. It passed the gate. Nothing has been sent.</div>');
   if (r.draft.tile) {
     parts.push('<div class="coach-stat coach-stat-wide" style="margin-bottom:0.6rem;">' +
       '<div class="coach-stat-label">Update tile. This cannot be deleted once it is sent.</div>' +
