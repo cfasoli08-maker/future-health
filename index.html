@@ -63,6 +63,15 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .focus-item { display:flex; gap:0.85rem; align-items:flex-start; padding:0.7rem 0; border-top:1px solid rgba(255,255,255,0.28); font-size:0.98rem; line-height:1.5; }
 .focus-num { flex-shrink:0; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.22); display:flex; align-items:center; justify-content:center; font-family:'Oswald',sans-serif; font-weight:600; }
 .focus-item span { opacity:0.92; }
+/* Her button. Big, because she is 75 and reads this on a phone. */
+.ask-card { background:var(--surface); border-radius:var(--radius); padding:1.1rem; margin-bottom:0.9rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+.ask-btn { width:100%; border:none; border-radius:14px; background:var(--sage); color:#fff; font-family:'Oswald',sans-serif; font-size:1.15rem; font-weight:600; letter-spacing:0.02em; padding:1rem; cursor:pointer; }
+.ask-btn:disabled { background:var(--muted); cursor:default; }
+.ask-note { font-size:0.9rem; color:var(--muted); text-align:center; margin-top:0.55rem; line-height:1.45; }
+.ask-goal { font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:600; line-height:1.2; margin-bottom:0.35rem; }
+.ask-sub { font-size:0.98rem; color:var(--muted); margin-bottom:0.9rem; line-height:1.5; }
+.ask-item { border-top:1px solid rgba(0,0,0,0.08); padding:0.75rem 0; font-size:1rem; line-height:1.55; }
+.ask-item b { display:block; margin-bottom:0.2rem; }
 
 /* ── INPUT TILES ── */
 .tile { border-radius:var(--radius); padding:1.5rem 1.4rem; margin-bottom:0.9rem; min-height:112px; display:flex; align-items:center; gap:1.1rem; cursor:pointer; border:3px solid var(--green); background:var(--green-soft); transition:transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease; box-shadow:0 2px 8px rgba(0,0,0,0.04); will-change:transform; }
@@ -400,6 +409,18 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
       <div class="focus-item"><span class="focus-num">4</span><div><b>Thank you for the salt. You fixed that one yourself.</b><br><span>You wrote to me on the 2nd that you sometimes forget to post it and that you do finger dip all day. Since then you have marked it every single day: the 2nd, 3rd, 4th, 5th, 6th and 7th. Six in a row, and one of them was "more". That is exactly what I needed and I am going to stop asking.</span></div></div>
       <div class="focus-item"><span class="focus-num">5</span><div><b>One thing has gone the wrong way, and it is your sleep.</b><br><span>Three wake-ups a night for four nights running, the 4th through the 7th. Before that you were on two. Your gut ache also went from a 2 to a 4 across the same days. I am not going to guess at why, and there is one short question about it on your Updates page. Your blood pressure is fine now, 118 over 67, and your magnesium is still out until that bottom number sits over 65 for a few days. It is close.</span></div></div>
     </div>
+
+    <!-- ══ HER BUTTON ══
+         She waited for her son to be at a computer. Now she does not. This
+         reads everything she has ever logged and tells her how she is doing,
+         right now, and it tells Christopher she asked. It can never post an
+         Update tile, because a tile cannot be deleted and that stays his. ══ -->
+    <div class="ask-card">
+      <button class="ask-btn" id="ask-btn" onclick="askHowAmIDoing()">How am I doing right now?</button>
+      <div class="ask-note" id="ask-note">It reads your whole record. It takes about a minute.</div>
+    </div>
+    <div id="ask-answer"></div>
+
     <div class="section-label">Today's log · tap a time of day to open it</div>
     <div id="sessions"></div>
   </div>
@@ -609,6 +630,10 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
            his Claude allowance are. This is the half that can live in the app:
            read what the PC prepared, look at it, send it or throw it away. ══ -->
       <div class="section-label" style="margin-top:0.5rem;">Update Mom</div>
+      <div class="ask-card">
+        <button class="ask-btn" id="make-update-btn" onclick="makeAnUpdateNow()">Make a new update</button>
+        <div class="ask-note" id="make-update-note">Runs the whole thing. Nothing is sent until you press send.</div>
+      </div>
       <div id="pending-draft"><div class="coach-empty">Checking for a prepared update.</div></div>
 
       <div class="section-label">Weekly update to Valerie</div>
@@ -2027,6 +2052,88 @@ async function publishUpdate() {
     loadCoachUpdates();
   }
 }
+// ══ THE THINKING SERVER ══
+//
+// 9 September 2026. This used to only run on Christopher's PC, so an update
+// could only be made when he was sitting at it. He asked why, at a football
+// game, he could not do it from his phone like every other app he owns. There
+// was no good answer, so the pipeline moved to a server and both buttons below
+// call it. The guards and the publish gate run there exactly as they did on his
+// desk. Nothing reaches her screen that has not been through them.
+//
+// The token here is not a secret. This page is public, so it cannot hold one.
+// It only stops a passer by, and the server caps the runs a day so nobody can
+// spend his money by hammering it.
+const BRAIN_URL = 'https://future-health-brain.fly.dev';
+const BRAIN_TOKEN = '49419f6e8ed5fb77e50488102dd49e2f2e72';
+
+async function askTheBrain(path) {
+  try {
+    const res = await fetch(BRAIN_URL + path, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ token: BRAIN_TOKEN })
+    });
+    return await res.json();
+  } catch (e) {
+    return { ok: false, error: 'Could not reach it. Check you have signal and try again.' };
+  }
+}
+
+// Hers. She asks, she gets the answer on this screen, and Christopher is told
+// she asked because the same result is parked in his coach view.
+async function askHowAmIDoing() {
+  const btn = document.getElementById('ask-btn');
+  const note = document.getElementById('ask-note');
+  const out = document.getElementById('ask-answer');
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = 'Reading your record...';
+  note.textContent = 'This takes about a minute. You can leave this screen open.';
+  out.innerHTML = '';
+
+  const r = await askTheBrain('/api/her-check');
+
+  btn.disabled = false;
+  btn.textContent = 'How am I doing right now?';
+  if (!r.ok || !r.card) {
+    note.textContent = r.error || 'It could not finish. Nothing was sent. Try again in a minute.';
+    return;
+  }
+  note.textContent = 'Christopher has been sent this too.';
+  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const c = r.card;
+  const bits = ['<div class="ask-card">'];
+  if (c.goal) bits.push('<div class="ask-goal">' + esc(c.goal) + '</div>');
+  if (c.sub) bits.push('<div class="ask-sub">' + esc(c.sub) + '</div>');
+  (c.items || []).forEach(function (it) {
+    bits.push('<div class="ask-item"><b>' + esc(it.head) + '</b>' + esc(it.body) + '</div>');
+  });
+  bits.push('</div>');
+  out.innerHTML = bits.join('');
+}
+
+// His. Same run, but he gets it parked to look at and send.
+async function makeAnUpdateNow() {
+  const btn = document.getElementById('make-update-btn');
+  const note = document.getElementById('make-update-note');
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = 'Thinking...';
+  if (note) note.textContent = 'Reading her record, running the guards and the gate. About a minute.';
+
+  const r = await askTheBrain('/api/update');
+
+  btn.disabled = false;
+  btn.textContent = 'Make a new update';
+  if (!r.ok) {
+    if (note) note.textContent = r.error || 'It did not finish. Nothing was sent.';
+    return;
+  }
+  if (note) note.textContent = 'Done. It passed the gate. Nothing has been sent to her yet.';
+  loadPendingDraft();
+}
+
 // ══ THE PREPARED UPDATE ══
 //
 // The run happens on the PC. It cannot happen here: it needs Node, the day
