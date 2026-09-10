@@ -2051,36 +2051,49 @@ async function publishUpdate() {
     loadCoachUpdates();
   }
 }
-// ══ THE THINKING SERVER ══
+// ══ SHE ASKS, HIS COMPUTER ANSWERS ══
 //
-// 9 September 2026. This used to only run on Christopher's PC, so an update
-// could only be made when he was sitting at it. He asked why, at a football
-// game, he could not do it from his phone like every other app he owns. There
-// was no good answer, so the pipeline moved to a server and both buttons below
-// call it. The guards and the publish gate run there exactly as they did on his
-// desk. Nothing reaches her screen that has not been through them.
+// 10 September 2026. This used to call a server that thought in the cloud on a
+// metered API key. The key cost money and ran out, and on the day it ran out
+// her button died. Worse, the runner had a Windows fault that meant it had
+// NEVER used his Claude subscription: it silently billed him per token instead.
 //
-// The token here is not a secret. This page is public, so it cannot hold one.
-// It only stops a passer by, and the server caps the runs a day so nobody can
-// spend his money by hammering it.
-const BRAIN_URL = 'https://future-health-brain.fly.dev';
-const BRAIN_TOKEN = '49419f6e8ed5fb77e50488102dd49e2f2e72';
+// Now her button leaves a question in the sheet. The agent on his computer
+// picks it up within seconds, does the real thinking on his subscription, and
+// puts the answer back. Nothing is templated, nothing is metered, and the
+// guards and the publish gate run exactly as they always did.
+//
+// If his computer is off she is told so plainly, and her question waits.
+const ASK_POLL_MS = 4000;
+const ASK_GIVE_UP_MS = 8 * 60 * 1000;
+const HE_IS_STALE_MS = 4 * 60 * 1000;
 
-async function askTheBrain(path) {
-  try {
-    const res = await fetch(BRAIN_URL + path, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ token: BRAIN_TOKEN })
-    });
-    return await res.json();
-  } catch (e) {
-    return { ok: false, error: 'Could not reach it. Check you have signal and try again.' };
+function heIsOnline(beat) {
+  if (!beat) return false;
+  const t = Date.parse(beat);
+  return !!t && (Date.now() - t) < HE_IS_STALE_MS;
+}
+
+async function leaveAQuestion(who) {
+  const t = stamp();
+  return await sheetCall({ action: 'save_ask', clientId: who, timestamp: t.iso });
+}
+
+async function waitForTheAnswer(who, onTick) {
+  const started = Date.now();
+  for (;;) {
+    await new Promise(r => setTimeout(r, ASK_POLL_MS));
+    const r = await sheetCall({ action: 'get_ask', clientId: who });
+    if (r && r.status === 'done' && r.answer) return { answer: r.answer };
+    if (Date.now() - started > ASK_GIVE_UP_MS) return { tooLong: true };
+    if (onTick) onTick(r || {});
   }
 }
 
-// Hers. She asks, she gets the answer on this screen, and Christopher is told
-// she asked because the same result is parked in his coach view.
+const OFFLINE_LINE = 'Christopher is offline right now. Your question is saved, ' +
+                     'and it will be answered as soon as he is back.';
+
+// ── HERS ──
 async function askHowAmIDoing() {
   const btn = document.getElementById('ask-btn');
   const note = document.getElementById('ask-note');
@@ -2088,20 +2101,37 @@ async function askHowAmIDoing() {
   if (!btn) return;
   btn.disabled = true;
   btn.textContent = 'Reading your record...';
-  note.textContent = 'This takes about a minute. You can leave this screen open.';
+  note.textContent = 'This takes a minute or two. You can leave this screen open.';
   out.innerHTML = '';
 
-  const r = await askTheBrain('/api/her-check');
+  const left = await leaveAQuestion('valerie');
+  if (!left || !left.success) {
+    btn.disabled = false;
+    btn.textContent = 'How am I doing right now?';
+    note.textContent = 'I could not send that just now. Please try again in a minute.';
+    return;
+  }
+
+  const first = await sheetCall({ action: 'get_ask', clientId: 'valerie' });
+  if (first && !heIsOnline(first.heartbeat)) note.textContent = OFFLINE_LINE;
+
+  const got = await waitForTheAnswer('valerie', function (r) {
+    note.textContent = heIsOnline(r.heartbeat)
+      ? 'Still reading. It looks at everything you have ever logged.'
+      : OFFLINE_LINE;
+  });
 
   btn.disabled = false;
   btn.textContent = 'How am I doing right now?';
-  if (!r.ok || !r.card) {
-    note.textContent = r.error || 'It could not finish. Nothing was sent. Try again in a minute.';
-    return;
-  }
+
+  if (got.tooLong) { note.textContent = OFFLINE_LINE; return; }
+  const a = got.answer;
+  if (a.error) { note.textContent = a.error; return; }
+  if (!a.card) { note.textContent = 'It could not finish this time. Please try again later.'; return; }
+
   note.textContent = 'Christopher can see this too.';
   const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-  const c = r.card;
+  const c = a.card;
   const bits = ['<div class="ask-card">'];
   if (c.goal) bits.push('<div class="ask-goal">' + esc(c.goal) + '</div>');
   if (c.sub) bits.push('<div class="ask-sub">' + esc(c.sub) + '</div>');
@@ -2112,23 +2142,36 @@ async function askHowAmIDoing() {
   out.innerHTML = bits.join('');
 }
 
-// His. Same run, but he gets it parked to look at and send.
+// ── HIS ──
 async function makeAnUpdateNow() {
   const btn = document.getElementById('make-update-btn');
   const note = document.getElementById('make-update-note');
   if (!btn) return;
   btn.disabled = true;
   btn.textContent = 'Thinking...';
-  if (note) note.textContent = 'Reading her record, running the guards and the gate. About a minute.';
+  if (note) note.textContent = 'Running the guards, the register and the gate. A minute or two.';
 
-  const r = await askTheBrain('/api/update');
+  const left = await leaveAQuestion('coach');
+  if (!left || !left.success) {
+    btn.disabled = false;
+    btn.textContent = 'Make a new update';
+    if (note) note.textContent = 'Could not reach the sheet. Try again in a minute.';
+    return;
+  }
+
+  const got = await waitForTheAnswer('coach', function (r) {
+    if (note) note.textContent = heIsOnline(r.heartbeat)
+      ? 'Still thinking.'
+      : 'Your computer is offline. This will run as soon as it is back.';
+  });
 
   btn.disabled = false;
   btn.textContent = 'Make a new update';
-  if (!r.ok) {
-    if (note) note.textContent = r.error || 'It did not finish. Nothing was sent.';
+  if (got.tooLong) {
+    if (note) note.textContent = 'Your computer is offline. This will run as soon as it is back.';
     return;
   }
+  if (got.answer && got.answer.error) { if (note) note.textContent = got.answer.error; return; }
   if (note) note.textContent = 'Done. It passed the gate. Nothing has been sent to her yet.';
   loadPendingDraft();
 }
