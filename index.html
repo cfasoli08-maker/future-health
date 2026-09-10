@@ -2099,7 +2099,7 @@ async function askHowAmIDoing() {
     note.textContent = r.error || 'It could not finish. Nothing was sent. Try again in a minute.';
     return;
   }
-  note.textContent = 'Christopher has been sent this too.';
+  note.textContent = 'Christopher can see this too.';
   const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
   const c = r.card;
   const bits = ['<div class="ask-card">'];
@@ -2156,6 +2156,26 @@ async function loadPendingDraft() {
   }
   pendingDraft = r.draft;
   const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+  // She pressed her own button. This is a record of what she was shown, not
+  // something waiting to be sent, so it gets no Send button. She has read it.
+  if (r.draft.fromHer) {
+    const c = r.draft.card || {};
+    const bits = ['<div class="coach-log-time" style="margin-bottom:0.6rem;">Your mom pressed her button ' +
+      esc(String(r.draft.preparedLocal || '').replace(/\.\s*$/, '')) +
+      '. This is what she was shown. Nothing is waiting to be sent.</div>',
+      '<div class="ask-card">'];
+    if (c.goal) bits.push('<div class="ask-goal">' + esc(c.goal) + '</div>');
+    if (c.sub) bits.push('<div class="ask-sub">' + esc(c.sub) + '</div>');
+    (c.items || []).forEach(function (it) {
+      bits.push('<div class="ask-item"><b>' + esc(it.head) + '</b>' + esc(it.body) + '</div>');
+    });
+    bits.push('</div><div class="reply-card"><button class="reply-send" ' +
+      'style="background:var(--muted);" onclick="discardPendingDraft()">Clear this</button></div>');
+    el.innerHTML = bits.join('');
+    return;
+  }
+
   const parts = [];
   // "5:44 p.m." already ends in a full stop, so do not add a second one.
   const when = String(r.draft.preparedLocal || '').replace(/\.\s*$/, '');
