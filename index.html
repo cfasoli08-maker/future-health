@@ -1921,14 +1921,38 @@ const wins = [
   { icon:"🌱", title:"Week 8: mowing the lawn", desc:"Back yard and back lane mowed, laundry done, dehumidifier hauled, eight weeks after a full knee replacement. Knee pain at 3, the lowest since surgery.", date:"Jul 26–28" }
 ];
 
-function initWins() {
+// Her Wins page. The typed list below stopped at 17 August and she noticed a
+// month of nothing. Since 16 September 2026 the agent writes milestones too,
+// they pass the publish gate, and they land in the sheet. This shows the
+// agent's ones first, newest on top, then the typed history.
+function niceWinDate(d) {
+  const s = String(d || '');
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+  if (!m) return s;
+  const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return MON[Number(m[2]) - 1] + ' ' + Number(m[3]);
+}
+function renderWins(list) {
+  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
   const wc = document.getElementById('wins-count');
-  if (wc) wc.textContent = wins.length;
-  document.getElementById('wins-list').innerHTML = wins.map(w=>`
+  if (wc) wc.textContent = list.length;
+  document.getElementById('wins-list').innerHTML = list.map(w=>`
     <div class="win-card">
-      <div class="win-emoji">${w.icon}</div>
-      <div><div class="win-title">${w.title}</div><div class="win-desc">${w.desc}</div><div class="win-date">${w.date}</div></div>
+      <div class="win-emoji">${esc(w.icon)}</div>
+      <div><div class="win-title">${esc(w.title)}</div><div class="win-desc">${esc(w.desc)}</div><div class="win-date">${esc(w.date)}</div></div>
     </div>`).join('');
+}
+async function initWins() {
+  renderWins(wins);
+  try {
+    const r = await sheetCall({ action: 'get_milestones', clientId: currentClientId });
+    const fresh = ((r && r.milestones) || [])
+      .filter(m => m && m.title)
+      .map(m => ({ icon: m.icon || '✦', title: m.title, desc: m.desc, date: niceWinDate(m.date),
+                   _when: Date.parse(String(m.date)) || 0 }))
+      .sort((a, b) => b._when - a._when);
+    if (fresh.length) renderWins(fresh.concat(wins));
+  } catch (e) { /* the typed list is already on screen */ }
 }
 
 /* ── COACH CHAT ── */
@@ -2085,6 +2109,12 @@ async function waitForTheAnswer(who, onTick) {
     await new Promise(r => setTimeout(r, ASK_POLL_MS));
     const r = await sheetCall({ action: 'get_ask', clientId: who });
     if (r && r.status === 'done' && r.answer) return { answer: r.answer };
+    // Held: his Claude allowance is used up for the moment. Her question is
+    // safe and the agent will come back to it by itself. She is told so in
+    // plain words and does not sit watching a spinner.
+    if (r && r.status === 'busy') {
+      return { held: true, note: (r.answer && r.answer.note) || '' };
+    }
     if (Date.now() - started > ASK_GIVE_UP_MS) return { tooLong: true };
     if (onTick) onTick(r || {});
   }
@@ -2125,6 +2155,7 @@ async function askHowAmIDoing() {
   btn.textContent = 'How am I doing right now?';
 
   if (got.tooLong) { note.textContent = OFFLINE_LINE; return; }
+  if (got.held) { note.textContent = got.note || 'Your question is saved. I will answer it a little later on my own.'; return; }
   const a = got.answer;
   if (a.error) { note.textContent = a.error; return; }
   if (!a.card) { note.textContent = 'It could not finish this time. Please try again later.'; return; }
@@ -2171,6 +2202,10 @@ async function makeAnUpdateNow() {
     if (note) note.textContent = 'Your computer is offline. This will run as soon as it is back.';
     return;
   }
+  if (got.held) {
+    if (note) note.textContent = got.note || 'Held. It will try again on its own.';
+    return;
+  }
   if (got.answer && got.answer.error) { if (note) note.textContent = got.answer.error; return; }
   if (note) note.textContent = 'Done. It passed the gate. Nothing has been sent to her yet.';
   loadPendingDraft();
@@ -2202,6 +2237,19 @@ async function loadPendingDraft() {
 
   // She pressed her own button. This is a record of what she was shown, not
   // something waiting to be sent, so it gets no Send button. She has read it.
+  // The agent could not think when she pressed her button. Usually his Claude
+  // allowance was used up for the moment. Her question is held and will be
+  // answered on its own, and this is him being told, which he asked for.
+  if (r.draft.alert) {
+    el.innerHTML =
+      '<div class="coach-stat coach-stat-wide" style="border-left:5px solid #B8912F;margin-bottom:0.6rem;">' +
+      '<div class="coach-stat-label">Needs you to know, ' + esc(String(r.draft.preparedLocal || '').replace(/\.\s*$/, '')) + '</div>' +
+      '<div style="font-size:0.98rem;line-height:1.5;margin-top:0.4rem;">' + esc(r.draft.alert) + '</div></div>' +
+      '<div class="reply-card"><button class="reply-send" style="background:var(--muted);" ' +
+      'onclick="discardPendingDraft()">Got it, clear this</button></div>';
+    return;
+  }
+
   if (r.draft.fromHer) {
     const c = r.draft.card || {};
     const bits = ['<div class="coach-log-time" style="margin-bottom:0.6rem;">Your mom pressed her button ' +
