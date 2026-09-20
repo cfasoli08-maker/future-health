@@ -630,8 +630,8 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
            read what the PC prepared, look at it, send it or throw it away. ══ -->
       <div class="section-label" style="margin-top:0.5rem;">Update Mom</div>
       <div class="ask-card">
-        <button class="ask-btn" id="make-update-btn" onclick="makeAnUpdateNow()">Make a new update</button>
-        <div class="ask-note" id="make-update-note">Runs the whole thing. Nothing is sent until you press send.</div>
+        <button class="ask-btn" id="make-update-btn" onclick="makeAnUpdateNow()">Update Mom</button>
+        <div class="ask-note" id="make-update-note">Runs the whole thing and sends it to her. One press.</div>
       </div>
       <div id="pending-draft"><div class="coach-empty">Checking for a prepared update.</div></div>
 
@@ -2185,7 +2185,7 @@ async function makeAnUpdateNow() {
   const left = await leaveAQuestion('coach');
   if (!left || !left.success) {
     btn.disabled = false;
-    btn.textContent = 'Make a new update';
+    btn.textContent = 'Update Mom';
     if (note) note.textContent = 'Could not reach the sheet. Try again in a minute.';
     return;
   }
@@ -2197,7 +2197,7 @@ async function makeAnUpdateNow() {
   });
 
   btn.disabled = false;
-  btn.textContent = 'Make a new update';
+  btn.textContent = 'Update Mom';
   if (got.tooLong) {
     if (note) note.textContent = 'Your computer is offline. This will run as soon as it is back.';
     return;
@@ -2207,7 +2207,10 @@ async function makeAnUpdateNow() {
     return;
   }
   if (got.answer && got.answer.error) { if (note) note.textContent = got.answer.error; return; }
-  if (note) note.textContent = 'Done. It passed the gate. Nothing has been sent to her yet.';
+  const s = got.answer && got.answer.sent;
+  if (note) note.textContent = s && s.tileOnHerPage
+    ? 'Sent. It is on her phone, read back off her page.'
+    : 'It ran and passed the gate, but the send did not read back. Check below.';
   loadPendingDraft();
 }
 
@@ -2223,17 +2226,51 @@ async function makeAnUpdateNow() {
 // Desktop: send it, or throw it away. Nothing here writes a word of its own.
 let pendingDraft = null;
 
+// What is ACTUALLY on her phone, read off her live page. Earned 20 September
+// 2026. His coach view told him an update had gone out and her phone showed
+// nothing since the 16th. The two screens were reading different things. Now
+// his screen reads hers, so they cannot disagree.
+async function herNewestTile() {
+  try {
+    const r = await sheetCall({ action:'get_updates', clientId: currentClientId });
+    const u = ((r && r.updates) || [])[0];
+    return u ? { title: u.title, when: u.timeLocal } : null;
+  } catch (e) { return null; }
+}
+function herNewestLine(esc, t) {
+  return '<div class="coach-log-time" style="margin-top:0.6rem;">Newest on her phone right now: ' +
+    (t ? '"' + esc(t.title) + '", ' + esc(t.when) : 'nothing could be read') + '</div>';
+}
+
 async function loadPendingDraft() {
   const el = document.getElementById('pending-draft');
   if (!el) return;
   const r = await sheetCall({ action:'get_draft', clientId: currentClientId });
+  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const hers = await herNewestTile();
   if (!r || !r.success || !r.draft) {
     pendingDraft = null;
-    el.innerHTML = '<div class="coach-empty">Nothing prepared. Run "Update Mom" on the PC first.</div>';
+    el.innerHTML = '<div class="coach-empty">Nothing waiting.</div>' + herNewestLine(esc, hers);
     return;
   }
   pendingDraft = r.draft;
-  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+  // The receipt. His button sent it, it read back off her page, and this is
+  // the record, next to what her page shows this second.
+  if (r.draft.sent) {
+    const s = r.draft.sent;
+    el.innerHTML =
+      '<div class="coach-stat coach-stat-wide" style="border-left:5px solid var(--sage);margin-bottom:0.6rem;">' +
+      '<div class="coach-stat-label">Sent to Mom, ' + esc(String(r.draft.preparedLocal || '').replace(/\.\s*$/, '')) + '</div>' +
+      '<div class="coach-stat-sub">' + esc(r.draft.tileTitle || '') + '</div>' +
+      '<div style="font-size:0.95rem;line-height:1.5;margin-top:0.4rem;">Went out: ' + esc(s.what || 'nothing') +
+      '. Read back off her page: tile ' + (s.tileOnHerPage ? 'yes' : 'no') +
+      ', question ' + (s.questionOnHerPage ? 'yes' : 'no') + '.</div>' +
+      herNewestLine(esc, hers) + '</div>' +
+      '<div class="reply-card"><button class="reply-send" style="background:var(--muted);" ' +
+      'onclick="discardPendingDraft()">Got it, clear this</button></div>';
+    return;
+  }
 
   // She pressed her own button. This is a record of what she was shown, not
   // something waiting to be sent, so it gets no Send button. She has read it.
