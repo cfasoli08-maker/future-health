@@ -2264,7 +2264,7 @@ async function loadPendingDraft() {
       '<div class="coach-stat-label">Sent to Mom, ' + esc(String(r.draft.preparedLocal || '').replace(/\.\s*$/, '')) + '</div>' +
       '<div class="coach-stat-sub">' + esc(r.draft.tileTitle || '') + '</div>' +
       '<div style="font-size:0.95rem;line-height:1.5;margin-top:0.4rem;">Went out: ' + esc(s.what || 'nothing') +
-      '. Read back off her page: tile ' + (s.tileOnHerPage ? 'yes' : 'no') +
+      '. Read back off her page: tile ' + (s.tileAlreadyThere ? 'already there' : (s.tileOnHerPage ? 'yes' : 'no')) +
       ', question ' + (s.questionOnHerPage ? 'yes' : 'no') + '.</div>' +
       herNewestLine(esc, hers) + '</div>' +
       '<div class="reply-card"><button class="reply-send" style="background:var(--muted);" ' +
