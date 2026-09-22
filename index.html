@@ -63,6 +63,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .focus-item { display:flex; gap:0.85rem; align-items:flex-start; padding:0.7rem 0; border-top:1px solid rgba(255,255,255,0.28); font-size:0.98rem; line-height:1.5; }
 .focus-num { flex-shrink:0; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.22); display:flex; align-items:center; justify-content:center; font-family:'Oswald',sans-serif; font-weight:600; }
 .focus-item span { opacity:0.92; }
+.when-stamp { font-size:0.78rem; color:var(--muted); text-align:right; margin:-0.5rem 0 0.9rem; font-style:italic; }
 /* Her button. Big, because she is 75 and reads this on a phone. */
 .ask-card { background:var(--surface); border-radius:var(--radius); padding:1.1rem; margin-bottom:0.9rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
 .ask-btn { width:100%; border:none; border-radius:14px; background:var(--sage); color:#fff; font-family:'Oswald',sans-serif; font-size:1.15rem; font-weight:600; letter-spacing:0.02em; padding:1rem; cursor:pointer; }
@@ -634,6 +635,11 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
         <div class="ask-note" id="make-update-note">Runs the whole thing and sends it to her. One press.</div>
       </div>
       <div id="pending-draft"><div class="coach-empty">Checking for a prepared update.</div></div>
+
+      <!-- What the run found, and anything the daily safety check wants him to
+           know. Both used to go into files on his PC that nobody opens. -->
+      <div class="section-label">What the agent found</div>
+      <div id="coach-notes"><div class="coach-empty">Reading.</div></div>
 
       <div class="section-label">Weekly update to Valerie</div>
       <div class="reply-card">
@@ -1942,6 +1948,66 @@ function renderWins(list) {
       <div><div class="win-title">${esc(w.title)}</div><div class="win-desc">${esc(w.desc)}</div><div class="win-date">${esc(w.date)}</div></div>
     </div>`).join('');
 }
+// ══ WHEN WAS THIS LAST LOOKED AT ══
+//
+// 22 September 2026. She could not tell which parts of her app were alive and
+// which were frozen, because they look identical. Her focus card had been dead
+// since 10 September and said she had four clear days while she was having
+// whooshes. She wrote: "I find the WINS outdated unless there are none."
+//
+// So every section that holds real data says when it was last checked, even
+// when nothing changed. A section with no stamp is a section with no owner,
+// and now that shows on the screen instead of hiding.
+function whenStamp(iso) {
+  if (!iso) return 'not checked yet';
+  const t = Date.parse(iso);
+  if (!t) return 'not checked yet';
+  const mins = Math.round((Date.now() - t) / 60000);
+  const when = mins < 2 ? 'just now'
+    : mins < 60 ? mins + ' minutes ago'
+    : mins < 60 * 36 ? Math.round(mins / 60) + ' hours ago'
+    : Math.round(mins / 1440) + ' days ago';
+  const d = new Date(t);
+  const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return 'checked ' + when + ', ' + MON[d.getMonth()] + ' ' + d.getDate();
+}
+function stampInto(id, iso) {
+  const host = document.getElementById(id);
+  if (!host) return;
+  let el = document.getElementById(id + '-stamp');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = id + '-stamp';
+    el.className = 'when-stamp';
+    host.parentNode.insertBefore(el, host.nextSibling);
+  }
+  el.textContent = whenStamp(iso);
+}
+
+// ══ HER FOCUS CARD, LIVE ══
+//
+// The agent writes this every run. Until today the code threw it away and the
+// page showed whatever was last typed into the HTML by hand.
+async function initFocusCard() {
+  const card = document.getElementById('focus-card');
+  if (!card) return;
+  let r;
+  try { r = await sheetCall({ action:'get_card', clientId: currentClientId }); }
+  catch (e) { return; }
+  if (!r || !r.card || !r.card.goal) { stampInto('focus-card', null); return; }
+  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const c = r.card;
+  const bits = ['<div class="focus-eyebrow">✦ This week\'s focus</div>',
+    '<div class="focus-goal">' + esc(c.goal) + '</div>'];
+  if (c.sub) bits.push('<div class="focus-sub">' + esc(c.sub) + '</div>');
+  (c.items || []).forEach(function (it, i) {
+    bits.push('<div class="focus-item"><span class="focus-num">' + (i + 1) + '</span><div><b>' +
+      esc(it.head) + '</b><br><span>' + esc(it.body) + '</span></div></div>');
+  });
+  card.innerHTML = bits.join('');
+  stampInto('focus-card', r.timestamp);
+}
+
 async function initWins() {
   renderWins(wins);
   try {
@@ -1952,6 +2018,7 @@ async function initWins() {
                    _when: Date.parse(String(m.date)) || 0 }))
       .sort((a, b) => b._when - a._when);
     if (fresh.length) renderWins(fresh.concat(wins));
+    stampInto('wins-list', (r && r.milestones && r.milestones.length) ? r.milestones[r.milestones.length-1].timestamp : null);
   } catch (e) { /* the typed list is already on screen */ }
 }
 
@@ -2362,6 +2429,29 @@ async function discardPendingDraft() {
   loadPendingDraft();
 }
 
+// HIS NOTES. The run writes him a debrief every time and the daily safety
+// check writes alarms. On 22 Sep the safety check fired saying she had not
+// logged for two days, wrote it to a file, and he never saw it.
+async function loadCoachNotes() {
+  const el = document.getElementById('coach-notes');
+  if (!el) return;
+  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  let r;
+  try { r = await sheetCall({ action:'get_notes', clientId: currentClientId }); }
+  catch (e) { el.innerHTML = '<div class="coach-empty">Could not read them.</div>'; return; }
+  const notes = (r && r.notes) || [];
+  if (!notes.length) { el.innerHTML = '<div class="coach-empty">Nothing yet.</div>'; return; }
+  el.innerHTML = notes.slice(0, 8).map(function (n) {
+    const urgent = n.kind === 'urgent';
+    return '<div class="coach-stat coach-stat-wide" style="margin-bottom:0.6rem;border-left:5px solid ' +
+      (urgent ? '#C25A2B' : 'var(--sage)') + ';">' +
+      '<div class="coach-stat-label">' + (urgent ? 'NEEDS YOU' : 'What it found') + '</div>' +
+      '<div style="font-size:0.95rem;line-height:1.55;margin-top:0.4rem;white-space:pre-wrap;">' +
+      esc(n.text) + '</div>' +
+      '<div class="when-stamp" style="text-align:left;margin:0.5rem 0 0;">' + whenStamp(n.timestamp) + '</div></div>';
+  }).join('');
+}
+
 async function loadCoachUpdates() {
   const el = document.getElementById('coach-updates-list');
   if (!el) return;
@@ -2647,7 +2737,8 @@ document.addEventListener('DOMContentLoaded', function() {
   safeRun('foodlists', renderFoodLists);
   safeRun('foodtoday', renderFoodToday);
   safeRun('wins', initWins);
-  if (coachMode) { safeRun('coachmode', initCoachMode); safeRun('coachupdates', loadCoachUpdates);
+  safeRun('focuscard', initFocusCard);
+  if (coachMode) { safeRun('coachmode', initCoachMode); safeRun('coachupdates', loadCoachUpdates); safeRun('coachnotes', loadCoachNotes);
     if (__pendingNav) { const p = __pendingNav; __pendingNav = null; safeRun('pendingnav', function(){ showPage(p.id, p.btn); }); }
     return; }
   safeRun('coachchat', initCoach);
