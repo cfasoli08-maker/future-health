@@ -325,6 +325,13 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
 .coach-stat-when { font-size:0.82rem; color:var(--muted); margin-top:0.15rem; }
 
 /* ── WHOOSH ── */
+.peptide-card { display:block; text-decoration:none; color:inherit; background:var(--surface); border:2px solid var(--luff2); border-radius:18px; padding:1rem 1.1rem; margin-bottom:1rem; }
+.peptide-head { display:flex; justify-content:space-between; align-items:center; gap:0.8rem; }
+.peptide-title { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:700; color:var(--luff1); }
+.peptide-sub { font-size:0.82rem; color:var(--muted); margin-top:0.1rem; }
+.peptide-go { flex-shrink:0; border-radius:14px; background:var(--luff2); color:#fff; font-family:'DM Sans',sans-serif; font-weight:700; font-size:0.9rem; padding:0.7rem 1rem; white-space:nowrap; }
+.peptide-bar { height:8px; background:var(--luff-soft); border-radius:999px; margin-top:0.7rem; overflow:hidden; }
+.peptide-fill { height:100%; width:0%; background:var(--luff2); border-radius:999px; transition:width 0.3s; }
 .whoosh-card { background:var(--surface); border:2px solid var(--gold); border-radius:18px; padding:1rem 1.1rem; margin-top:1.2rem; }
 .whoosh-head { display:flex; justify-content:space-between; align-items:center; gap:0.8rem; }
 .whoosh-title { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:700; color:var(--gold); }
@@ -386,6 +393,17 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
       <div class="verse-ref" id="verse-ref"></div>
     </div>
 
+
+    <a class="peptide-card" id="peptide-card" href="mom/questions.html">
+      <div class="peptide-head">
+        <div>
+          <div class="peptide-title">💬 Peptide questions</div>
+          <div class="peptide-sub" id="peptide-sub">Chris has some questions for you.</div>
+        </div>
+        <div class="peptide-go" id="peptide-go">Start</div>
+      </div>
+      <div class="peptide-bar"><div class="peptide-fill" id="peptide-fill"></div></div>
+    </a>
     <div class="days-card">
       <div class="days-number" id="days-count">—</div>
       <div class="days-label">Days on protocol</div>
@@ -1878,6 +1896,34 @@ const verses = [
   { ref:"Isaiah 41:10 — NASB",   text:"Do not fear, for I am with you; do not be afraid, for I am your God. I will strengthen you, I will also help you, I will also uphold you with My righteous right hand." }
 ];
 
+// The Peptide questions card on her home page. The questions live on a separate
+// page, mom/questions.html, but it is the same site, so the answers she has
+// saved are readable from here. That is the whole reason the card can tell her
+// where she got to instead of just saying "Start" forever.
+function paintPeptideCard() {
+  const card = document.getElementById('peptide-card');
+  if (!card) return;
+  const sub = document.getElementById('peptide-sub');
+  const go = document.getElementById('peptide-go');
+  const fill = document.getElementById('peptide-fill');
+  const TOTAL = 77;
+  let saved = null;
+  try { const raw = localStorage.getItem('valerie-intake-v1'); if (raw) saved = JSON.parse(raw); } catch (e) {}
+  let done = 0;
+  if (saved && saved.a) { for (const k in saved.a) { if (saved.a[k] && saved.a[k].v) done++; } }
+  if (fill) fill.style.width = Math.round((done / TOTAL) * 100) + '%';
+  if (saved && saved.sent) {
+    if (sub) sub.textContent = 'All sent. Thank you, Mom.';
+    if (go) go.textContent = 'Open';
+  } else if (done) {
+    if (sub) sub.textContent = done + ' of ' + TOTAL + ' done. Carry on where you stopped.';
+    if (go) go.textContent = 'Keep going';
+  } else {
+    if (sub) sub.textContent = 'Chris has some questions for you. Stop any time.';
+    if (go) go.textContent = 'Start';
+  }
+}
+
 function initVerse() {
   const today = new Date();
   const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000*60*60*24));
@@ -2730,6 +2776,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('hero-time').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   });
   safeRun('verse', initVerse);
+  safeRun('peptidecard', paintPeptideCard);
+  window.addEventListener('pageshow', function(){ safeRun('peptidecard', paintPeptideCard); });
   safeRun('migrate', migrateDay);
   safeRun('tiles', renderTiles);
   safeRun('whooshes', fetchWhooshesToday);

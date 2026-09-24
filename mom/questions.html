@@ -48,6 +48,9 @@
   .out{white-space:pre-wrap;font-size:16px;background:#FFF8EC;border:1px dashed var(--copper);border-radius:12px;padding:14px;
     max-height:40vh;overflow:auto;margin-top:12px}
   .done{color:var(--ok);font-weight:700}
+  .backbar{margin:-4px 0 10px}
+  .backbar a{display:inline-block;text-decoration:none;font-size:18px;font-weight:700;color:var(--blue);
+    background:var(--sky);border-radius:12px;padding:10px 16px;min-height:44px;line-height:24px}
   footer{margin-top:auto;padding-block:14px;font-size:14px;color:var(--muted);text-align:center}
   @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
 </style>
@@ -58,6 +61,7 @@
     <div class="brand">Future Health</div>
     <div class="count" id="count"></div>
   </header>
+  <div class="backbar"><a href="../index.html">&#8592; Back to my app</a></div>
   <div class="bar"><i id="fill"></i></div>
   <div class="sec" id="secname"></div>
   <div class="card" id="card"></div>
