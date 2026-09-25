@@ -742,8 +742,14 @@ function doRefresh(){ const b=document.getElementById('refresh-btn'); if(b){ b.c
 
 /* ── DAILY INPUT TILES ── */
 const INPUTS = [
-  { id:'glucose', icon:'🩸', label:'Blood sugar', sub:'Morning fasting, and 2 hours after supper', type:'number', unit:'mmol/L', step:'0.1', placeholder:'6.5',
-    help:'Morning: your fasting number, before you eat or drink anything but water. Night: take it two hours after your last bite, every night. The same gap every night is what makes the numbers comparable. Just the number from your meter.' },
+  // 25 Sep 2026. She told us on 24 Sep that she has her coffee with cream BEFORE
+  // the morning poke, so every morning number in the record is post-cream. This
+  // tile used to call it fasting. Keep her routine exactly as it is, because day
+  // against day is still fair, and take the true fasting number on its own tile.
+  { id:'glucose', icon:'🩸', label:'Blood sugar', sub:'Morning after your coffee, and 2 hours after supper', type:'number', unit:'mmol/L', step:'0.1', placeholder:'6.5',
+    help:'Morning: take it the way you always do, after your coffee. Keep it the same every day. That is what makes one day fair against the next. Night: take it two hours after your last bite, every night. Just the number from your meter.' },
+  { id:'truefasting', icon:'🌅', label:'True fasting sugar', sub:'Once a week, before your coffee', type:'number', unit:'mmol/L', step:'0.1', placeholder:'7.0', plainSub:true,
+    help:'Once a week, prick your finger before your coffee and cream, with nothing but water first. Put that number here. Then have your coffee and do your usual Blood sugar tile the same as always. This one number shows us your real fasting sugar.' },
   { id:'pulse', icon:'💗', label:'Pulse', sub:'Morning heart rate', type:'number', unit:'beats per minute', step:'1', placeholder:'65',
     help:'Your morning pulse in beats per minute.' },
   { id:'bp', icon:'💓', label:'Blood pressure', sub:'Sit and rest 5 minutes first', type:'bp',
@@ -756,6 +762,11 @@ const INPUTS = [
     help:'How restful was your sleep? 1 means terrible, tossing and turning all night. 10 means wonderful, you woke up completely refreshed.' },
   { id:'wakeups', icon:'🕑', label:'Night wake-ups', sub:'Times you woke overnight', type:'count',
     help:'How many times did you wake up during the night? Count every time, including bathroom trips. 0 means you slept straight through.' },
+  { id:'wakefeel', icon:'🛏️', label:'How you woke', sub:'Tap all that fit', type:'multi',
+    opts:[ { v:'drymouth', label:'Dry mouth' },
+           { v:'neckache', label:'Neck headache', small:'A headache at the back of the neck' },
+           { v:'groggy',   label:'Groggy', small:'Slow to clear your head' } ],
+    help:'How did you feel when you woke up this morning? Tap every one that fits. If none of them fit, tap None of these. A good morning tells me as much as a bad one.' },
   { id:'kneepain', icon:'🦵', label:'Knee pain', sub:'0 to 10', type:'scale', zeroOk:true,
     help:'How is your knee today? 0 means no pain at all. 10 means the worst pain you can imagine. Pick the number that fits right now.' },
   { id:'fibropain', icon:'🌡️', label:'Body pain', sub:'Overall aches, 0 to 10', type:'scale', zeroOk:true,
@@ -764,6 +775,11 @@ const INPUTS = [
     help:'One number for your energy and how clear your head feels. 1 means exhausted and foggy. 10 means bright, sharp, and full of energy.' },
   { id:'activity', icon:'🚶', label:'Activity', sub:'What you did today', type:'activity',
     help:'What movement did you do? Type what it was, pick how hard it felt, and roughly what time.' },
+  { id:'stairs', icon:'🪜', label:'Stairs', sub:'Once a week is enough', type:'choice', plainSub:true,
+    opts:[ { v:'cane',    label:'With the cane or a rail' },
+           { v:'without', label:'Without any help' },
+           { v:'avoided', label:'I avoided them' } ],
+    help:'The last time you took stairs today, how did it go? Once a week is enough. This shows your leg strength better than the scale can.' },
   { id:'stress', icon:'🫶', label:'Stress', sub:'How heavy was today?', type:'stress',
     help:'How much stress today? 1 means calm and easy. 10 means overwhelming. Then tap what caused it.' },
   { id:'gutache', icon:'🤢', label:'Gut ache', sub:'0 to 10, tap 0 on a good day', type:'scale', zeroOk:true,
@@ -773,8 +789,16 @@ const INPUTS = [
   { id:'hydration', icon:'💧', label:'Water', sub:'How much did you drink today?', type:'hydration', optWord:'water',
     help:'Compared to a normal day, how much water did you drink today? Water only. Salt is its own tile now, because they were sharing one button and I could not tell them apart.' },
   { id:'salt', icon:'🧂', label:'Salt', sub:'How much salt today?', type:'hydration', optWord:'salt',
-    help:'Compared to a normal day, how much salt did you have today? Count it all: on your food, in your coffee, in your water, and the finger dips. You told me on August 22 that you do all of those, so most days should be usual or more.' }
+    help:'Compared to a normal day, how much salt did you have today? Count it all: on your food, in your coffee, in your water, and the finger dips. You told me on August 22 that you do all of those, so most days should be usual or more.' },
+  { id:'fullfast', icon:'🍽️', label:'Full fast at supper', sub:'Did a few bites fill you up?', type:'choice',
+    opts:[ { v:'yes', label:'Yes', small:'Full after only a few bites' },
+           { v:'no',  label:'No', small:'I ate my usual amount' } ],
+    help:'At supper tonight, did you feel full after only a few bites? Please tap No on the normal nights too. A normal night tells me as much as a full one.' }
 ];
+// Tiles that only make sense at one part of the day. How she woke is a morning
+// question, and so is the fasting poke. Supper is a night question.
+const MORNING_ONLY = ['truefasting','wakefeel'];
+const NIGHT_ONLY = ['fullfast'];
 
 // Metrics Valerie measures more than once a day. These keep every reading with its time instead of overwriting.
 const MULTI_READ = ['glucose','pulse','bp'];
@@ -803,9 +827,9 @@ const REPEATABLE_IDS = ['glucose','pulse','bp','kneepain','fibropain','energy','
 const DAILY_IDS = INPUTS.map(i=>i.id).filter(id => REPEATABLE_IDS.indexOf(id) === -1);
 const SESSION_ORDER = ['morning','noon','night'];
 const SESSIONS = [
-  { id:'morning', label:'Morning', metrics: INPUTS.map(i=>i.id) },
-  { id:'noon',    label:'Noon',    metrics: REPEATABLE_IDS.concat(DAILY_IDS) },
-  { id:'night',   label:'Night',   metrics: REPEATABLE_IDS.concat(DAILY_IDS) }
+  { id:'morning', label:'Morning', metrics: INPUTS.map(i=>i.id).filter(id => NIGHT_ONLY.indexOf(id) === -1) },
+  { id:'noon',    label:'Noon',    metrics: REPEATABLE_IDS.concat(DAILY_IDS).filter(id => MORNING_ONLY.indexOf(id) === -1 && NIGHT_ONLY.indexOf(id) === -1) },
+  { id:'night',   label:'Night',   metrics: REPEATABLE_IDS.concat(DAILY_IDS).filter(id => MORNING_ONLY.indexOf(id) === -1) }
 ];
 
 // For a once-a-day metric, find whichever session actually holds today's reading.
@@ -918,7 +942,7 @@ function tileHtml(day, sid, mid){
   }
   const restSub = (SESSION_SUBS[mid] && SESSION_SUBS[mid][sid]) || inp.sub;
   const sub = done ? (repeatable ? log.length + ' logged, tap to add another' : 'Logged ✓ tap to change')
-                   : (repeatable ? restSub : restSub + ' · once a day, any time');
+                   : (repeatable || inp.plainSub ? restSub : restSub + ' · once a day, any time');
   return `<div class="tile ${done?'done tile-multi':''}" onclick="openEntry('${mid}','${holder}')">
       <div class="tile-head">
         <div class="tile-icon">${inp.icon}</div>
@@ -961,8 +985,13 @@ function displayVal(inp, v) {
   if (inp.type==='bp') return v.sys + '/' + v.dia;
   if (inp.type==='activity') return '✓';
   if (inp.type==='stress') return v.intensity;
-  if (inp.type==='bristol') return 'Type ' + v.type;
+  if (inp.type==='bristol') return 'Type ' + v.type + (v.look && v.look !== 'normal' ? ', ' + v.look : '');
   if (inp.type==='hydration') return v.charAt(0).toUpperCase()+v.slice(1);
+  if (inp.type==='choice') { const o = inp.opts.find(o => o.v === v); return o ? o.label : v; }
+  if (inp.type==='multi') {
+    if (v === 'none') return 'None of these';
+    return String(v).split(',').map(k => { const o = inp.opts.find(o => o.v === k); return o ? o.label : k; }).join(', ');
+  }
   return v;
 }
 
@@ -1026,7 +1055,20 @@ function openEntry(id, session) {
       <div class="opt-col">
         <button class="opt-btn" onclick="pickOpt(this,'warning','With warning')">With warning<small>You had time to get there</small></button>
         <button class="opt-btn" onclick="pickOpt(this,'warning','No warning')">No warning<small>It came on suddenly</small></button>
+      </div>
+      <div class="sheet-field-label">How did it look?</div>
+      <div class="opt-col">
+        <button class="opt-btn" onclick="pickOpt(this,'look','normal')">Normal</button>
+        <button class="opt-btn" onclick="pickOpt(this,'look','greasy')">Greasy<small>Shiny, oily, or hard to flush clean</small></button>
+        <button class="opt-btn" onclick="pickOpt(this,'look','floats')">Floats</button>
       </div>`;
+  } else if (inp.type==='choice') {
+    body = `<div class="opt-col">` + inp.opts.map(o =>
+      `<button class="opt-btn" onclick="pickOpt(this,'choice','${o.v}')">${o.label}${o.small ? '<small>' + o.small + '</small>' : ''}</button>`).join('') + `</div>`;
+  } else if (inp.type==='multi') {
+    body = `<div class="opt-col">` + inp.opts.map(o =>
+      `<button class="opt-btn" data-v="${o.v}" onclick="pickMulti(this)">${o.label}${o.small ? '<small>' + o.small + '</small>' : ''}</button>`).join('') +
+      `<button class="opt-btn" data-v="none" onclick="pickMulti(this)">None of these</button></div>`;
   } else if (inp.type==='hydration') {
     const w = inp.optWord || 'water and salt';
     body = `<div class="opt-col">
@@ -1106,8 +1148,17 @@ function useYesterday() {
     const btn = [...document.querySelectorAll('.opt-btn')].find(b => b.textContent.toLowerCase().indexOf(want) === 0);
     if (btn) btn.click();
   } else if (t === 'bristol') {
-    const btn = [...document.querySelectorAll('.opt-btn,.bristol-btn')].find(b => b.textContent.trim().indexOf(raw) === 0);
+    const want = raw.split(',')[0];
+    const btn = [...document.querySelectorAll('.opt-btn,.bristol-btn')].find(b => b.textContent.trim().indexOf(want) === 0);
     if (btn) btn.click();
+  } else if (t === 'choice') {
+    const btn = [...document.querySelectorAll('.opt-btn')].find(b => b.textContent.trim().indexOf(raw) === 0);
+    if (btn) btn.click();
+  } else if (t === 'multi') {
+    raw.split(', ').forEach(lbl => {
+      const btn = [...document.querySelectorAll('.opt-btn')].find(b => b.textContent.trim().indexOf(lbl) === 0);
+      if (btn) btn.click();
+    });
   }
   const hint = document.getElementById('same-hint');
   if (hint) hint.textContent = 'Filled in. Tap Save if that is right.';
@@ -1123,6 +1174,17 @@ function pickOpt(el, key, val) {
   el.parentElement.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
   sheetSel[key] = val;
+}
+
+// Tap all that fit. None of these clears the others, and any other clears None.
+function pickMulti(el) {
+  const v = el.getAttribute('data-v');
+  const all = el.parentElement.querySelectorAll('.opt-btn');
+  if (v === 'none') all.forEach(b => b.classList.remove('sel'));
+  else all.forEach(b => { if (b.getAttribute('data-v') === 'none') b.classList.remove('sel'); });
+  el.classList.toggle('sel', v === 'none' ? true : !el.classList.contains('sel'));
+  const picked = [...all].filter(b => b.classList.contains('sel')).map(b => b.getAttribute('data-v'));
+  sheetSel.multi = picked.length ? picked.join(',') : undefined;
 }
 
 function showOverlay() {
@@ -1165,10 +1227,16 @@ async function saveEntry() {
     value = { intensity: sheetSel.scale, source: sheetSel.source || '' };
   } else if (inp.type==='bristol') {
     if (sheetSel.type === undefined) return;
-    value = { type: sheetSel.type, warning: sheetSel.warning || '' };
+    value = { type: sheetSel.type, warning: sheetSel.warning || '', look: sheetSel.look || '' };
   } else if (inp.type==='hydration') {
     if (!sheetSel.tag) return;
     value = sheetSel.tag;
+  } else if (inp.type==='choice') {
+    if (!sheetSel.choice) return;
+    value = sheetSel.choice;
+  } else if (inp.type==='multi') {
+    if (!sheetSel.multi) return;
+    value = sheetSel.multi;
   }
   const t = stamp();
   const day = loadDay();

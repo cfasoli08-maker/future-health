@@ -330,27 +330,27 @@
     "SUPP_GREEN": [
       "Alpha Lipoic Acid",
       "Florastor",
-      "Magnesium Glycinate (HELD 200mg)",
+      "Magnesium Glycinate (200mg every second night, restarted 25 Sep)",
       "Vitamin D3",
       "Vitamin K2 MK-7",
       "Vitamin C",
+      "Sauerkraut (cleared 8 Sep)",
       "Whey Protein Isolate (Diesel)"
     ],
     "SUPP_YELLOW": [
-      "Sauerkraut (PAUSED Aug 20, washout Aug 21-27, tick tile removed)",
       "Magnesium above 200mg (closed, no)",
       "Melatonin",
       "Indica gummy 2.5mg",
-      "Enterogermina",
-      "Psyllium Husk",
-      "Ashwagandha",
-      "Creatine",
+      "Creatine (YES, starts 1 Oct)",
+      "Enterogermina (NO, not while Florastor works)",
+      "Ashwagandha (NO)",
       "Marine Collagen",
       "BPC-157 Oral"
     ],
     "SUPP_RED": [
       "Ibuprofen (Advil, Motrin, Robax Platinum)",
       "All other NSAIDs",
+      "Psyllium Husk",
       "Digestive Enzyme Formula",
       "Sublingual Vitamin B12",
       "5-HTP",
@@ -602,15 +602,10 @@
       "Vitamin D3",
       "Vitamin K2",
       "Vitamin C",
-      "Sauerkraut"
+      "Sauerkraut",
+      "Magnesium glycinate"
     ],
-    "held": [
-      {
-        "name": "Magnesium glycinate",
-        "since": "2026-08-21",
-        "why": "Blood pressure, not gut. Morning diastolic hit 55 on 28 Aug, the lowest of 101 readings. It returns at 200mg every second night when that number sits over 65 for a few days."
-      }
-    ],
+    "held": [],
     "red": [
       "Ibuprofen",
       "Advil",
@@ -620,9 +615,25 @@
       "Digestive Enzyme",
       "Sublingual B12",
       "5-HTP",
-      "Collagen-Biotin"
+      "Collagen-Biotin",
+      "Psyllium"
     ],
-    "reviewedOn": "2026-09-02"
+    "reviewedOn": "2026-09-25",
+    "restored": [
+      {
+        "name": "Magnesium glycinate",
+        "on": "2026-09-25",
+        "how": "200mg every second night, alone",
+        "readsOut": "2026-09-30"
+      }
+    ],
+    "dated": [
+      {
+        "name": "Creatine",
+        "starts": "2026-10-01",
+        "dose": "3g daily, alone"
+      }
+    ]
   },
   "labs": {
     "status": "NONE IN THE RECORD. 177 days on protocol and not one blood test in this file.",
