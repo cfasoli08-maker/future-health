@@ -769,6 +769,8 @@ const INPUTS = [
     help:'How did you feel when you woke up this morning? Tap every one that fits. If none of them fit, tap None of these. A good morning tells me as much as a bad one.' },
   { id:'kneepain', icon:'🦵', label:'Knee pain', sub:'0 to 10', type:'scale', zeroOk:true,
     help:'How is your knee today? 0 means no pain at all. 10 means the worst pain you can imagine. Pick the number that fits right now.' },
+  { id:'backpain', icon:'🔙', label:'Back pain', sub:'0 to 10', type:'scale', zeroOk:true,
+    help:'How is your lower back right now? 0 means no pain at all. 10 means the worst pain you can imagine. Please tap it on the good days too.' },
   { id:'fibropain', icon:'🌡️', label:'Body pain', sub:'Overall aches, 0 to 10', type:'scale', zeroOk:true,
     help:'Your overall body aches and fibro pain, everywhere other than the knee. 0 means none at all. 10 means the worst imaginable.' },
   { id:'energy', icon:'⚡', label:'Energy and clarity', sub:'How sharp do you feel?', type:'scale',
@@ -820,7 +822,7 @@ let activeSession = 'morning';
 let sheetSel = {};
 
 // Repeatable metrics logged morning, noon, and night. The rest are morning-only, once a day.
-const REPEATABLE_IDS = ['glucose','pulse','bp','kneepain','fibropain','energy','activity','stress','bowel','hydration','salt'];
+const REPEATABLE_IDS = ['glucose','pulse','bp','kneepain','backpain','fibropain','energy','activity','stress','bowel','hydration','salt'];
 // Once-a-day metrics. They used to live under Morning only, so if she opened the app in
 // the afternoon they were invisible and looked deleted. Reported by Valerie Aug 13.
 // They now show in every session and share one reading across all three.
