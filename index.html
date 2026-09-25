@@ -745,11 +745,11 @@ const INPUTS = [
   // 25 Sep 2026. She told us on 24 Sep that she has her coffee with cream BEFORE
   // the morning poke, so every morning number in the record is post-cream. This
   // tile used to call it fasting. Keep her routine exactly as it is, because day
-  // against day is still fair, and take the true fasting number on its own tile.
+  // against day is still fair, and take the before-coffee number on its own tile.
   { id:'glucose', icon:'🩸', label:'Blood sugar', sub:'Morning after your coffee, and 2 hours after supper', type:'number', unit:'mmol/L', step:'0.1', placeholder:'6.5',
     help:'Morning: take it the way you always do, after your coffee. Keep it the same every day. That is what makes one day fair against the next. Night: take it two hours after your last bite, every night. Just the number from your meter.' },
-  { id:'truefasting', icon:'🌅', label:'True fasting sugar', sub:'Once a week, before your coffee', type:'number', unit:'mmol/L', step:'0.1', placeholder:'7.0', plainSub:true,
-    help:'Once a week, prick your finger before your coffee and cream, with nothing but water first. Put that number here. Then have your coffee and do your usual Blood sugar tile the same as always. This one number shows us your real fasting sugar.' },
+  { id:'truefasting', icon:'🌅', label:'Before-coffee sugar', sub:'Once a week, before your coffee', type:'number', unit:'mmol/L', step:'0.1', placeholder:'7.0', plainSub:true,
+    help:'Once a week, prick your finger before your coffee and cream, with nothing but water first. Put that number here. Then have your coffee and do your usual Blood sugar tile the same as always. This one number shows us your real empty-stomach sugar.' },
   { id:'pulse', icon:'💗', label:'Pulse', sub:'Morning heart rate', type:'number', unit:'beats per minute', step:'1', placeholder:'65',
     help:'Your morning pulse in beats per minute.' },
   { id:'bp', icon:'💓', label:'Blood pressure', sub:'Sit and rest 5 minutes first', type:'bp',
