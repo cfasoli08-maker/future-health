@@ -1431,8 +1431,8 @@ const SUPPS = [
 const MAG = { id:'mag_pm', name:'Magnesium glycinate — bedtime', pill:200, max:1 };
 // One switch, so the tile and the focus card can never disagree again. Set to
 // false and the every-second-night wording comes back on its own.
-const MAG_PAUSED = true;
-const MAG_PAUSE_WHY = 'Not tonight and not tomorrow night. This is nothing to do with your gut. It is your blood pressure. Your bottom number was 55 last Friday, the lowest of the 101 readings you have ever given me, and magnesium pushes that number down. It has climbed back since: 59, then 60, then 64. It comes back at 200mg every second night once that bottom number sits over 65 for a few days, and I will tell you the day it does. You are one point away. If you took one already, that is fine and it is not your fault.';
+const MAG_PAUSED = false;
+const MAG_PAUSE_WHY = 'This is nothing to do with your gut. It is your blood pressure. Magnesium pushes your bottom number down, and it was too low. It comes back at 200mg every second night once that bottom number sits over 65 for a few days, and I will tell you the day it does. If you took one already, that is fine and it is not your fault.';
 // max was 3. Her gut closed 400mg and 600mg on 14 Aug, twice over, and the tile
 // kept offering them. 200mg is the dose. There is nothing above it to tap.
 // Her dose is 200mg every SECOND night. The tile never said so and never looked
@@ -1455,24 +1455,24 @@ const SUPP_GREEN = [
   { name:'Vitamin D3', note:'4000 IU in the morning. Four 1000 IU capsules.' },
   { name:'Vitamin K2 as MK-7', note:'One 100mcg capsule in the morning with your D3. You told me on August 21 that you take one, not two, and the app was still saying two. That is corrected. It directs calcium into your bones and away from your arteries, and it needs a little fat in the meal to be absorbed.' },
   { name:'Vitamin C', note:'500mg chewable, morning and evening.' },
-  { name:'Whey Protein Isolate (Diesel)', note:'Cleared. The label question is settled: zero sugar, zero carbs per scoop, sweetened with stevia. One condition only, drink it before 4pm. Both high bedtime readings followed a late-day drink.' }
+  { name:'Sauerkraut', note:'Cleared, both ways, on September 8. It is not causing your episodes and it is not raising your morning number. The nine day reintroduction answered both. Keep having your tablespoon in the morning and keep ticking the tile.' },
+  { name:'Whey Protein Isolate (Diesel)', note:'Cleared. The label question is settled: zero sugar, zero carbs per scoop, sweetened with stevia. One condition only, drink it before 4pm. Both high bedtime readings followed a late-day drink. Your last one was August 18. This is the easiest way to hold the muscle on your arms and legs, and you told me you enjoyed it, so it is worth starting again.' }
 ];
 const SUPP_YELLOW = [
-  { name:'Sauerkraut — BACK ON, under test until Sept 4', note:'You restarted it on the morning of Aug 28, and the tick tile is back at the top of this page. Please tick it every day you have it. The washout answered the gut question and the answer was no: you had an episode on almost every day you were off it, so it is not what is causing them, and I was wrong about that. The one thing still open is your MORNING blood sugar. A clean week is the only thing that can answer it, so nothing else changes until Sept 4.' },
   { name:'Magnesium — the amount above 200mg', note:'Closed Aug 14, and the answer is no. Two separate 400mg nights, two sore guts the next day. 200mg is your number. Nothing above it goes back in without a reason.' },
   { name:'Melatonin', note:'Not currently in use. Situational only if reintroduced, 0.5mg to a maximum of 1mg.' },
   { name:'Indica gummy 2.5mg', note:'Sleep support trial. Two unbroken nights logged with it this week, one rough night. Keep noting each use in the coach chat.' },
-  { name:'Enterogermina', note:'Keep or drop pending observed benefit.' },
-  { name:'Psyllium Husk', note:'Go or no-go decision pending.' },
-  { name:'Ashwagandha', note:'Schedule or hold pending.' },
-  { name:'Creatine', note:'Under review. Being considered for muscle rebuilding support.' },
+  { name:'Creatine — YES, starting October 1', note:'Answered, and the answer is yes. It is the best studied thing there is for holding muscle at your age, and holding muscle is the whole point right now. 3g a day with food. It does not start today only because your magnesium restarts tonight and two changes at once means neither answer counts. Magnesium reads out September 30. Creatine begins October 1, on its own.' },
+  { name:'Enterogermina — NO, not while Florastor is working', note:'Answered. You already take Florastor, and you told me yourself that your night episodes stopped after you started it. Adding a second gut bug on top would muddy the one thing you have credited with working. It is not a no forever. It is a no while Florastor is doing the job.' },
+  { name:'Ashwagandha — NO, there is nothing for it to treat', note:'Answered. It is for stress, and you told me you do not get wound up and worried, and your record agrees: stress is logged on 6 of your last 30 days and never with a cause. There is no problem here for it to solve, so it would only be one more pill.' },
   { name:'Marine Collagen', note:'Not yet added. Queued in sequence.' },
   { name:'BPC-157 Oral', note:'Dosing not yet discussed. Pending review.' }
 ];
 const SUPP_RED = [
   { name:'Ibuprofen (Advil, Motrin, Robax Platinum)', note:'Stop. This is the one that matters most. Ibuprofen strips the protective lining of the gut, and your three roughest gut days this summer all followed a dose. Robax Platinum contains ibuprofen even though the box does not say it loudly. Tylenol 650 is a different drug, it does not do this, and it stays fine to use.' },
   { name:'All other NSAIDs (Aleve, naproxen, Aspirin, Voltaren pills)', note:'Same family as ibuprofen, same effect on the gut lining. Ask before taking anything new for pain.' },
-  { name:'Digestive Enzyme Formula', note:'Do not use.' },
+  { name:'Psyllium Husk', note:'Answered, and the answer is no. It is normally the right idea for loose stools, but not for your stomach. Yours already empties too slowly, which is why you feel full after a few bites and why your belly swells by evening. Psyllium slows it further and would make both worse. It also binds the fat your Vitamin D3 and K2 need. Do not use it.' },
+  { name:'Digestive Enzyme Formula', note:'Still a no for now, and now you know why. This was on your do-not-use list with no reason written down anywhere, which I have fixed. The reason to hold it: you told me on September 24 that your stool is always greasy, which is worth taking seriously, but there is no test result to aim an enzyme at and no bloodwork since March. Adding it now would also land in the middle of your magnesium week. This is the first thing to raise with your doctor.' },
   { name:'Sublingual Vitamin B12', note:'Stop immediately. Check the label for biotin before discarding.' },
   { name:'5-HTP', note:'Do not use.' },
   { name:'Collagen-Biotin Beauty Formula', note:'Do not use.' }
@@ -1720,7 +1720,7 @@ function renderFoodHistory() {
 
 /* ── FOOD ── */
 const FOOD_GREEN = ['Beef','Lamb','Pork','Ham','Chicken skin-on','Turkey','Bacon','Organ meats','Eggs any style','Salmon','Mackerel','Sardines','Herring','White fish','Shellfish','Butter','Ghee','Tallow','Duck fat','Olive oil','Avocado oil','Coconut oil','MCT oil','Heavy cream','Parmesan','Aged cheddar','Gruyere','Gouda','Manchego','Spinach','Zucchini','Green beans','Carrots','Squash','Peppers','Asparagus','Avocado','Macadamia','Pecans','Walnuts','Raspberries','Strawberries','Blueberries','Fresh orange','Water with Redmond salt','Coffee with heavy cream','Green tea','Black tea','Redmond salt','Herbs and spices','Old Dutch bacon puffs (lard)','Plain vinegars','Mustard','Olive oil and vinegar dressing','Ginger tea','Stevia (pure leaf, a small amount to sweeten)'];
-const FOOD_YELLOW = ['Sauerkraut (back on Aug 28, under test until Sept 4)','Mozzarella','Burrata','Ricotta','Cottage cheese','Cream cheese','Fluid milk','Raw vegetables and salads','Onion and garlic in quantity','Large cruciferous loads','Almonds','Hazelnuts','Cashews','Pistachios','Chia','Ground flax','Sourdough','White rice small portions','Potato cooked then cooled','One beer occasionally','Dry wine','Spirits','Havarti','Pork puffs (check bag for seed oils)','Beets small portions','Beet chips (check bag for seed oils)'];
+const FOOD_YELLOW = ['Sauerkraut (cleared Sept 8)','Mozzarella','Burrata','Ricotta','Cottage cheese','Cream cheese','Fluid milk','Raw vegetables and salads','Onion and garlic in quantity','Large cruciferous loads','Almonds','Hazelnuts','Cashews','Pistachios','Chia','Ground flax','Sourdough','White rice small portions','Potato cooked then cooled','One beer occasionally','Dry wine','Spirits','Havarti','Pork puffs (check bag for seed oils)','Beets small portions','Beet chips (check bag for seed oils)'];
 const FOOD_RED = ['Canola oil','Soybean oil','Corn oil','Sunflower oil','Safflower oil','Grapeseed oil','Apple','Pear','Mango','Grapes','Watermelon','Cherries','Dried fruit','Peanuts','Peanut butter','Legumes','Bean soup any source','Added sugar','Refined flour with no ferment','Diet pop','Artificial sweeteners','Sugar alcohols','Honey','Concentrated balsamic glaze','Splenda and sucralose','Corn on the cob','Corn and cornmeal','Restaurant and delivery pizza (here, not in Italy)','Beer on a night out (one occasionally is still fine, several is not)'];
 
 function renderFoodLists() {
