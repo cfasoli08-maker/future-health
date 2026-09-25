@@ -418,16 +418,8 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     </div>
 
 
-    <a class="peptide-card" id="peptide-card" href="mom/questions.html">
-      <div class="peptide-head">
-        <div>
-          <div class="peptide-title">💬 Peptide questions</div>
-          <div class="peptide-sub" id="peptide-sub">Chris has some questions for you.</div>
-        </div>
-        <div class="peptide-go" id="peptide-go">Start</div>
-      </div>
-      <div class="peptide-bar"><div class="peptide-fill" id="peptide-fill"></div></div>
-    </a>
+    <!-- The peptide questions card came off 26 Sep 2026: all 77 answered on 24 Sep.
+         The page mom/questions.html and her answers in the sheet are kept. -->
     <div class="days-card">
       <div class="days-number" id="days-count">—</div>
       <div class="days-label">Days on protocol</div>
@@ -2869,7 +2861,7 @@ function showPage(id, btn) {
    what she asks reaches the protocol. Nothing is logged in preview, because
    preview is Christopher on his own phone writing into her sheet. */
 const P2_PREVIEW = /[?&]phase2=1\b/.test(location.search);
-const P2_LIVE = false;   // flip to true when he approves, and the button shows for her
+const P2_LIVE = true;    // approved by Christopher 26 Sep 2026
 let p2Stack = [];
 
 const P2 = {
