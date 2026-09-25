@@ -214,6 +214,30 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 /* ── WINS ── */
 .wins-hero { background:linear-gradient(145deg,var(--olive1),var(--olive2)); border-radius:var(--radius); padding:1.8rem 1.5rem; color:#fff; margin-bottom:1rem; display:flex; flex-direction:column; align-items:center; }
 .wins-big { font-family:'Oswald',sans-serif; font-size:4rem; font-weight:600; line-height:1; }
+/* ── PHASE TWO ── a master page of tiles, and every tile drills down */
+.p2-back { display:inline-flex; align-items:center; gap:0.35rem; background:var(--surface); border:1.5px solid var(--sage); color:var(--sage); font:inherit; font-weight:700; font-size:0.95rem; border-radius:999px; padding:0.5rem 1rem; cursor:pointer; margin-bottom:1rem; }
+.p2-kicker { font-size:0.85rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); font-weight:700; margin:0 0 0.3rem; }
+.p2-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+.p2-tile { background:var(--surface); border:none; border-radius:var(--radius); padding:1.2rem 1rem 1.1rem; text-align:left; font:inherit; color:var(--ink); cursor:pointer; box-shadow:0 1px 6px rgba(0,0,0,0.05); display:flex; flex-direction:column; gap:0.55rem; min-height:118px; }
+.p2-tile:active { transform:scale(0.98); }
+.p2-tile .ic { font-size:1.9rem; line-height:1; }
+.p2-tile .nm { font-size:1.08rem; font-weight:700; line-height:1.25; }
+.p2-tile .more { margin-top:auto; font-size:0.8rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-weight:700; }
+.p2-tile.wide { grid-column:1 / -1; background:linear-gradient(145deg,#5C6E33,#7D8F4E); color:#fff; min-height:0; flex-direction:row; align-items:center; gap:1rem; padding:1.3rem 1.3rem; }
+.p2-tile.wide .nm { font-family:'Cormorant Garamond',serif; font-size:1.7rem; font-weight:600; }
+.p2-tile.wide .more { color:#F3E6B8; margin:0 0 0 auto; }
+.p2-tile.soon .more { color:var(--muted); }
+.p2-lead { background:var(--surface); border-radius:var(--radius); padding:1.3rem 1.3rem; margin-bottom:1rem; box-shadow:0 1px 6px rgba(0,0,0,0.04); font-size:1.02rem; line-height:1.65; }
+.p2-read { background:var(--surface); border-radius:var(--radius); padding:1.4rem 1.35rem; box-shadow:0 1px 6px rgba(0,0,0,0.04); font-size:1.05rem; line-height:1.7; }
+.p2-read p { margin:0 0 0.95rem; }
+.p2-read p:last-child { margin-bottom:0; }
+.p2-read h4 { font-family:'Cormorant Garamond',serif; font-size:1.45rem; font-weight:600; color:var(--sage); margin:1.3rem 0 0.4rem; line-height:1.2; }
+.p2-read h4:first-child { margin-top:0; }
+.p2-read ul { margin:0 0 0.95rem 1.2rem; }
+.p2-read li { margin-bottom:0.45rem; }
+.p2-read .pull { background:var(--gold-soft); border-left:4px solid var(--gold); border-radius:10px; padding:0.8rem 1rem; margin:0 0 0.95rem; font-weight:500; }
+.p2-ask { width:100%; margin-top:1rem; background:var(--sage); color:#fff; border:none; border-radius:16px; padding:1rem; font:inherit; font-weight:700; font-size:1.02rem; cursor:pointer; }
+.p2-sub { margin-top:1.4rem; }
 .win-card { background:var(--surface); border-radius:16px; padding:1.2rem 1.3rem; margin-bottom:0.7rem; display:flex; gap:1rem; box-shadow:0 1px 6px rgba(0,0,0,0.04); }
 .win-emoji { font-size:1.9rem; flex-shrink:0; }
 .win-title { font-size:1.12rem; font-weight:700; line-height:1.3; }
@@ -610,6 +634,11 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     <div id="updates-wrap" class="updates-wrap"></div>
   </div>
 
+  <!-- ══ PHASE TWO ══ -->
+  <div class="page" id="page-phase2">
+    <div id="p2-view"></div>
+  </div>
+
   <!-- ══ COACH ══ -->
   <div class="page" id="page-message">
     <div class="im-header">
@@ -699,6 +728,7 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     <button class="nav-btn" onclick="showPage('food',this)"><div class="nav-icon">🍽️</div><div class="nav-label">Food</div></button>
     <button class="nav-btn" onclick="showPage('wins',this)"><div class="nav-icon">🏆</div><div class="nav-label">Wins</div></button>
     <button class="nav-btn" onclick="showPage('updates',this)"><div class="nav-icon">🌿</div><div class="nav-label">Updates</div></button>
+    <button class="nav-btn" id="nav-phase2" style="display:none" onclick="showPage('phase2',this)"><div class="nav-icon">🧬</div><div class="nav-label">Phase Two</div></button>
     <button class="nav-btn" onclick="showPage('message',this)"><span class="nav-badge" id="coach-badge"></span><div class="nav-icon">💬</div><div class="nav-label">Coach</div></button>
   </div>
 
@@ -2827,7 +2857,245 @@ function showPage(id, btn) {
     if (typeof loadUpdatesClient === 'function') loadUpdatesClient();
     if (typeof loadQuestionsClient === 'function') loadQuestionsClient();
   }
+  if (id === 'phase2') { p2Stack = []; p2Render(); }
 }
+
+/* ── PHASE TWO ── 26 Sep 2026.
+   A master page of tiles. Each tile opens a page, and a page can hold tiles of
+   its own, so she drills down as far as she wants and Back always goes up one.
+   No doses and no dates live here. Those come when the peptides arrive.
+   Hidden until Christopher approves it: the button only shows with ?phase2=1.
+   Every page she opens is logged as field "phase2read", so what she reads and
+   what she asks reaches the protocol. Nothing is logged in preview, because
+   preview is Christopher on his own phone writing into her sheet. */
+const P2_PREVIEW = /[?&]phase2=1\b/.test(location.search);
+const P2_LIVE = false;   // flip to true when he approves, and the button shows for her
+let p2Stack = [];
+
+const P2 = {
+  id:'root', title:'Phase Two', children:[
+  { id:'peptides', icon:'🧬', title:'What is a peptide?', wide:true, children:[
+    { id:'idea', icon:'✉️', title:'The simple idea', body:`
+      <h4>Your body runs on messages</h4>
+      <p>Every minute of every day, the cells in your body are talking to each other. One part says "there is damage here". Another says "send help". Another says "make more energy" or "calm down, the danger has passed". Most of those messages are carried by peptides.</p>
+      <p>A peptide is a short chain of amino acids, the same building blocks that make up protein. A protein is a long chain, often hundreds of links. A peptide is a short one, usually between two and fifty links. Because it is short, it is small enough to travel through the body and fit exactly into the one lock it was made for.</p>
+      <div class="pull">A peptide is a key. Each cell has locks on its surface. When the right key turns the right lock, the cell does one specific job.</div>
+      <p>That is what makes peptides different from most pills. A pill often pushes on many things at once. A peptide carries one message to one kind of lock. That is why they tend to be so gentle, and so precise.</p>` },
+    { id:'history', icon:'📜', title:'Where they came from', body:`
+      <h4>You already know one</h4>
+      <p>The most famous peptide in the world is insulin, the one you were on until this spring. It was discovered in 1921 in Toronto by Frederick Banting and Charles Best, and it has kept millions of people alive since. Insulin is a peptide. So you have already lived with one for years.</p>
+      <h4>A hundred years of science</h4>
+      <p>In 1953 an American scientist, Vincent du Vigneaud, built a peptide in the lab for the first time, oxytocin, and won the Nobel Prize for it. From then on, scientists could copy the body's own messages.</p>
+      <p>Today there are more than 80 peptide medicines in use around the world. Some of the best known are for diabetes and weight, like Ozempic. Many more peptides are used by clinics, athletes and people who want to heal and age well, long before they become official medicines.</p>
+      <h4>Why they are growing so fast</h4>
+      <p>Because they copy what the body already makes, peptides are usually well tolerated. When the body is done with one, it breaks it back down into plain amino acids, the same as it does with food protein.</p>` },
+    { id:'aging', icon:'⏳', title:'Why they matter as we age', body:`
+      <h4>The messages get quieter</h4>
+      <p>When you were twenty, a small injury healed in days. Now the same thing takes weeks. Nothing is wrong with you. Your body simply makes fewer of its repair messages than it used to, and the cells that receive them hear them less clearly.</p>
+      <p>Growth signals, repair signals, immune signals, and the signals that tell muscle to stay strong all fall year by year after about thirty.</p>
+      <div class="pull">The idea behind Phase Two is simple: give your body back some of the messages it used to make on its own, and let it do the repair work it already knows how to do.</div>
+      <p>Nothing here forces your body to do something new. It reminds it how to do what it did well when you were younger.</p>` },
+    { id:'work', icon:'🔑', title:'How they work in you', body:`
+      <h4>Lock and key</h4>
+      <p>Each peptide fits a certain lock, called a receptor. Some locks are on your gut lining, some on your tendons, some on your nerves, some on your immune cells. When the peptide arrives, it turns the lock and the cell starts its job: grow a new tiny blood vessel, lay down new tissue, calm swelling, make more energy.</p>
+      <h4>Short visits, long results</h4>
+      <p>Most peptides only stay in your blood for a short time. But the work they start keeps going for days and weeks. That is why the results usually build slowly and then keep building.</p>
+      <h4>Working as a team</h4>
+      <p>Some peptides are better together. One sends the signal to heal, another moves the repair cells to where they are needed. Your protocol is built with that in mind.</p>` },
+    { id:'taken', icon:'💉', title:'How they are taken', body:`
+      <h4>Why not a pill?</h4>
+      <p>Your stomach is built to break proteins down. Swallow most peptides and your stomach digests them like food before they can do anything.</p>
+      <h4>A tiny shot under the skin</h4>
+      <p>So most peptides are given as a very small shot just under the skin, usually in the soft part of the belly. The needle is fine and short, like the insulin needles you already know. It goes into the fat layer, not the muscle.</p>
+      <h4>Some go in the nose</h4>
+      <p>A few peptides, the ones meant for the brain, work best as a spray in the nose. The inside of the nose sits very close to the brain, so they get there quickly.</p>
+      <p>Christopher will prepare everything for you ahead of time and walk you through it in person.</p>` },
+    { id:'yours', icon:'🎯', title:'Why yours were chosen', body:`
+      <h4>Built from your own record</h4>
+      <p>Your protocol was not picked from a list of popular peptides. It was built from 200 days of your own numbers, your own words, and the 77 questions you answered.</p>
+      <ul>
+        <li><b>Your gut</b> is nerve damage from diabetes. So there is a peptide aimed at repairing nerves.</li>
+        <li><b>Your lower back and your left knee</b> hurt almost every day. So there are peptides aimed at tendons, ligaments and joints.</li>
+        <li><b>Your gut lining</b> has had twenty hard years. So there is repair aimed there.</li>
+        <li><b>Your muscle and your energy</b> have dropped. So there is one aimed at the cell's power plants.</li>
+        <li><b>Your memory</b>, which you told us you wonder about. So there is one aimed at a clear, sharp head.</li>
+        <li><b>Your immune system</b>, after the infection in March. So there is one aimed at keeping you well.</li>
+      </ul>
+      <h4>The same careful way as phase one</h4>
+      <p>One new thing at a time, so we always know what is helping. Your app keeps watching your numbers the whole way.</p>` },
+    { id:'expect', icon:'🌱', title:'What to expect', body:`
+      <h4>Repair first, then build</h4>
+      <p>Phase Two starts with repair: tissue, gut lining, nerves. Once your body is healing, it moves to energy and strength. Each step stands on the one before it.</p>
+      <h4>Slow, then steady</h4>
+      <p>Most people notice the first changes in the first few weeks, often as less pain or a calmer stomach. The deeper changes, like stronger tissue and more energy, keep building over months.</p>
+      <h4>Everyone is different</h4>
+      <p>Some people feel a lot quickly. Some feel little at first and then realise one day that the ache is gone. Your taps in the app are how we will see it, even before you feel it.</p>
+      <div class="pull">The goal is not just less pain. It is a stronger, more capable you at 75 than you were at 70.</div>` }
+  ]},
+  { id:'bpc157', icon:'🩹', title:'BPC-157', children:[
+    { id:'what', icon:'🔬', title:'What it is', body:`
+      <h4>Body Protection Compound</h4>
+      <p>BPC-157 is a peptide made of 15 amino acids. It is copied from a small part of a protein that your own stomach makes and keeps in its juices. That protein has one job: protect and repair the lining of the stomach, which faces acid every day of your life.</p>
+      <p>The name says it: <b>B</b>ody <b>P</b>rotection <b>C</b>ompound.</p>
+      <h4>Why it is unusual</h4>
+      <p>Most peptides fall apart quickly in the body. BPC-157 is remarkably stable. It holds together for many hours even in stomach acid, where almost nothing else survives. That toughness is a big part of why it works so broadly.</p>
+      <h4>What it is known for</h4>
+      <p>It is the best known healing peptide in the world. People use it for the gut, tendons, ligaments, muscles, joints, nerves and more. If you hear people talk about a "healing peptide", this is usually the one they mean.</p>` },
+    { id:'story', icon:'📖', title:'The story', body:`
+      <h4>Zagreb, early 1990s</h4>
+      <p>BPC-157 was discovered by Professor Predrag Sikirić and his team at the University of Zagreb in Croatia. They were studying how the stomach protects itself, and found this piece of the stomach's own protective protein.</p>
+      <h4>Thirty years of research</h4>
+      <p>Since then his group and others have published hundreds of scientific papers on it. They tested it on almost every kind of tissue damage they could think of: stomach ulcers, inflamed bowel, torn tendons, crushed muscle, broken bone, cut nerves, damaged blood vessels and injured organs. Again and again, it sped up healing.</p>
+      <h4>Tested in people</h4>
+      <p>A drug company later developed it under the name PL 14736 and tested it in people with ulcerative colitis, an inflamed bowel disease. It was well tolerated.</p>
+      <h4>Today</h4>
+      <p>BPC-157 is used around the world by sports clinics, anti-aging clinics, athletes, and people recovering from injury and surgery. It is one of the most talked about peptides there is, because so many people say it worked for them when other things did not.</p>` },
+    { id:'how', icon:'⚙️', title:'How it works', children:[
+      { id:'vessels', icon:'🩸', title:'New blood supply', body:`
+        <h4>Healing needs a road</h4>
+        <p>Damaged tissue can only heal if blood reaches it. Blood brings oxygen, food and repair cells. Tendons, ligaments and the discs of the back have very little blood supply, which is why they heal so slowly.</p>
+        <p>BPC-157 switches on a receptor called VEGFR2, the body's main switch for growing new tiny blood vessels. More small vessels means more blood reaching the damaged spot, and faster repair.</p>
+        <p>This also matters for diabetes. High sugar over many years harms the tiny vessels that feed nerves and tissue. BPC-157 works directly on that problem.</p>` },
+      { id:'no', icon:'🌬️', title:'Balancing blood flow', body:`
+        <h4>Nitric oxide</h4>
+        <p>Nitric oxide is a gas your blood vessels make to relax and open up. Too little and tissue is starved. Too much and vessels become leaky and inflamed.</p>
+        <p>BPC-157 helps bring the nitric oxide system back into balance. In studies it helped protect the lining of blood vessels and keep blood flowing well to injured areas.</p>` },
+      { id:'tendon', icon:'🧵', title:'Rebuilding tendons', body:`
+        <h4>More repair cells, working harder</h4>
+        <p>Tendons and ligaments are rebuilt by cells called fibroblasts. BPC-157 helps these cells move into the injury, spread out, and survive while they work.</p>
+        <p>It also increases the number of growth hormone receptors on tendon cells. That makes those cells more responsive to the growth hormone your own body already makes, so they rebuild faster and stronger.</p>` },
+      { id:'gutprotect', icon:'🛡️', title:'Protecting the gut', body:`
+        <h4>Its home ground</h4>
+        <p>Because it comes from the stomach's own protection system, the gut is where BPC-157 is strongest. It helps keep the gut lining sealed and healthy, supports the blood supply to the gut wall, and speeds the healing of damage.</p>
+        <p>In studies it also protected the gut against the damage that ibuprofen-type pain pills and alcohol cause.</p>` },
+      { id:'calm', icon:'🕊️', title:'Calming inflammation', body:`
+        <h4>Swelling down, healing up</h4>
+        <p>Inflammation is the body's alarm. A little is useful. Too much, for too long, damages tissue and causes pain. BPC-157 helps calm excess inflammation while letting healing carry on. Many people notice this first, as less swelling and less ache.</p>` }
+    ]},
+    { id:'heals', icon:'✨', title:'What it heals', children:[
+      { id:'gut', icon:'🫄', title:'Gut', body:`
+        <h4>The strongest area of its research</h4>
+        <p>In studies BPC-157 healed stomach ulcers, inflamed bowel, leaks between the bowel and the skin, and damage to the throat from acid. It helped the bowel heal after surgery and after part of it was removed. It helped seal a "leaky" gut lining.</p>
+        <h4>What people report</h4>
+        <p>People with sore stomachs, bloating, reflux and irritable or inflamed bowels often say their gut feels calmer within the first couple of weeks.</p>` },
+      { id:'tendons', icon:'🦿', title:'Tendons and ligaments', body:`
+        <h4>Where it became famous</h4>
+        <p>In studies, fully cut Achilles tendons and torn knee ligaments healed faster and came back stronger with BPC-157. This is why athletes and sports clinics use it so widely for sprains, strains, tendon pain and slow injuries that never quite heal.</p>` },
+      { id:'muscle', icon:'💪', title:'Muscle', body:`
+        <h4>Crushed, torn and weak muscle</h4>
+        <p>In studies, crushed and torn muscles recovered their strength and function faster. It also helped muscle recover from damage caused by some medicines.</p>` },
+      { id:'joints', icon:'🦵', title:'Joints and back', body:`
+        <h4>Knees, shoulders, backs</h4>
+        <p>The joints and the spine are held together by ligaments, tendons and discs, all tissues with a poor blood supply that heal slowly. That is exactly where BPC-157 helps most.</p>
+        <p>In a 2021 study of people with knee pain, 14 of 16 had real relief, and many said it lasted six months or longer. People commonly use it for lower back pain, knee pain and recovery after joint surgery, including knee replacements.</p>` },
+      { id:'nerves', icon:'⚡', title:'Nerves', body:`
+        <h4>Helping nerves reconnect</h4>
+        <p>In studies, cut nerves in the leg reconnected faster and worked better with BPC-157, and it helped recovery after injury to the spinal cord. It also supports the network of nerves in the gut wall and the connection between the gut and the brain.</p>` },
+      { id:'bone', icon:'🦴', title:'Bone', body:`
+        <h4>Faster mending</h4>
+        <p>In studies, broken bones and gaps in bone healed faster. New blood supply is a big part of this, because bone needs blood to rebuild.</p>` },
+      { id:'brain', icon:'🧠', title:'Brain and mood', body:`
+        <h4>The gut-brain link</h4>
+        <p>In studies BPC-157 helped balance dopamine and serotonin, two of the brain's main messengers for mood, motivation and calm. Many people say they simply feel better and calmer on it. Much of this runs through the gut, which is sometimes called the second brain.</p>` },
+      { id:'organs', icon:'🫀', title:'Liver and organs', body:`
+        <h4>Wider protection</h4>
+        <p>In studies it protected the liver, heart and blood vessels from several kinds of damage, including damage from some medicines and from alcohol.</p>` }
+    ]},
+    { id:'people', icon:'👥', title:'In people', body:`
+      <h4>What has been done in humans</h4>
+      <ul>
+        <li><b>Ulcerative colitis.</b> Tested as PL 14736 in people with this inflamed bowel disease, and well tolerated.</li>
+        <li><b>Knee pain, 2021.</b> A clinic looked back at 16 people with long-lasting knee pain who had it injected. 14 of them had real relief. Many said it lasted six months or more.</li>
+      </ul>
+      <h4>What people all over the world say</h4>
+      <p>Beyond the studies, there are many thousands of people using BPC-157 today: athletes coming back from tendon injuries, older people with sore joints and backs, people with long-standing gut trouble. The same themes come up over and over: less pain, faster healing, a calmer stomach.</p>
+      <h4>What is still to come</h4>
+      <p>Large human trials, the kind a drug company runs before a medicine goes on sale, have not been done yet. Most of the detail we know comes from the animal studies and from people using it.</p>` },
+    { id:'you', icon:'💚', title:'Why it is for you', body:`
+      <h4>Three problems, one peptide</h4>
+      <ul>
+        <li><b>Your lower back.</b> You told us it hurts almost all the time, and nothing you take really touches it. Back pain lives in ligaments, tendons and discs, the slow-healing tissues BPC-157 helps most.</li>
+        <li><b>Your left knee.</b> Since your right knee was replaced in June, your left knee has carried you. It is overworked. And your new right knee is still building strength around the joint.</li>
+        <li><b>Your gut.</b> Twenty years of a hard-working, hurting gut. BPC-157 comes from the gut's own protection system. The gut is where it is strongest.</li>
+      </ul>
+      <h4>And underneath</h4>
+      <p>Years of diabetes harm the tiny blood vessels that feed nerves and tissue. BPC-157 grows new ones. It is the foundation the rest of Phase Two is built on.</p>` },
+    { id:'notice', icon:'📅', title:'What you will notice', body:`
+      <h4>What people most often report</h4>
+      <p><b>The first week or two.</b> Less swelling and a softer ache. People with a sore gut often notice a calmer stomach and less bloating early.</p>
+      <p><b>Weeks two to four.</b> Pain that was always there starts to fade. Moving, bending and stairs get a little easier.</p>
+      <p><b>Weeks four to eight.</b> This is when tissue is really rebuilding. Many people say this is when they realise they have not thought about the old pain for days.</p>
+      <p><b>After.</b> The repair it starts keeps paying off for months. Many people say the relief lasted long after they stopped.</p>
+      <div class="pull">Keep tapping Back pain, Knee pain and Gut ache in your app, on good days too. We will show you the change in your own numbers.</div>` },
+    { id:'taken', icon:'💉', title:'How it is taken', body:`
+      <h4>A small shot under the skin</h4>
+      <p>BPC-157 is given as a small shot just under the skin, usually in the soft skin of the belly. The needle is very fine and short, like an insulin needle.</p>
+      <p>Christopher will prepare it all for you ahead of time, ready to use, and show you exactly how when you are together.</p>` }
+  ]},
+  { id:'tb500', icon:'🧩', title:'TB-500', children:[] },
+  { id:'ara290', icon:'🌿', title:'Ara-290', children:[] },
+  { id:'motsc', icon:'🔋', title:'MOTS-c', children:[] },
+  { id:'semax', icon:'💡', title:'Semax', children:[] },
+  { id:'ta1', icon:'🛡️', title:'Thymosin Alpha-1', children:[] }
+]};
+
+function p2Node() {
+  let n = P2;
+  for (const id of p2Stack) n = (n.children || []).find(c => c.id === id) || n;
+  return n;
+}
+function p2Open(id) { p2Stack.push(id); p2Log(); p2Render(); window.scrollTo(0, 0); }
+function p2Back() { p2Stack.pop(); p2Render(); window.scrollTo(0, 0); }
+function p2Path() {
+  let n = P2; const names = [];
+  for (const id of p2Stack) { n = (n.children || []).find(c => c.id === id) || n; names.push(n.title); }
+  return names;
+}
+// One row per page per day, so a page she rereads ten times is still one row.
+function p2Log() {
+  if (P2_PREVIEW || !P2_LIVE) return;
+  try {
+    const key = 'p2read_' + localDayStr();
+    const seen = JSON.parse(localStorage.getItem(key) || '[]');
+    const path = p2Stack.join('/');
+    if (seen.indexOf(path) > -1) return;
+    seen.push(path); localStorage.setItem(key, JSON.stringify(seen));
+    const t = stamp();
+    sheetCall({ action:'log_entry', clientId: currentClientId, field:'phase2read', value: path, timestamp: t.iso, timeLocal: t.local });
+  } catch(e) {}
+}
+// Her question lands in the Coach thread, which the reasoning step reads.
+function p2Ask() {
+  const btn = [...document.querySelectorAll('#main-nav .nav-btn')].find(b => (b.getAttribute('onclick') || '').indexOf("'message'") > -1);
+  showPage('message', btn);
+  const box = document.getElementById('reply-input');
+  if (box) { box.value = 'About ' + p2Path().join(', ') + ': '; box.focus(); if (typeof autoGrow === 'function') autoGrow(box); }
+}
+function p2Tile(c) {
+  const empty = !c.body && !(c.children && c.children.length);
+  return `<button class="p2-tile${c.wide ? ' wide' : ''}${empty ? ' soon' : ''}" onclick="p2Open('${c.id}')">
+    <span class="ic">${c.icon || ''}</span><span class="nm">${c.title}</span>
+    <span class="more">${empty ? 'Coming soon' : (c.body ? 'Read' : 'Open')}</span></button>`;
+}
+function p2Render() {
+  const v = document.getElementById('p2-view');
+  if (!v) return;
+  const n = p2Node();
+  const back = p2Stack.length ? `<button class="p2-back" onclick="p2Back()">‹ Back</button>` : '';
+  const crumbs = p2Path();
+  const kicker = crumbs.length > 1 ? `<div class="p2-kicker">${crumbs.slice(0, -1).join(' · ')}</div>` : '';
+  const title = p2Stack.length ? `<div class="page-title">${n.title}</div>` : `<div class="page-title">Phase <em>Two</em></div>`;
+  let main = '';
+  if (n.body) {
+    main = `<div class="p2-read">${n.body}</div><button class="p2-ask" onclick="p2Ask()">Ask Christopher about this</button>`;
+  } else if (n.children && n.children.length) {
+    main = `<div class="p2-grid">${n.children.map(p2Tile).join('')}</div>`;
+  } else {
+    main = `<div class="p2-read"><p>Christopher is still writing this one. It will be here soon.</p></div>`;
+  }
+  v.innerHTML = back + kicker + title + main;
+}
+try { if (P2_PREVIEW || P2_LIVE) document.getElementById('nav-phase2').style.display = ''; } catch(e) {}
 
 /* ── INIT ── every step is guarded so one error can never blank the screens after it */
 function safeRun(label, fn) { try { fn(); } catch(e) { console.error('Future Health init error in ' + label, e); } }
