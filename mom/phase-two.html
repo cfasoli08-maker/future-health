@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Phase Two</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root{
+    --ground:#FBF7F0; --card:#FFFFFF; --ink:#1B2430; --muted:#5A6472;
+    --fire:#E8611A; --copper:#B87333; --sun:#F2B722; --blue:#1F5FA8; --sky:#E4EEF9;
+    --line:#E3DBCF; --ok:#1E7F4F;
+    color-scheme: light;
+  }
+  body{margin:0;background:var(--ground);color:var(--ink);
+    font-family:"Atkinson Hyperlegible",Arial,Helvetica,sans-serif;font-size:20px;line-height:1.5;
+    padding-inline:16px;padding-block:8px 40px;}
+  .wrap{max-width:560px;margin:0 auto}
+  header{padding-block:10px 6px}
+  .brand{font-weight:700;color:var(--copper);letter-spacing:.04em;text-transform:uppercase;font-size:14px}
+  .backbar{margin:6px 0 14px}
+  .backbar a{display:inline-block;text-decoration:none;font-size:18px;font-weight:700;color:var(--blue);
+    background:var(--sky);border-radius:12px;padding:10px 16px;min-height:44px;line-height:24px}
+  h1{font-size:32px;line-height:1.15;margin:0 0 6px}
+  .lede{font-size:20px;color:var(--muted);margin:0 0 18px}
+  .sec{margin:26px 0 8px;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:10px;
+    box-shadow:0 6px 24px rgba(184,115,51,.08)}
+  .card p{margin:0 0 12px}
+  .card p:last-child{margin-bottom:0}
+  .wins{list-style:none;padding:0;margin:0 0 14px}
+  .wins li{padding:8px 0 8px 34px;position:relative;border-bottom:1px solid #F1EBE1}
+  .wins li:last-child{border-bottom:0}
+  .wins li::before{content:"\2713";position:absolute;left:4px;top:7px;color:var(--ok);font-weight:700;font-size:22px}
+  .bridge{font-size:22px;font-weight:700;color:#9A3C0B;margin:0}
+  .plan{list-style:none;padding:0;margin:0}
+  .plan li{display:flex;gap:14px;align-items:baseline;padding:8px 0;border-bottom:1px solid #F1EBE1}
+  .plan li:last-child{border-bottom:0}
+  .plan .d{flex:0 0 76px;font-weight:700;color:var(--copper);font-size:17px}
+  details.pep{background:var(--card);border:1px solid var(--line);border-radius:18px;margin-top:12px;
+    box-shadow:0 6px 24px rgba(184,115,51,.08);overflow:hidden}
+  details.pep summary{list-style:none;cursor:pointer;padding:18px 20px;display:flex;gap:14px;align-items:center;min-height:64px}
+  details.pep summary::-webkit-details-marker{display:none}
+  .dot{flex:0 0 14px;height:14px;border-radius:50%}
+  .nm{flex:1}
+  .nm b{display:block;font-size:22px}
+  .nm span{font-size:16px;color:var(--muted)}
+  .chev{font-size:22px;color:var(--blue);transition:transform .2s}
+  details[open] .chev{transform:rotate(90deg)}
+  .body{padding:0 20px 20px}
+  .body h3{font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:var(--blue);margin:18px 0 6px}
+  .body p{margin:0 0 10px}
+  .look{background:#FFF8EC;border:1px dashed var(--copper);border-radius:12px;padding:12px 14px;font-size:17px}
+  summary:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+  footer{margin-top:28px;font-size:15px;color:var(--muted);text-align:center}
+  @media (prefers-reduced-motion:reduce){.chev{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><div class="brand">Future Health</div></header>
+  <div class="backbar"><a href="../index.html">&#8592; Back to my app</a></div>
+
+  <h1>Phase Two</h1>
+  <p class="lede">Read this at your own pace. Come back to it as often as you like.</p>
+
+  <div class="sec">How far you have come</div>
+  <div class="card">
+    <ul class="wins">
+      <li>In March you were on insulin. Today you are off it.</li>
+      <li>In March your blood pressure was 145 over 90. Today it is lower, with no blood pressure pills.</li>
+      <li>Your gut finally has a name: nerve damage from diabetes. Not a food. Not something you did.</li>
+      <li>You found your own magnesium limit. Your body told you, and you listened.</li>
+      <li>You told us your night episodes stopped after Florastor and Alpha Lipoic Acid.</li>
+      <li>You have been right about your body before the numbers were, six times.</li>
+    </ul>
+    <p>Phase one was about clearing the noise. Taking things away, one at a time, until we could see what your body was really doing.</p>
+    <p class="bridge">Phase two is about repair.</p>
+  </div>
+
+  <div class="sec">What peptides are</div>
+  <div class="card">
+    <p>A peptide is a short chain of building blocks. Your body makes thousands of them. They carry messages, like "heal here" or "make more energy".</p>
+    <p>As we get older, we make fewer of some of them. The peptides in your plan are copies of messages your body already knows.</p>
+    <p>Most of them are not sold as medicines here. Some are medicines in other countries. Much of what we know comes from lab studies, small human studies, and a great many people using them. Results are different for every person.</p>
+    <p>That is why we do it the same way we did phase one. One new thing at a time. We watch your numbers. And you can ask me anything, any time, by tapping Message in your app.</p>
+  </div>
+
+  <div class="sec">Your plan, in order</div>
+  <div class="card">
+    <ul class="plan">
+      <li><span class="d">1 Oct</span><span>Creatine. A powder, not a peptide. For muscle.</span></li>
+      <li><span class="d">12 Oct</span><span>BPC-157 and TB-500</span></li>
+      <li><span class="d">26 Oct</span><span>Ara-290</span></li>
+      <li><span class="d">9 Nov</span><span>MOTS-c</span></li>
+      <li><span class="d">23 Nov</span><span>Semax</span></li>
+      <li><span class="d">7 Dec</span><span>Thymosin Alpha-1</span></li>
+    </ul>
+  </div>
+
+  <div class="sec">Tap any one to read about it</div>
+
+  <details class="pep">
+    <summary><span class="dot" style="background:var(--fire)"></span><span class="nm"><b>BPC-157</b><span>Starts 12 October. For your back, knee and gut.</span></span><span class="chev">&#8250;</span></summary>
+    <div class="body">
+      <h3>What it is</h3>
+      <p>A chain of 15 building blocks. It is copied from a protein your own stomach makes to protect itself. The name means Body Protection Compound.</p>
+      <h3>Where it came from</h3>
+      <p>Scientists in Zagreb, Croatia, found it in the early 1990s. They have studied it for more than thirty years, mostly in animals. In those studies it healed stomach lining, tendons, muscle and nerves. It also grows new tiny blood vessels, which is how healing gets to a hurt spot.</p>
+      <h3>What people have seen</h3>
+      <p>In 2021, a clinic in Florida looked back at patients who had it for knee pain. 14 of 16 had less pain, and many said it lasted six months or more. Athletes and people healing from injuries use it widely.</p>
+      <h3>Why it is in your plan</h3>
+      <p>Your lower back hurts almost all the time. Your left knee has carried you since the new one went in. Your gut lining has had twenty hard years. BPC-157 is aimed at all three.</p>
+      <h3>What you might notice</h3>
+      <p>Less ache in your back and knee over the first few weeks. A calmer stomach. Some people notice nothing for a while, and then one day realise the ache is less.</p>
+      <h3>How you take it</h3>
+      <p>A small shot under the skin. I will set it all up for you and show you how.</p>
+      <h3>How we will know</h3>
+      <p>Your Back pain, Knee pain and Gut ache taps. Keep tapping them, on the good days too.</p>
+      <p class="look">Want to read more? Search: <b>BPC-157 knee pain 2021</b></p>
+    </div>
+  </details>
+
+  <details class="pep">
+    <summary><span class="dot" style="background:var(--copper)"></span><span class="nm"><b>TB-500</b><span>Starts 12 October, with BPC-157. For healing.</span></span><span class="chev">&#8250;</span></summary>
+    <div class="body">
+      <h3>What it is</h3>
+      <p>A copy of the working part of a protein called Thymosin Beta-4. Almost every cell in your body makes it. There is a lot of it in wounds, where healing is happening.</p>
+      <h3>Where it came from</h3>
+      <p>Thymosin Beta-4 was found in the early 1980s in the United States. It moves repair cells to where the damage is, and helps new blood vessels grow.</p>
+      <h3>What people have seen</h3>
+      <p>Thymosin Beta-4 has been tested in people as eye drops for dry, damaged eyes, and on skin sores that would not heal. Horse trainers used TB-500 for years to help racehorses recover, and athletes use it for the same reason.</p>
+      <h3>Why it is in your plan</h3>
+      <p>BPC-157 sends the signal to heal. TB-500 moves the workers there. They are a team, and they are almost always used together.</p>
+      <h3>What you might notice</h3>
+      <p>On its own, not much you can point to. Together with BPC-157, less stiffness and a body that bounces back a little faster.</p>
+      <h3>How you take it</h3>
+      <p>A small shot under the skin, only twice a week.</p>
+      <h3>How we will know</h3>
+      <p>The same taps as BPC-157: Back pain, Knee pain and Gut ache.</p>
+      <p class="look">Want to read more? Search: <b>Thymosin Beta-4 wound healing</b></p>
+    </div>
+  </details>
+
+  <details class="pep">
+    <summary><span class="dot" style="background:var(--blue)"></span><span class="nm"><b>Ara-290</b><span>Starts 26 October. For the nerves behind your gut.</span></span><span class="chev">&#8250;</span></summary>
+    <div class="body">
+      <h3>What it is</h3>
+      <p>A small piece of a hormone called EPO, which your kidneys make. Whole EPO makes red blood cells. This piece does not. It keeps only the part that protects and repairs.</p>
+      <h3>Where it came from</h3>
+      <p>Scientists in New York built it in the 2000s to protect nerves. It has been tested in people in proper studies, where some got it and some got a dummy shot.</p>
+      <h3>What people have seen</h3>
+      <p>In 2015, people with type 2 diabetes, like you, took it every day for 28 days. Their three-month sugar number went down. Their nerve pain went down. And tiny nerves, which doctors can count in the eye, grew back. It was also tested in people with nerve damage from another illness, with the same kind of result.</p>
+      <h3>Why it is in your plan</h3>
+      <p>Your whoosh comes from nerve damage from diabetes. Of everything we looked at, this is the one tested in people for exactly that.</p>
+      <h3>What you might notice</h3>
+      <p>This is a slow one. The thing we are hoping for is a little more warning before a whoosh. That would mean a nerve is talking again. Your morning sugar may come down too.</p>
+      <h3>How you take it</h3>
+      <p>A small shot under the skin once a day, for 28 days. Then it stops.</p>
+      <h3>How we will know</h3>
+      <p>Your Whoosh log, when you tap "with warning". And your Blood sugar tap.</p>
+      <p class="look">Want to read more? Search: <b>ARA 290 type 2 diabetes neuropathy</b></p>
+    </div>
+  </details>
+
+  <details class="pep">
+    <summary><span class="dot" style="background:var(--sun)"></span><span class="nm"><b>MOTS-c</b><span>Starts 9 November. For muscle and energy.</span></span><span class="chev">&#8250;</span></summary>
+    <div class="body">
+      <h3>What it is</h3>
+      <p>A tiny message made by the power plants inside your cells. Your body makes more of it when you exercise, and less of it as you age.</p>
+      <h3>Where it came from</h3>
+      <p>It was found in 2015 in California. It was a surprise, because nobody thought the cell's power plants could send their own messages.</p>
+      <h3>What people have seen</h3>
+      <p>Most of what we know is from animals. Old mice given MOTS-c walked and ran better, were stronger, and handled sugar better. Many people now use it for energy and stamina.</p>
+      <h3>Why it is in your plan</h3>
+      <p>It flips the same switch in your body that exercise flips. Your back and knee make exercise hard. This gives you some of what exercise would, while the healing happens.</p>
+      <h3>What you might notice</h3>
+      <p>A bit more get-up-and-go. Stairs feeling a little easier over the weeks.</p>
+      <h3>How you take it</h3>
+      <p>A small shot under the skin, three times a week.</p>
+      <h3>How we will know</h3>
+      <p>Your Stairs tap, your Energy tap, and your Blood sugar tap.</p>
+      <p class="look">Want to read more? Search: <b>MOTS-c exercise aging</b></p>
+    </div>
+  </details>
+
+  <details class="pep">
+    <summary><span class="dot" style="background:#6B8E23"></span><span class="nm"><b>Semax</b><span>Starts 23 November. For a clear head and memory.</span></span><span class="chev">&#8250;</span></summary>
+    <div class="body">
+      <h3>What it is</h3>
+      <p>A short piece of a brain hormone, with the hormone part taken out. It helps the brain make more of the thing it uses to build and protect nerve connections.</p>
+      <h3>Where it came from</h3>
+      <p>Scientists in Moscow made it in the 1980s. In Russia it is a medicine, used after strokes and for memory and focus.</p>
+      <h3>What people have seen</h3>
+      <p>Studies in Russia found better recovery after stroke. People who use it often say their head feels clearer and they can focus longer, sometimes within a few days.</p>
+      <h3>Why it is in your plan</h3>
+      <p>You told us you sometimes wonder about your memory. This is for a sharp, clear head.</p>
+      <h3>What you might notice</h3>
+      <p>Feeling more awake and clear. Because it wakes you up, you use it in the morning and at lunch, never at night.</p>
+      <h3>How you take it</h3>
+      <p>No needle. A spray in the nose. Two weeks on, then two weeks off.</p>
+      <h3>How we will know</h3>
+      <p>Your Energy and clarity tap.</p>
+      <p class="look">Want to read more? Search: <b>Semax memory stroke</b></p>
+    </div>
+  </details>
+
+  <details class="pep">
+    <summary><span class="dot" style="background:#7A5CC2"></span><span class="nm"><b>Thymosin Alpha-1</b><span>Starts 7 December. For your immune system.</span></span><span class="chev">&#8250;</span></summary>
+    <div class="body">
+      <h3>What it is</h3>
+      <p>A copy of a message made by your thymus, a small gland behind your breastbone that trains your immune system. The thymus shrinks as we age.</p>
+      <h3>Where it came from</h3>
+      <p>It was found in the 1970s in the United States. It became a medicine called Zadaxin, sold in more than 30 countries, for liver infections and to support the immune system.</p>
+      <h3>What people have seen</h3>
+      <p>It has been used in thousands of people. It has been used to help older people respond better to the flu shot, and to help the body fight off infections.</p>
+      <h3>Why it is in your plan</h3>
+      <p>You had a bad infection in March. You fly to Mexico in January, with airports, planes and new places. This helps your body be ready.</p>
+      <h3>What you might notice</h3>
+      <p>Probably nothing you can feel. The win is a winter with no infection.</p>
+      <h3>How you take it</h3>
+      <p>A small shot under the skin, twice a week.</p>
+      <h3>How we will know</h3>
+      <p>You stay well. Tell me in Message if you feel a cold coming on.</p>
+      <p class="look">Want to read more? Search: <b>Thymosin Alpha-1 elderly immune</b></p>
+    </div>
+  </details>
+
+  <div class="sec">After this</div>
+  <div class="card">
+    <p>When your blood work is done, we may add more for muscle, sleep and energy. We will read about each one together first, the same way.</p>
+  </div>
+
+  <footer>From Christopher. Questions any time: tap Message in your app.</footer>
+</div>
+</body>
+</html>
