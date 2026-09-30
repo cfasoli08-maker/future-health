@@ -38,6 +38,16 @@
   },
   "tests": [
     {
+      "id": "magnesium-restore",
+      "opened": "2026-09-24",
+      "readout": "2026-09-30",
+      "status": "running",
+      "variable": "magnesiumMg",
+      "change": "Magnesium glycinate 200mg every second night, restored alone",
+      "why": "Held since 21 Aug for blood pressure. Morning diastolic went back over 65 and held, so it came back alone. Her first dose was the night of 24 Sep. Registered 30 Sep because the due check could not see a readout that only lived in the notes.",
+      "success": "Morning diastolic stays over 65, systolic stays at or over 105, no dizziness on standing, and her gut is no worse than the week before. Say how many doses she actually logged."
+    },
+    {
       "id": "gastrocolic-reflex",
       "opened": "2026-08-24",
       "readout": "pending her answer",
