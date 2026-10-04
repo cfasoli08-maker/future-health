@@ -677,7 +677,7 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
 
       <!-- What the run found, and anything the daily safety check wants him to
            know. Both used to go into files on his PC that nobody opens. -->
-      <div class="section-label">What the agent found</div>
+      <div class="section-label">From the agent. "Needs you" is only for real danger.</div>
       <div id="coach-notes"><div class="coach-empty">Reading.</div></div>
 
       <div class="section-label">Weekly update to Valerie</div>
@@ -2146,12 +2146,25 @@ async function initFocusCard() {
   stampInto('focus-card', r.timestamp);
 }
 
+// A WIN THAT WAS RIGHT WHEN IT WAS WRITTEN AND IS WRONG NOW. 4 Oct 2026.
+// A milestone row in the sheet cannot be edited, there is no action for it. On
+// 30 Sep every reading was re-filed by the time on her own screen, and her 6.5
+// moved from 15 Sep to 14 Sep: her screen said "Mon, Sep 14 at 10:25 PM". The
+// card kept saying the 15th. A correction goes here, keyed by the card's title,
+// and claude/tools/replay.js fails if any card on her page disagrees with her record.
+const WIN_FIXES = {
+  'A morning number back under 7': {
+    desc: 'Your morning number was 6.5 on 14 September, down from 7.2 on 12 September.',
+    date: '2026-09-14T07:00:00.000Z'
+  }
+};
 async function initWins() {
   renderWins(wins);
   try {
     const r = await sheetCall({ action: 'get_milestones', clientId: currentClientId });
     const fresh = ((r && r.milestones) || [])
       .filter(m => m && m.title)
+      .map(m => WIN_FIXES[m.title] ? Object.assign({}, m, WIN_FIXES[m.title]) : m)
       .map(m => ({ icon: m.icon || '✦', title: m.title, desc: m.desc, date: niceWinDate(m.date),
                    _when: Date.parse(String(m.date)) || 0 }))
       .sort((a, b) => b._when - a._when);
@@ -2583,7 +2596,7 @@ async function loadCoachNotes() {
     const urgent = n.kind === 'urgent';
     return '<div class="coach-stat coach-stat-wide" style="margin-bottom:0.6rem;border-left:5px solid ' +
       (urgent ? '#C25A2B' : 'var(--sage)') + ';">' +
-      '<div class="coach-stat-label">' + (urgent ? 'NEEDS YOU' : 'What it found') + '</div>' +
+      '<div class="coach-stat-label">' + (urgent ? 'NEEDS YOU' : 'Kept in the loop') + '</div>' +
       '<div style="font-size:0.95rem;line-height:1.55;margin-top:0.4rem;white-space:pre-wrap;">' +
       esc(n.text) + '</div>' +
       '<div class="when-stamp" style="text-align:left;margin:0.5rem 0 0;">' + whenStamp(n.timestamp) + '</div></div>';

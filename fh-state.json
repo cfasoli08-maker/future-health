@@ -41,11 +41,90 @@
       "id": "magnesium-restore",
       "opened": "2026-09-24",
       "readout": "2026-09-30",
-      "status": "running",
+      "status": "closed 2026-10-04: SAFE, BUT BARELY TAKEN",
       "variable": "magnesiumMg",
       "change": "Magnesium glycinate 200mg every second night, restored alone",
       "why": "Held since 21 Aug for blood pressure. Morning diastolic went back over 65 and held, so it came back alone. Her first dose was the night of 24 Sep. Registered 30 Sep because the due check could not see a readout that only lived in the notes.",
-      "success": "Morning diastolic stays over 65, systolic stays at or over 105, no dizziness on standing, and her gut is no worse than the week before. Say how many doses she actually logged."
+      "success": "Morning diastolic stays over 65, systolic stays at or over 105, no dizziness on standing, and her gut is no worse than the week before. Say how many doses she actually logged.",
+      "readoutSpec": {
+        "_why": "So the code can close this test on its date without a person. readout.js counts these and writes the verdict.",
+        "dose": {
+          "field": "magnesiumMg",
+          "called": "magnesium",
+          "expectAtLeast": 3
+        },
+        "checks": [
+          {
+            "called": "the bottom number of her morning blood pressure stayed over 65",
+            "series": "diastolicAm",
+            "rule": "min>",
+            "value": 65,
+            "safety": true
+          },
+          {
+            "called": "the top number of her blood pressure stayed at or over 105",
+            "series": "systolicAny",
+            "rule": "min>=",
+            "value": 105,
+            "safety": true
+          },
+          {
+            "called": "her gut was no worse than the week before",
+            "series": "gutache",
+            "rule": "meanNotAbovePrior",
+            "tolerance": 1
+          }
+        ],
+        "onFail": {
+          "hold": "Magnesium glycinate",
+          "why": "Her blood pressure fell while magnesium was back in. It is held until the bottom number sits over 65 again."
+        }
+      },
+      "closedOn": "2026-10-04",
+      "result": {
+        "verdict": "SAFE, BUT BARELY TAKEN",
+        "from": "2026-09-24",
+        "to": "2026-10-04",
+        "doses": [
+          "2026-09-24",
+          "2026-10-02"
+        ],
+        "checks": [
+          {
+            "called": "the bottom number of her morning blood pressure stayed over 65",
+            "safety": true,
+            "n": 8,
+            "pass": true,
+            "min": 69,
+            "minOn": "2026-09-29",
+            "max": 79,
+            "maxOn": "2026-10-04"
+          },
+          {
+            "called": "the top number of her blood pressure stayed at or over 105",
+            "safety": true,
+            "n": 13,
+            "pass": true,
+            "min": 124,
+            "minOn": "2026-09-24",
+            "max": 142,
+            "maxOn": "2026-10-02"
+          },
+          {
+            "called": "her gut was no worse than the week before",
+            "safety": false,
+            "n": 4,
+            "pass": true,
+            "min": 2,
+            "minOn": "2026-09-26",
+            "max": 3,
+            "maxOn": "2026-09-24",
+            "mean": 2.25,
+            "priorMean": 2.67
+          }
+        ],
+        "consequence": "Nothing on her list changes."
+      }
     },
     {
       "id": "gastrocolic-reflex",
@@ -154,6 +233,12 @@
       "closed": "2026-08-14",
       "verdict": "FIXED, was a design flaw not a code bug",
       "evidence": "Weight, sleep hours, sleep quality and wake-ups were in the Morning session only. She logged at 2:27 PM which the app treats as Noon, so they were invisible. Once-a-day metrics now appear in every session, share one reading across all three, and Cancel points at the session that actually stores it."
+    },
+    {
+      "id": "magnesium-restore",
+      "closed": "2026-10-04",
+      "verdict": "SAFE, BUT BARELY TAKEN",
+      "evidence": "She ticked magnesium on 24 Sep and on 2 Oct, between 24 Sep and 4 Oct. No other day in that stretch has a tick. That is too few ticks to say what magnesium does for her. It shows only that nothing went wrong on the days around them. HELD: the bottom number of her morning blood pressure stayed over 65. The lowest reading was 69 on 29 Sep. The line is 65. HELD: the top number of her blood pressure stayed at or over 105. The lowest reading was 124 on 24 Sep. The line is 105. HELD: her gut was no worse than the week before. It averaged 2.25, compared to 2.67 the week before. Nothing on her list changes."
     }
   ],
   "corrections": [
@@ -605,7 +690,7 @@
     ]
   },
   "protocol": {
-    "_why": "Machine readable. G12 compares what she LOGS against this every scan. Names must match what index.html writes into the supplement rows, not the pretty names in tiers.",
+    "_why": "THE ONE LIST of what she takes. Everything else is made from it or checked against it: the switch in index.html, the protocol section of claude/WIKI.md, the brief, and gate check P15. Change it here, then run node claude/tools/protocol.js --write. G12 compares what she LOGS against it every scan. Names must match what index.html writes into the supplement rows.",
     "on": [
       "Alpha lipoic acid",
       "Florastor",
@@ -643,7 +728,119 @@
         "starts": "2026-10-01",
         "dose": "3g daily, alone"
       }
-    ]
+    ],
+    "detail": {
+      "Alpha lipoic acid": {
+        "say": "Alpha Lipoic Acid",
+        "dose": "600mg daily with her largest meal",
+        "doses": [
+          "600mg",
+          "100mg"
+        ],
+        "aliases": [
+          "alpha lipoic"
+        ]
+      },
+      "Florastor": {
+        "say": "Florastor",
+        "dose": "1 capsule with breakfast"
+      },
+      "Vitamin D3": {
+        "say": "Vitamin D3",
+        "dose": "4000 IU in the morning",
+        "doses": [
+          "4000iu",
+          "1000iu"
+        ],
+        "aliases": [
+          "d3"
+        ]
+      },
+      "Vitamin K2": {
+        "say": "Vitamin K2 MK-7",
+        "dose": "one 100mcg capsule in the morning (one, not two)",
+        "doses": [
+          "100mcg"
+        ],
+        "aliases": [
+          "k2"
+        ]
+      },
+      "Vitamin C": {
+        "say": "Vitamin C",
+        "dose": "500mg chewable, morning and evening",
+        "doses": [
+          "500mg"
+        ]
+      },
+      "Sauerkraut": {
+        "say": "Sauerkraut",
+        "dose": "one tablespoon in the morning",
+        "since": "2026-08-28"
+      },
+      "Magnesium glycinate": {
+        "say": "Magnesium Glycinate",
+        "dose": "200mg every second night",
+        "doses": [
+          "200mg"
+        ],
+        "aliases": [
+          "magnesium"
+        ],
+        "dayField": "magnesiumMg",
+        "appSwitch": "MAG_PAUSED"
+      },
+      "Creatine": {
+        "say": "Creatine",
+        "aliases": [
+          "creatine"
+        ]
+      },
+      "Ibuprofen": {
+        "say": "Ibuprofen"
+      },
+      "Advil": {
+        "say": "Advil"
+      },
+      "Motrin": {
+        "say": "Motrin"
+      },
+      "Robax": {
+        "say": "Robax Platinum"
+      },
+      "NSAID": {
+        "say": "all other NSAIDs",
+        "aliases": [
+          "nsaids",
+          "aleve",
+          "naproxen",
+          "aspirin",
+          "voltaren"
+        ]
+      },
+      "Digestive Enzyme": {
+        "say": "digestive enzyme formula",
+        "aliases": [
+          "enzyme formula",
+          "digestive enzymes"
+        ]
+      },
+      "Sublingual B12": {
+        "say": "sublingual B12",
+        "aliases": [
+          "b12"
+        ]
+      },
+      "5-HTP": {
+        "say": "5-HTP"
+      },
+      "Collagen-Biotin": {
+        "say": "collagen-biotin"
+      },
+      "Psyllium": {
+        "say": "psyllium husk"
+      }
+    }
   },
   "labs": {
     "status": "NONE IN THE RECORD. 177 days on protocol and not one blood test in this file.",
