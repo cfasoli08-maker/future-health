@@ -3450,6 +3450,22 @@ document.addEventListener('DOMContentLoaded', function() {
   safeRun('verse', initVerse);
   safeRun('peptidecard', paintPeptideCard);
   window.addEventListener('pageshow', function(){ safeRun('peptidecard', paintPeptideCard); });
+  // A FRESH PAGE EVERY MORNING. Earned 4 Oct 2026. Her phone keeps the app open
+  // in the background, so on the morning of the 4th it came back exactly as she
+  // left it at 11:43 the night before: "Good evening", last night's tiles, and
+  // nothing she tried to save that morning reached the sheet. Now, when she
+  // comes back to it on a new day, or after more than half an hour away, it
+  // reloads itself, the same as tapping refresh. Never while a box is open.
+  (function(){
+    let hiddenAt = 0, openedDay = localDayStr();
+    document.addEventListener('visibilitychange', function(){
+      if (document.visibilityState === 'hidden') { hiddenAt = Date.now(); return; }
+      const away = hiddenAt ? Date.now() - hiddenAt : 0;
+      const ov = document.getElementById('overlay');
+      const boxOpen = ov && ov.classList.contains('open');
+      if (!boxOpen && (localDayStr() !== openedDay || away > 30 * 60 * 1000)) doRefresh();
+    });
+  })();
   safeRun('migrate', migrateDay);
   safeRun('tiles', renderTiles);
   safeRun('whooshes', fetchWhooshesToday);
