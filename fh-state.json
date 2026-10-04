@@ -430,13 +430,13 @@
       "Vitamin K2 MK-7",
       "Vitamin C",
       "Sauerkraut (cleared 8 Sep)",
-      "Whey Protein Isolate (Diesel)"
+      "Whey Protein Isolate (Diesel)",
+      "Creatine (3g daily with food, on from 5 Oct)"
     ],
     "SUPP_YELLOW": [
       "Magnesium above 200mg (closed, no)",
       "Melatonin",
       "Indica gummy 2.5mg",
-      "Creatine (YES, starts 1 Oct)",
       "Enterogermina (NO, not while Florastor works)",
       "Ashwagandha (NO)",
       "Marine Collagen",
@@ -698,7 +698,8 @@
       "Vitamin K2",
       "Vitamin C",
       "Sauerkraut",
-      "Magnesium glycinate"
+      "Magnesium glycinate",
+      "Creatine"
     ],
     "held": [],
     "red": [
@@ -713,7 +714,7 @@
       "Collagen-Biotin",
       "Psyllium"
     ],
-    "reviewedOn": "2026-09-25",
+    "reviewedOn": "2026-10-04",
     "restored": [
       {
         "name": "Magnesium glycinate",
@@ -722,13 +723,7 @@
         "readsOut": "2026-09-30"
       }
     ],
-    "dated": [
-      {
-        "name": "Creatine",
-        "starts": "2026-10-01",
-        "dose": "3g daily, alone"
-      }
-    ],
+    "dated": [],
     "detail": {
       "Alpha lipoic acid": {
         "say": "Alpha Lipoic Acid",
@@ -792,9 +787,14 @@
       },
       "Creatine": {
         "say": "Creatine",
+        "dose": "3g once a day, with food",
+        "doses": [
+          "3g"
+        ],
         "aliases": [
           "creatine"
-        ]
+        ],
+        "since": "2026-10-05"
       },
       "Ibuprofen": {
         "say": "Ibuprofen"
