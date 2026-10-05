@@ -1,0 +1,68 @@
+name: "ATTENTION - Mom's update did NOT run today"
+
+# THE CHECKER THAT DOES NOT LIVE ON HIS PC. Built 5 October 2026.
+#
+# On 5 October her 6 am update could not run because the Claude sign-in on his
+# PC had expired. The PC tried every ten minutes and told nobody he could hear.
+# He found out by asking, hours later.
+#
+# The thing that checks must not be the thing that broke. This runs on GitHub,
+# so it works when his PC is off, asleep, signed out or on fire. It asks her
+# live app one question: is the card on her home page from today?
+#
+# If it is, this passes and says nothing. If it is not, this FAILS ON PURPOSE,
+# and GitHub emails him that the workflow failed. The name of this workflow is
+# the subject of that email, which is why it is written the way it is.
+#
+# It reads only the time stamp of her card. Nothing about her health is read,
+# printed or kept. This repo is public.
+on:
+  schedule:
+    - cron: '30 14 * * *'   # 7:30 am Kelowna. The 6 am run has had 90 minutes.
+    - cron: '0 19 * * *'    # noon Kelowna. Still down means it needs a person.
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/watch-her-update.yml'
+
+jobs:
+  did-it-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Is the card on her home page from today?
+        env:
+          EP: https://script.google.com/macros/s/AKfycbwc-FLnsJThCFmynUFb4m3KN3P895I-wATyPOxoGK4lWnIpVw6WGYkbBc3lCzJDMOymGg/exec
+        run: |
+          set -uo pipefail
+
+          # Her sheet blips for a minute or two most mornings. Try five times
+          # over ten minutes before calling it unreachable.
+          TS=""
+          for n in 1 2 3 4 5; do
+            LOC=$(curl -sS -o /dev/null -w '%{redirect_url}' -X POST "$EP" \
+                    -d '{"action":"get_card","clientId":"valerie"}' --max-time 120 || true)
+            if [ -n "$LOC" ]; then
+              TS=$(curl -sS "$LOC" --max-time 120 | grep -o '"timestamp":"[^"]*"' | tail -1 | cut -d'"' -f4 || true)
+            fi
+            [ -n "$TS" ] && break
+            echo "try $n: her sheet did not answer, waiting two minutes"
+            sleep 120
+          done
+
+          if [ -z "$TS" ]; then
+            echo "::error::Her sheet could not be reached in ten minutes, so nobody can say whether her update ran. Her app may be down."
+            exit 1
+          fi
+
+          TODAY=$(TZ=America/Vancouver date +%F)
+          CARD=$(TZ=America/Vancouver date -d "$TS" +%F)
+          echo "today in Kelowna: $TODAY"
+          echo "her card is from: $CARD"
+
+          if [ "$CARD" = "$TODAY" ]; then
+            echo "Her update ran today. Nothing to do."
+            exit 0
+          fi
+
+          echo "::error::MOM'S UPDATE DID NOT RUN TODAY. Her home page still shows the card from $CARD. Nothing wrong was sent to her. The agent on the PC is down, signed out of Claude, or the PC is off. Open a Claude session on the PC and say: fix the Future Health agent."
+          exit 1
