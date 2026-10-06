@@ -1,4 +1,4 @@
-name: "ATTENTION - Mom's update did NOT run today"
+name: "FAILURE FAILURE - Mom's update did not run"
 
 # THE CHECKER THAT DOES NOT LIVE ON HIS PC. Built 5 October 2026.
 #
@@ -29,6 +29,19 @@ jobs:
   did-it-run:
     runs-on: ubuntu-latest
     steps:
+      # THE KEY RUNS OUT. The agent runs on a one-year key made 6 October 2026.
+      # Thirty days before it ends, this starts failing so he is emailed in time
+      # to make a new one. The date is here and nowhere else.
+      - name: Does the agent's one-year key end within 30 days?
+        run: |
+          KEY_ENDS=2027-10-06
+          DAYS=$(( ( $(date -d "$KEY_ENDS" +%s) - $(date +%s) ) / 86400 ))
+          echo "the agent's key ends on $KEY_ENDS, in $DAYS days"
+          if [ "$DAYS" -le 30 ]; then
+            echo "::error::THE AGENT'S ONE-YEAR KEY ENDS IN $DAYS DAYS, on $KEY_ENDS. Make a new one: open a Claude session on the PC and say: renew the Future Health key."
+            exit 1
+          fi
+
       - name: Is the card on her home page from today?
         env:
           EP: https://script.google.com/macros/s/AKfycbwc-FLnsJThCFmynUFb4m3KN3P895I-wATyPOxoGK4lWnIpVw6WGYkbBc3lCzJDMOymGg/exec
