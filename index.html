@@ -770,8 +770,10 @@ const INPUTS = [
   // against day is still fair, and take the before-coffee number on its own tile.
   { id:'glucose', icon:'🩸', label:'Blood sugar', sub:'Morning after your coffee, and 2 hours after supper', type:'number', unit:'mmol/L', step:'0.1', placeholder:'6.5',
     help:'Morning: take it the way you always do, after your coffee. Keep it the same every day. That is what makes one day fair against the next. Night: take it two hours after your last bite, every night. Just the number from your meter.' },
-  { id:'truefasting', icon:'🌅', label:'Before-coffee sugar', sub:'Once a week, before your coffee', type:'number', unit:'mmol/L', step:'0.1', placeholder:'7.0', plainSub:true,
-    help:'Once a week, prick your finger before your coffee and cream, with nothing but water first. Put that number here. Then have your coffee and do your usual Blood sugar tile the same as always. This one number shows us your real empty-stomach sugar.' },
+  // 8 Oct 2026. Every morning for two weeks, not once a week, so we learn her
+  // true morning number. Back to once a week after 22 October.
+  { id:'truefasting', icon:'🌅', label:'Before-coffee sugar', sub:'Every morning for 2 weeks, before your coffee', type:'number', unit:'mmol/L', step:'0.1', placeholder:'7.0', plainSub:true,
+    help:'For the next two weeks, every morning, prick your finger before your coffee and cream, with nothing but water first. Put that number here. Then have your coffee and do your usual Blood sugar tile the same as always. Two weeks of this shows us your real empty-stomach sugar.' },
   { id:'pulse', icon:'💗', label:'Pulse', sub:'Morning heart rate', type:'number', unit:'beats per minute', step:'1', placeholder:'65',
     help:'Your morning pulse in beats per minute.' },
   { id:'bp', icon:'💓', label:'Blood pressure', sub:'Sit and rest 5 minutes first', type:'bp',
@@ -789,6 +791,28 @@ const INPUTS = [
            { v:'neckache', label:'Neck headache', small:'A headache at the back of the neck' },
            { v:'groggy',   label:'Groggy', small:'Slow to clear your head' } ],
     help:'How did you feel when you woke up this morning? Tap every one that fits. If none of them fit, tap None of these. A good morning tells me as much as a bad one.' },
+  // 8 Oct 2026. Her headaches, her mood and her peptides, so we hear them the
+  // day they happen. Each one is checked high and low in vitals.js.
+  { id:'headache', icon:'🤕', label:'Headache', sub:'0 to 10, tap 0 when there is none', type:'scale', zeroOk:true,
+    help:'How bad is your headache right now? 0 means no headache at all. 10 means the worst you have ever had. Please tap 0 on the good days too. You can log it again later if it changes.' },
+  { id:'headwhere', icon:'📍', label:'Where it hurts', sub:'Only when you have a headache', type:'multi', plainSub:true,
+    opts:[ { v:'neck',  label:'Back of the neck' },
+           { v:'front', label:'Forehead or eyes' },
+           { v:'side',  label:'One side' },
+           { v:'all',   label:'All over' } ],
+    help:'Where is the headache? Tap every place it hurts. Skip this tile on a day with no headache.' },
+  { id:'mood', icon:'🌤️', label:'Mood', sub:'How do you feel today?', type:'scale',
+    help:'One number for how you feel in yourself today. 1 means very low. 10 means wonderful. There is no wrong answer.' },
+  { id:'moodfeel', icon:'💭', label:'How you feel', sub:'Tap all that fit', type:'multi',
+    opts:[ { v:'calm',    label:'Calm' },
+           { v:'low',     label:'Low' },
+           { v:'worried', label:'Worried' },
+           { v:'scared',  label:'Scared' } ],
+    help:'Tap every word that fits how you feel right now. Christopher sees this.' },
+  { id:'peptide', icon:'💉', label:'Peptide dose', sub:'Tap each one you took today', type:'multi', plainSub:true,
+    opts:[ { v:'bpc157', label:'BPC-157' },
+           { v:'tb500',  label:'TB-500' } ],
+    help:'Tap each peptide you took today, once. This lets us see what they do for your numbers.' },
   { id:'kneepain', icon:'🦵', label:'Knee pain', sub:'0 to 10', type:'scale', zeroOk:true,
     help:'How is your knee today? 0 means no pain at all. 10 means the worst pain you can imagine. Pick the number that fits right now.' },
   { id:'backpain', icon:'🦴', label:'Back pain', sub:'0 to 10', type:'scale', zeroOk:true,
@@ -844,7 +868,7 @@ let activeSession = 'morning';
 let sheetSel = {};
 
 // Repeatable metrics logged morning, noon, and night. The rest are morning-only, once a day.
-const REPEATABLE_IDS = ['glucose','pulse','bp','kneepain','backpain','fibropain','energy','activity','stress','bowel','hydration','salt'];
+const REPEATABLE_IDS = ['glucose','pulse','bp','kneepain','backpain','fibropain','energy','activity','stress','bowel','hydration','salt','headache','mood'];
 // Once-a-day metrics. They used to live under Morning only, so if she opened the app in
 // the afternoon they were invisible and looked deleted. Reported by Valerie Aug 13.
 // They now show in every session and share one reading across all three.
@@ -1226,6 +1250,8 @@ function closeSheet() {
   activeInput = null;
 }
 
+// The range a number tile is checked against before it saves. Outside it, she is asked once.
+const SANE = { glucose:[2.5,25], truefasting:[2.5,25], pulse:[35,150], weight:[90,220], sleephours:[0,16] };
 async function saveEntry() {
   const inp = activeInput;
   if (!inp) return;
@@ -1233,11 +1259,23 @@ async function saveEntry() {
   if (inp.type==='number') {
     const v = parseFloat(document.getElementById('entry-val').value);
     if (isNaN(v)) return;
+    // 8 Oct 2026. A 64 went into her sugar on 25 Sep. Far outside her range,
+    // ask once before saving, and offer the likely number.
+    const R = SANE[inp.id];
+    if (R && (v < R[0] || v > R[1])) {
+      const guess = (v / 10 >= R[0] && v / 10 <= R[1]) ? Math.round(v) / 10 : null;
+      const ask = 'That is ' + v + ' ' + (inp.unit || '') + '.' + (guess !== null ? ' Did you mean ' + guess + '?' : ' That is far from your usual.') +
+        '\n\nPress OK to save ' + v + '. Press Cancel to fix it.';
+      if (!confirm(ask)) return;
+    }
     value = v;
   } else if (inp.type==='bp') {
     const sys = parseInt(document.getElementById('entry-sys').value);
     const dia = parseInt(document.getElementById('entry-dia').value);
     if (isNaN(sys) || isNaN(dia)) return;
+    if (sys <= dia || sys < 70 || sys > 250 || dia < 35 || dia > 150) {
+      if (!confirm('That is ' + sys + ' over ' + dia + '. The top number is usually the bigger one.\n\nPress OK to save it as it is. Press Cancel to fix it.')) return;
+    }
     value = { sys, dia };
   } else if (inp.type==='scale' || inp.type==='count') {
     if (sheetSel.scale === undefined) return;
