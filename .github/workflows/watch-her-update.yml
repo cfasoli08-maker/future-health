@@ -79,3 +79,25 @@ jobs:
 
           echo "::error::MOM'S UPDATE DID NOT RUN TODAY. Her home page still shows the card from $CARD. Nothing wrong was sent to her. The agent on the PC is down, signed out of Claude, or the PC is off. Open a Claude session on the PC and say: fix the Future Health agent."
           exit 1
+
+      # THE FAILSAFE FOR THE 180 ALARM (added 8 Oct 2026). It lives in her sheet
+      # and writes a heartbeat every 10 minutes under the client "alarm", which
+      # her app never reads. Older than 30 minutes means it has stopped: this step
+      # fails and GitHub emails him. It runs last and always, so it never stops
+      # the other checks.
+      - name: Is the 180 alarm alive?
+        if: always()
+        env:
+          EP: https://script.google.com/macros/s/AKfycbwc-FLnsJThCFmynUFb4m3KN3P895I-wATyPOxoGK4lWnIpVw6WGYkbBc3lCzJDMOymGg/exec
+        run: |
+          TS=""
+          for n in 1 2 3; do
+            LOC=$(curl -sS -o /dev/null -w '%{redirect_url}' -X POST "$EP" -d '{"action":"get_card","clientId":"alarm"}' --max-time 120 || true)
+            [ -n "$LOC" ] && TS=$(curl -sS "$LOC" --max-time 120 | grep -o '"timestamp":"[^"]*"' | tail -1 | cut -d'"' -f4 || true)
+            [ -n "$TS" ] && break
+            sleep 60
+          done
+          if [ -z "$TS" ]; then echo "::error::THE 180 ALARM HAS NO HEARTBEAT. Open a Claude session on the PC and say: fix Mom's 180 alarm."; exit 1; fi
+          AGE=$(( ( $(date +%s) - $(date -d "$TS" +%s) ) / 60 ))
+          echo "the alarm last beat $AGE minutes ago ($TS)"
+          if [ "$AGE" -gt 30 ]; then echo "::error::THE 180 ALARM HAS STOPPED. Its last heartbeat was $AGE minutes ago. Open a Claude session on the PC and say: fix Mom's 180 alarm."; exit 1; fi
