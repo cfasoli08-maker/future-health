@@ -91,12 +91,18 @@ jobs:
           EP: https://script.google.com/macros/s/AKfycbwc-FLnsJThCFmynUFb4m3KN3P895I-wATyPOxoGK4lWnIpVw6WGYkbBc3lCzJDMOymGg/exec
         run: |
           TS=""
-          for n in 1 2 3; do
-            LOC=$(curl -sS -o /dev/null -w '%{redirect_url}' -X POST "$EP" -d '{"action":"get_card","clientId":"alarm"}' --max-time 120 || true)
-            [ -n "$LOC" ] && TS=$(curl -sS "$LOC" --max-time 120 | grep -o '"timestamp":"[^"]*"' | tail -1 | cut -d'"' -f4 || true)
+          # Google sometimes stops answering for ten minutes or so (13 Oct 2026:
+          # 9 minutes, while the alarm kept beating). Keep asking for about 25
+          # minutes before calling it, and say which of the two it is.
+          REACHED=""
+          for n in 1 2 3 4 5 6 7; do
+            LOC=$(curl -sS -o /dev/null -w '%{redirect_url}' -X POST "$EP" -d '{"action":"get_card","clientId":"alarm"}' --max-time 90 || true)
+            [ -n "$LOC" ] && BODY=$(curl -sS "$LOC" --max-time 90 || true) && [ -n "$BODY" ] && REACHED=1
+            [ -n "$LOC" ] && TS=$(echo "$BODY" | grep -o '"timestamp":"[^"]*"' | tail -1 | cut -d'"' -f4 || true)
             [ -n "$TS" ] && break
-            sleep 60
+            sleep 120
           done
+          if [ -z "$REACHED" ]; then echo "::error::Her sheet did not answer for about 25 minutes, so the 180 alarm could not be checked. Her app may be down too. Open a Claude session on the PC and say: fix Mom's 180 alarm."; exit 1; fi
           if [ -z "$TS" ]; then echo "::error::THE 180 ALARM HAS NO HEARTBEAT. Open a Claude session on the PC and say: fix Mom's 180 alarm."; exit 1; fi
           AGE=$(( ( $(date +%s) - $(date -d "$TS" +%s) ) / 60 ))
           echo "the alarm last beat $AGE minutes ago ($TS)"
