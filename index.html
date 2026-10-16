@@ -384,6 +384,7 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
 .upd-tile.open .upd-tile-body { display:block; }
 .upd-tile-body strong { color:var(--sage); }
 @media (max-width:430px) { .nav-label { font-size:0.58rem; letter-spacing:0.03em; } .nav-icon { font-size:1.6rem; } .nav-btn { padding:0.5rem 0.1rem; } }
+.pen-tick{display:block;padding:1.2rem;overflow-wrap:anywhere;border-color:var(--pen-color,#D8D2C2)}.pen-action{display:flex;align-items:center;gap:1rem;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;padding:.8rem 0;cursor:pointer}.pen-action .supp-tick-box{flex-shrink:0;border-color:var(--pen-color,var(--sage))}.pen-tick.checked .supp-tick-box{background:var(--pen-color,var(--green));border-color:var(--pen-color,var(--green))}.pen-tick .mag-box.on{border-color:var(--pen-color,var(--green))}.pen-units{display:block;font-size:1.65rem}.pen-tick small{line-height:1.7}.pen-tick .mag-box{min-width:56px;min-height:56px;font-size:1.2rem}.pen-next{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -753,7 +754,7 @@ function stamp() {
 /* ── LOCAL DAY STATE ── */
 // Day key uses HER LOCAL date. The old UTC key flipped to tomorrow at 8pm Eastern,
 // which made everything logged that day vanish from the tiles every evening.
-function localDayStr(d){ const n = d || new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); }
+function localDayStr(d){ const n = d || new Date(); if(!d && window.__FH_WALK__ === true){ const v=new URLSearchParams(location.search).get('day'); if(/^\d{4}-\d{2}-\d{2}$/.test(v||'')) return v; } return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); }
 const dayKey = () => 'fh_' + localDayStr();
 function loadDay() { try { return JSON.parse(localStorage.getItem(dayKey())) || {}; } catch(e){ return {}; } }
 function saveDay(state) { localStorage.setItem(dayKey(), JSON.stringify(state)); }
@@ -809,10 +810,6 @@ const INPUTS = [
            { v:'worried', label:'Worried' },
            { v:'scared',  label:'Scared' } ],
     help:'Tap every word that fits how you feel right now. Christopher sees this.' },
-  { id:'peptide', icon:'💉', label:'Peptide dose', sub:'Tap each one you took today', type:'multi', plainSub:true,
-    opts:[ { v:'bpc157', label:'BPC-157' },
-           { v:'tb500',  label:'TB-500' } ],
-    help:'Tap each peptide you took today, once. This lets us see what they do for your numbers.' },
   { id:'kneepain', icon:'🦵', label:'Knee pain', sub:'0 to 10', type:'scale', zeroOk:true,
     help:'How is your knee today? 0 means no pain at all. 10 means the worst pain you can imagine. Pick the number that fits right now.' },
   { id:'backpain', icon:'🦴', label:'Back pain', sub:'0 to 10', type:'scale', zeroOk:true,
@@ -1540,6 +1537,34 @@ async function loadUpdatesClient() {
 }
 
 /* ── SUPPLEMENTS ── */
+// BEGIN PENS: shared by the app and offline tools (pens.js).
+const PEN_START = '2026-10-18';
+function penAdd(day, n) { return new Date(Date.parse(day+'T12:00:00Z')+n*86400000).toISOString().slice(0,10); }
+function penDays(a,b) { return Math.round((Date.parse(b)-Date.parse(a))/86400000); }
+const PENS = [
+  {id:'bpctb',name:'BPC-157 + TB-500',purpose:'For your back, left knee and gut lining.',units:15,length:84,days:'daily',mixOffsets:[0,20,40,60,80],keep:28,color:null},
+  {id:'ara',name:'ARA-290',purpose:'For the nerves behind your slow gut.',units:40,length:28,days:'daily',mixOffsets:[0,14],keep:14,color:null},
+  {id:'mots',name:'MOTS-c',purpose:'For muscle and blood sugar.',units:50,length:53,days:[0,7,14,21,28,31,35,38,42,45,49,52],mixOffsets:[0,21,31,38,45,52],throwOffsets:[14,28,35,42,49,52],color:null},
+  {id:'ta1',name:'Thymosin Alpha-1',purpose:'To build up your immune system.',units:32,length:39,days:[0,3,7,10,14,17,21,24,28,31,35,38],mixOffsets:[0,21],throwOffsets:[17,38],keep:28,color:null},
+  {id:'semax',name:'Semax',label:'Semax nose spray',purpose:'For brain fog and nerve repair.',units:null,length:42,days:'blocks',mixOffsets:[0,28],throwOffsets:[13,41],color:null}
+].map(p=>Object.assign(p,{start:PEN_START,end:penAdd(PEN_START,p.length-1),mixDates:p.mixOffsets.map(n=>penAdd(PEN_START,n)),throwRule:p.throwOffsets?'After its last dose':'At the next mix or storage limit, whichever comes first'}));
+function penState(p,day) {
+  const n=penDays(p.start,day),active=n>=0&&day<=p.end;
+  const due=active&&(p.days==='daily'||(p.days==='blocks'?(n<14||n>=28):p.days.includes(n)));
+  let mi=p.mixOffsets.filter(x=>x<=n).length-1;
+  const mix=mi>=0?p.mixDates[mi]:null;
+  let discard=null,pen=null;
+  if(mix){
+    if(p.id==='ara'){pen=Math.floor((n-p.mixOffsets[mi])/7)+1; discard=penAdd(mix,pen===1?7:14);}
+    else if(p.throwOffsets) discard=penAdd(p.start,p.throwOffsets[mi]);
+    else discard=[penAdd(mix,p.keep),p.mixDates[mi+1]].filter(Boolean).sort()[0];
+  }
+  let next=null;
+  for(let i=Math.max(0,n+1);i<p.length;i++) if(p.days==='daily'||(p.days==='blocks'?(i<14||i>=28):p.days.includes(i))){next=penAdd(p.start,i);break;}
+  return {due,active,units:p.id==='mots'&&n<14?25:p.units,mix,discard,pen,next,nextMix:p.mixDates.find(x=>x>day)||null,mixToday:active&&p.mixDates.includes(day),blockDay:p.id==='semax'&&due?(n%28)+1:null,sprays:p.id==='semax'&&due?(n%28<3?1:2):0,off:p.id==='semax'&&active&&!due};
+}
+// END PENS
+
 const SUPPS = [
   { id:'ala',      name:'Alpha lipoic acid 600mg', dose:'Six 100mg capsules together, with your largest meal' },
   { id:'florastor',name:'Florastor', dose:'1 capsule with breakfast' },
@@ -1580,6 +1605,7 @@ const TYL = { name:'Tylenol 650', pill:650, max:4, sub:'Tap the box that matches
 const GUM = { name:'Indica gummy 2.5mg', max:4, sub:'Tap the box that matches your TOTAL gummies so far today' };
 
 const SUPP_GREEN = [
+  ...PENS.map(p=>({name:p.name,note:p.purpose})),
   { name:'Alpha Lipoic Acid', note:'600mg daily. Six 100mg capsules taken together with the largest meal. Always with food.' },
   { name:'Florastor (Saccharomyces boulardii)', note:'1 capsule with breakfast daily.' },
   { name:'Magnesium Glycinate', note:'ONE PILL, 200mg. Settled. You proved this yourself twice: 400mg on Aug 10 gave you a sore gut on the 11th, 400mg again on the 12th gave you the same on the 13th, and at 200mg you have no trouble at all. Your read was right and your dose is now 200mg at bedtime every second night. No more increases. It is still doing the work on your blood pressure, which is sitting in the 120s.' },
@@ -1609,12 +1635,58 @@ const SUPP_RED = [
   { name:'Collagen-Biotin Beauty Formula', note:'Do not use.' }
 ];
 
+
+function penDate(d,weekday) { const date=new Date(d+'T12:00:00'); return (weekday?date.toLocaleDateString('en-CA',{weekday:'long'})+' ':'')+date.getDate()+' '+date.toLocaleDateString('en-CA',{month:'long'}); }
+function renderPens(day) {
+  const today=localDayStr(), live=PENS.filter(p=>today<=p.end);
+  if(!live.length)return '';
+  let out='<section id="pens-today"><h2>Your pens today</h2>';
+  if(today<PEN_START)return out+'<p>Your pens start '+penDate(PEN_START,true)+'.</p><p>Mix with Christopher: '+PENS.map(p=>p.name+(p.id==='ara'?' (two pens)':'')).join(', ')+'.</p></section>';
+  const next=[];
+  live.forEach(p=>{
+    const s=penState(p,today);
+    if(!s.due){ next.push(s.off?'Off week. No spray. Back on '+penDate(s.next,true)+'.':p.name+': next shot '+penDate(s.next,true)+'.');return; }
+    const on=!!(day.supps||{})[p.id],time=(day.suppTimes||{})[p.id]||'';
+    const style=p.color?'--pen-color:'+p.color+';border-color:var(--pen-color);':'';
+    out+='<div class="supp-tick pen-tick '+(on?'checked':'')+'" style="'+style+'" data-pen="'+p.id+'">';
+    if(s.mixToday)out+='<strong>Mix a new '+(p.id==='semax'?'vial':'pen')+' today.</strong>';
+    if(p.id==='semax'){
+      out+='<div class="supp-tick-name">'+p.label+'</div><p>On week, day '+s.blockDay+' of 14</p><strong>'+s.sprays+' spray'+(s.sprays===1?'':'s')+' today. On a foggy day, up to 3.</strong>';
+      ['morning','second'].forEach((slot,i)=>{
+        const count=(day.semax||{})[slot]||0;
+        out+='<p>'+(i?'Second dose, foggy day only, before noon':'Morning')+'</p>';
+        if(i && new Date().getHours()>=12)out+='<p>Nothing after noon. It can keep you awake.</p>';
+        out+='<div class="mag-row">';
+        for(let n=1;n<=3;n++)out+='<button type="button" aria-label="'+slot+' '+n+' sprays" class="mag-box '+(count>=n?'on':'')+'" onclick="setSemax(\''+slot+'\','+n+')">'+n+'</button>';
+        out+='</div>';
+      });
+    }else out+='<button type="button" class="pen-action" onclick="togglePen(\''+p.id+'\')"><span class="supp-tick-box">'+(on?'✓':'')+'</span><span><span class="supp-tick-name">'+p.name+'</span><strong class="pen-units">'+s.units+' units</strong></span></button>';
+    if(on)out+='<p>Done ✓ '+time+' · tap again to undo</p>';
+    out+='<p>'+p.purpose+'</p><small>Mixed '+penDate(s.mix)+'. '+(s.pen?'Pen '+s.pen+' of 2. ':'')+'Throw out by '+penDate(s.discard)+'. '+(s.nextMix?'Next mix '+penDate(s.nextMix)+'.':'No more mixes.')+'</small></div>';
+  });
+  return out+next.map(x=>'<p class="pen-next">'+x+'</p>').join('')+'</section>';
+}
+function togglePen(id) {
+  const p=PENS.find(x=>x.id===id),s=penState(p,localDayStr()); if(!s.due)return;
+  const day=loadDay(); day.supps=day.supps||{};day.suppTimes=day.suppTimes||{};
+  day.supps[id]=!day.supps[id];day.suppTimes[id]=day.supps[id]?timeOnly():'';
+  saveDay(day);renderSupps();
+  suppLogDebounced(id,{action:'log_supplement',clientId:currentClientId,supplement:p.name,taken:day.supps[id],note:s.units+' units'});
+}
+function setSemax(slot,n) {
+  const p=PENS.find(x=>x.id==='semax');if(!penState(p,localDayStr()).due)return;
+  const day=loadDay();day.semax=day.semax||{};day.semax[slot]=day.semax[slot]===n?n-1:n;
+  const a=day.semax.morning||0,b=day.semax.second||0;
+  day.supps=day.supps||{};day.suppTimes=day.suppTimes||{};day.supps.semax=a+b>0;day.suppTimes.semax=a+b?timeOnly():'';
+  saveDay(day);renderSupps();suppLogDebounced('semax',{action:'log_supplement',clientId:currentClientId,supplement:p.name,taken:a+b>0,note:'Semax '+a+' sprays morning, '+b+' second dose'});
+}
+
 function renderSupps() {
   const day = loadDay();
   const taken = day.supps || {};
   const times = day.suppTimes || {};
   const magCount = day.magCount || 0;
-  let html = SUPPS.map(s => `
+  let html = renderPens(day) + SUPPS.map(s => `
     <div class="supp-tick ${taken[s.id]?'checked':''}" onclick="toggleSuppTick('${s.id}',this)">
       <div class="supp-tick-box">${taken[s.id]?'✓':''}</div>
       <div><div class="supp-tick-name">${s.name}</div><div class="supp-tick-dose">${taken[s.id]
@@ -1767,7 +1839,7 @@ async function hydrateFromSheet() {
     // supplement ticks from today's rows, last state per supplement wins
     day.supps = day.supps || {};
     day.suppTimes = day.suppTimes || {};
-    (r.supps || []).forEach(function(srow){
+    (r.supps || []).slice().sort((a,b)=>Date.parse(a.timestamp)-Date.parse(b.timestamp)).forEach(function(srow){
       const d = new Date(srow.timestamp);
       if (isNaN(d) || localDayStr(d) !== todayStr) return;
       const name = String(srow.supplement || '');
@@ -1788,6 +1860,13 @@ async function hydrateFromSheet() {
         const c = parseInt(gumM[1], 10);
         if (day.gumCount !== c) { day.gumCount = c; day.gumTime = cleanTimeLocal(srow.timeLocal); changed = true; }
         return;
+      }
+      const pen = PENS.find(x=>name===x.name || name.startsWith(x.name+' ('));
+      if(pen && !_suppTimers[pen.id]) {
+        const on=srow.taken===true || srow.taken==='YES' || srow.taken==='yes';
+        day.supps[pen.id]=on;day.suppTimes[pen.id]=on?cleanTimeLocal(srow.timeLocal):'';
+        if(pen.id==='semax') { const m=(srow.note||name).match(/Semax (\d) sprays morning, (\d) second dose/);day.semax=m?{morning:+m[1],second:+m[2]}:{morning:0,second:0}; }
+        changed=true;return;
       }
       const sdef = SUPPS.find(function(x){ return x.name === name; });
       if (!sdef) return;
@@ -3522,6 +3601,8 @@ document.addEventListener('DOMContentLoaded', function() {
   safeRun('tiles', renderTiles);
   safeRun('whooshes', fetchWhooshesToday);
   safeRun('supplements', renderSupps);
+  let pensClock=localDayStr()+':'+new Date().getHours();
+  setInterval(function(){const clock=localDayStr()+':'+new Date().getHours();if(clock!==pensClock){pensClock=clock;safeRun('supplements',renderSupps);}},30000);
   safeRun('foodlists', renderFoodLists);
   safeRun('foodtoday', renderFoodToday);
   safeRun('wins', initWins);
