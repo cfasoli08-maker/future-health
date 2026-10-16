@@ -1648,7 +1648,7 @@ function renderPens(day) {
     if(!s.due){ next.push(s.off?'Off week. No spray. Back on '+penDate(s.next,true)+'.':p.name+': next shot '+penDate(s.next,true)+'.');return; }
     const on=!!(day.supps||{})[p.id],time=(day.suppTimes||{})[p.id]||'';
     const style=p.color?'--pen-color:'+p.color+';border-color:var(--pen-color);':'';
-    out+='<div class="supp-tick pen-tick '+(on?'checked':'')+'" style="'+style+'" data-pen="'+p.id+'">';
+    out+='<div class="supp-tick pen-tick '+(on?'checked':'')+'" style="'+style+'" data-pen="'+p.id+'"'+(p.id==='semax'?'':' onclick="togglePen(\''+p.id+'\')"')+'>';
     if(s.mixToday)out+='<strong>Mix a new '+(p.id==='semax'?'vial':'pen')+' today.</strong>';
     if(p.id==='semax'){
       out+='<div class="supp-tick-name">'+p.label+'</div><p>On week, day '+s.blockDay+' of 14</p><strong>'+s.sprays+' spray'+(s.sprays===1?'':'s')+' today. On a foggy day, up to 3.</strong>';
@@ -1660,7 +1660,7 @@ function renderPens(day) {
         for(let n=1;n<=3;n++)out+='<button type="button" aria-label="'+slot+' '+n+' sprays" class="mag-box '+(count>=n?'on':'')+'" onclick="setSemax(\''+slot+'\','+n+')">'+n+'</button>';
         out+='</div>';
       });
-    }else out+='<button type="button" class="pen-action" onclick="togglePen(\''+p.id+'\')"><span class="supp-tick-box">'+(on?'✓':'')+'</span><span><span class="supp-tick-name">'+p.name+'</span><strong class="pen-units">'+s.units+' units</strong></span></button>';
+    }else out+='<button type="button" class="pen-action"><span class="supp-tick-box">'+(on?'✓':'')+'</span><span><span class="supp-tick-name">'+p.name+'</span><strong class="pen-units">'+s.units+' units</strong></span></button>';
     if(on)out+='<p>Done ✓ '+time+' · tap again to undo</p>';
     out+='<p>'+p.purpose+'</p><small>Mixed '+penDate(s.mix)+'. '+(s.pen?'Pen '+s.pen+' of 2. ':'')+'Throw out by '+penDate(s.discard)+'. '+(s.nextMix?'Next mix '+penDate(s.nextMix)+'.':'No more mixes.')+'</small></div>';
   });
