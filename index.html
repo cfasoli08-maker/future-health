@@ -119,6 +119,9 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
   .tile, .supp-tick, .tier-btn, .tier-arrow, .upd-tile-chev, .overlay { transition:none !important; }
 }
 .sheet { background:var(--surface); border-radius:26px 26px 0 0; width:100%; max-width:560px; max-height:88vh; overflow-y:auto; padding:1.8rem 1.5rem 2.2rem; animation:slideup 0.25s ease; }
+.sheet:has(.entry-content) { display:flex; flex-direction:column; overflow:hidden; max-height:88dvh; padding-bottom:calc(2.2rem + env(safe-area-inset-bottom)); }
+.entry-content { min-height:0; overflow-y:auto; }
+.entry-actions { flex-shrink:0; }
 @keyframes slideup { from{transform:translateY(40px);opacity:0;} to{transform:none;opacity:1;} }
 .sheet-icon { font-size:2.6rem; text-align:center; }
 .sheet-title { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:600; text-align:center; margin-top:0.3rem; }
@@ -726,6 +729,7 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
   </div>
 
   <!-- ══ ENTRY SHEET ══ -->
+  <div id="reading-sync-status" role="status" hidden style="position:fixed;bottom:86px;left:5%;width:90%;z-index:90;background:var(--cream,#fff);color:var(--ink,#222);padding:12px;border:1px solid currentColor;border-radius:12px;text-align:center;"></div>
   <div class="overlay" id="overlay" onclick="if(event.target===this)closeSheet()">
     <div class="sheet" id="sheet"></div>
   </div>
@@ -738,11 +742,16 @@ const SHEET_URL = "https://script.google.com/macros/s/AKfycbwc-FLnsJThCFmynUFb4m
 const PROTOCOL_START = new Date("2026-03-07");
 const currentClientId = "valerie";
 
-async function sheetCall(payload) {
+async function sheetCall(payload, timeoutMs) {
+  let timer;
   try {
-    const res = await fetch(SHEET_URL, { method:"POST", body: JSON.stringify(payload) });
+    const controller=timeoutMs?new AbortController():null;
+    if(controller)timer=setTimeout(()=>controller.abort(),timeoutMs);
+    const res = await fetch(SHEET_URL, { method:"POST", body: JSON.stringify(payload), signal:controller?controller.signal:undefined });
+    if(!res.ok)return {success:false,error:'HTTP '+res.status};
     return await res.json();
   } catch(e) { return { success:false, error:e.toString() }; }
+  finally {if(timer)clearTimeout(timer);}
 }
 
 function stamp() {
@@ -865,7 +874,7 @@ let activeSession = 'morning';
 let sheetSel = {};
 
 // Repeatable metrics logged morning, noon, and night. The rest are morning-only, once a day.
-const REPEATABLE_IDS = ['glucose','pulse','bp','kneepain','backpain','fibropain','energy','activity','stress','bowel','hydration','salt','headache','mood'];
+const REPEATABLE_IDS = ['glucose','truefasting','pulse','bp','kneepain','backpain','fibropain','energy','activity','stress','bowel','hydration','salt','headache','mood'];
 // Once-a-day metrics. They used to live under Morning only, so if she opened the app in
 // the afternoon they were invisible and looked deleted. Reported by Valerie Aug 13.
 // They now show in every session and share one reading across all three.
@@ -887,7 +896,7 @@ function dailyHolder(day, mid) {
 }
 let sessionOpen = { morning:false, noon:false, night:false };
 
-function sessionReadings(day, sid, mid){ return (day[sid] && day[sid][mid]) ? day[sid][mid] : []; }
+function sessionReadings(day, sid, mid){ return dedupeReadings((day[sid] && day[sid][mid]) || []); }
 function toggleSession(id){ sessionOpen[id] = !sessionOpen[id]; renderSessions(); }
 
 /* ── ONE-TIME DAY MIGRATION ── runs at startup, before first render.
@@ -1137,15 +1146,22 @@ function openEntry(id, session) {
     priorReadings = `<div class="today-readings-hint">You can log this as many times this ${activeSession} as you like. Each reading is saved with its own date and time.</div>`;
   }
   document.getElementById('sheet').innerHTML = `
+    <div class="entry-content" oninput="entryError('')">
     <div class="sheet-icon">${inp.icon}</div>
     <div class="sheet-title">${inp.label} <span style="color:${sessColor};">· ${sessName}</span></div>
     <div class="sheet-help">${helpText}</div>
     ${priorReadings}
     ${sameAs}
     ${body}
+    ${inp.id==='glucose'&&activeSession==='morning'?beforeCoffeeControls():''}
+    ${['glucose','truefasting','pulse','bp'].includes(inp.id)?readingTimeControls():''}
+    <div id="entry-error" role="alert" style="color:var(--red);margin:1rem 0;"></div>
+    </div>
+    <div class="entry-actions">
     <button class="save-btn" onclick="saveEntry()">Save ✓</button>
     <button class="cancel-btn" onclick="closeSheet()">Cancel</button>
-    <div class="saved-flash" id="saved-flash">Saved 🌿</div>`;
+    <div class="saved-flash" id="saved-flash">Saved 🌿</div>
+    </div>`;
   showOverlay();
   const first = document.getElementById('entry-val');
   if (first) setTimeout(()=>first.focus(), 300);
@@ -1247,32 +1263,143 @@ function closeSheet() {
   activeInput = null;
 }
 
-// The range a number tile is checked against before it saves. Outside it, she is asked once.
-const SANE = { glucose:[2.5,25], truefasting:[2.5,25], pulse:[35,150], weight:[90,220], sleephours:[0,16] };
+// These entry limits cannot be overridden by confirming a warning.
+const SANE = { glucose:[2,30], truefasting:[2,30], pulse:[30,200], weight:[90,220], sleephours:[0,16] };
+const READING_OUTBOX = 'fh_reading_outbox_v1';
+const READING_CANCELLED = 'fh_reading_cancelled_v1';
+const READING_RETENTION = 2*24*60*60*1000;
+let readingFlush = null;
+function readingIdOf(row) {
+  const marker=String(row.timeLocal||'').match(/\[readingId:([^\]]+)\]/);
+  return row.readingId || (marker && marker[1]) || '';
+}
+function dedupeReadings(rows) {
+  const seen=new Set();
+  return rows.filter(row=>{
+    if(readingIsCancelled(row))return false;
+    const id=readingIdOf(row),key=JSON.stringify([row.clientId||'',row.field,id]);
+    if(!id)return true; // Old rows keep their old meaning.
+    if(seen.has(key))return false;
+    seen.add(key);return true; // Keep the before-coffee mirror in its own field.
+  });
+}
+function cancelledReadings() {
+  const key=READING_CANCELLED+':'+currentClientId;
+  const saved=JSON.parse(localStorage.getItem(key)||'{}'), now=Date.now();
+  const count=Object.keys(saved).length;
+  Object.keys(saved).forEach(id=>{if(saved[id]<=now)delete saved[id];});
+  if(Object.keys(saved).length!==count)localStorage.setItem(key,JSON.stringify(saved));
+  return saved;
+}
+function readingIsCancelled(row) {
+  return !!cancelledReadings()[readingIdOf(row)||row.timestamp||row.iso];
+}
+async function reconcileReadings() {
+  // Version 17 cannot make append idempotent. A timed-out request may land
+  // after its retry, so inspect the raw rows again even with an empty outbox.
+  const result=await sheetCall({action:'get_logs',clientId:currentClientId},20000);
+  if(!result || result.success!==true || !Array.isArray(result.logs))return;
+  const seen=new Set(),cutoff=Date.now()-READING_RETENTION;
+  for(const row of result.logs) {
+    if(row.clientId && row.clientId!==currentClientId)continue;
+    const time=Date.parse(row.timestamp),id=readingIdOf(row);
+    if(!Number.isFinite(time)||time<cutoff)continue;
+    const key=JSON.stringify([row.field,id]);
+    const remove=readingIsCancelled(row)||(id && seen.has(key));
+    if(id)seen.add(key); // Paired glucose/truefasting rows each keep one copy.
+    if(remove) {
+      // Use this copy's server identity, never the original append's stamp.
+      await sheetCall({action:'delete_entry',clientId:currentClientId,sheet:'Daily Log',timestamp:row.timestamp},20000);
+    }
+  }
+}
+function readingOutbox() { return JSON.parse(localStorage.getItem(READING_OUTBOX) || '[]'); }
+function storeReadingOutbox(items) { localStorage.setItem(READING_OUTBOX, JSON.stringify(items)); }
+function readingSaveStatus(id, pending) {
+  const flash=document.getElementById('saved-flash');
+  if(flash && flash.dataset.readingId===id) {
+    flash.textContent=pending?'Saving... Waiting for the sheet. We will retry.':'Saved';
+    flash.style.display='block';
+    if(!pending)setTimeout(()=>{if(flash===document.getElementById('saved-flash') && flash.dataset.readingId===id)closeSheet();},550);
+  }
+  const status=document.getElementById('reading-sync-status');
+  if(status){const waiting=readingOutbox().length>0;status.hidden=!waiting;status.textContent=waiting?'Saving... Waiting for the sheet. We will retry.':'Saved';}
+}
+function flushReadingOutbox() {
+  if(readingFlush)return readingFlush;
+  readingFlush=(async()=>{
+    const attempted=new Set();
+    while(true) {
+      const item=readingOutbox().find(x=>!attempted.has(x.key));
+      if(!item)break;
+      attempted.add(item.key);
+      let confirmed=false;
+      try {
+        // A failed read is unknown, never proof that an append is absent.
+        if(item.attempted && item.payload.action==='log_entry') {
+          const seen=await sheetCall({action:'get_logs',clientId:item.payload.clientId},20000);
+          if(!seen || seen.success!==true || !Array.isArray(seen.logs))continue;
+          confirmed=seen.logs.some(r=>r.field===item.payload.field &&
+            (/\[readingId:/.test(item.payload.timeLocal||'')?readingIdOf(r)===readingIdOf(item.payload):r.timestamp===item.payload.timestamp));
+        }
+        // Undo may remove this append while readback is in flight.
+        if(!confirmed && readingOutbox().some(x=>x.key===item.key) &&
+            (item.payload.action!=='log_entry'||!readingIsCancelled(item.payload))) {
+          storeReadingOutbox(readingOutbox().map(x=>x.key===item.key?{...x,attempted:true}:x));
+          const response=await sheetCall(item.payload,20000);
+          confirmed=!!(response && response.success===true);
+        }
+      } catch(e) { /* Keep the request until the sheet confirms it. */ }
+      if(confirmed)storeReadingOutbox(readingOutbox().filter(x=>x.key!==item.key));
+      readingSaveStatus(item.id,readingOutbox().some(x=>x.id===item.id));
+    }
+    try { await reconcileReadings(); } catch(e) { /* Next open or sync retries cleanup. */ }
+  })().finally(()=>{readingFlush=null;});
+  return readingFlush;
+}
+function startReadingOutbox() {
+  const pending=readingOutbox();
+  if(pending.length)readingSaveStatus(pending[0].id,true);
+  return flushReadingOutbox();
+}
+function beforeCoffeeControls() {
+  return `<div class="sheet-field-label">Before coffee?</div><div class="opt-col"><button class="opt-btn" onclick="pickOpt(this,'beforeCoffee','yes')">Yes</button><button class="opt-btn" onclick="pickOpt(this,'beforeCoffee','no')">No</button></div>`;
+}
+function readingTimeControls() {
+  const n=new Date(),value=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  return `<label class="opt-btn" style="display:block;min-height:44px;"><input id="taken-earlier" type="checkbox" onchange="document.getElementById('taken-time-wrap').hidden=!this.checked"> Taken earlier?</label><div id="taken-time-wrap" hidden><label for="taken-time">Time taken</label><input id="taken-time" class="big-input" type="time" value="${value}"></div>`;
+}
+function entryError(text) {document.getElementById('entry-error').textContent=text;return false;}
+function readingTime(t) {
+  const earlier=document.getElementById('taken-earlier'),input=document.getElementById('taken-time');
+  if(!earlier||!earlier.checked)return {};
+  if(!input||!/^\d{2}:\d{2}$/.test(input.value))return null;
+  const [h,m]=input.value.split(':').map(Number),n=new Date(t.iso);
+  if(h>23||m>59)return null;n.setHours(h,m,0,0);
+  if(n.getTime()>Date.parse(t.iso))n.setDate(n.getDate()-1);
+  const local=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+'T'+input.value;
+  return {takenAt:n.toISOString(),takenAtLocal:local};
+}
 async function saveEntry() {
   const inp = activeInput;
   if (!inp) return;
   let value = null;
   if (inp.type==='number') {
-    const v = parseFloat(document.getElementById('entry-val').value);
+    const v = Number(document.getElementById('entry-val').value || NaN);
     if (isNaN(v)) return;
-    // 8 Oct 2026. A 64 went into her sugar on 25 Sep. Far outside her range,
-    // ask once before saving, and offer the likely number.
     const R = SANE[inp.id];
     if (R && (v < R[0] || v > R[1])) {
-      const guess = (v / 10 >= R[0] && v / 10 <= R[1]) ? Math.round(v) / 10 : null;
-      const ask = 'That is ' + v + ' ' + (inp.unit || '') + '.' + (guess !== null ? ' Did you mean ' + guess + '?' : ' That is far from your usual.') +
-        '\n\nPress OK to save ' + v + '. Press Cancel to fix it.';
-      if (!confirm(ask)) return;
+      return entryError(inp.id==='pulse'?'That looks like a sugar number. Pulse is usually 50 to 100. Please check it.':
+        (inp.id==='glucose'||inp.id==='truefasting')?'Please check your sugar number. Enter a number from 2 to 30.':'Please check that number. Enter '+R[0]+' to '+R[1]+'.');
     }
+    if(inp.id==='glucose'&&activeSession==='morning'&&!sheetSel.beforeCoffee)return entryError('Please tap Yes or No for Before coffee.');
     value = v;
   } else if (inp.type==='bp') {
-    const sys = parseInt(document.getElementById('entry-sys').value);
-    const dia = parseInt(document.getElementById('entry-dia').value);
+    const sys = Number(document.getElementById('entry-sys').value || NaN);
+    const dia = Number(document.getElementById('entry-dia').value || NaN);
     if (isNaN(sys) || isNaN(dia)) return;
-    if (sys <= dia || sys < 70 || sys > 250 || dia < 35 || dia > 150) {
-      if (!confirm('That is ' + sys + ' over ' + dia + '. The top number is usually the bigger one.\n\nPress OK to save it as it is. Press Cancel to fix it.')) return;
-    }
+    if(sys<70||sys>250||dia<40||dia>150||sys<=dia||!Number.isInteger(sys)||!Number.isInteger(dia))
+      return entryError('Please check both pressure numbers. Top: 70 to 250. Bottom: 40 to 150. The top is the bigger number.');
     value = { sys, dia };
   } else if (inp.type==='scale' || inp.type==='count') {
     if (sheetSel.scale === undefined) return;
@@ -1298,19 +1425,33 @@ async function saveEntry() {
     value = sheetSel.multi;
   }
   const t = stamp();
+  const taken=readingTime(t);if(taken===null)return entryError('Please choose the time you took this reading.');
   const day = loadDay();
   day[activeSession] = day[activeSession] || {};
-  const entry = { disp: displayVal(inp, value), when: stampFull(), iso: t.iso };
+  const beforeCoffee=sheetSel.beforeCoffee||'';
+  const entry = { disp: displayVal(inp, value), when: stampFull()+(taken.takenAtLocal?' · taken '+taken.takenAtLocal.replace('T',' '):''), iso: t.iso, beforeCoffee, ...taken };
   // double-tap guard: an identical reading within 2 minutes of the last one is a duplicate
   const priorList = (day[activeSession][inp.id] || []);
   const prior = priorList[priorList.length - 1];
-  if (prior && prior.disp === entry.disp && prior.iso && (new Date(t.iso) - new Date(prior.iso)) < 2 * 60 * 1000) {
-    document.getElementById('saved-flash').textContent = 'Already saved ✓';
-    document.getElementById('saved-flash').style.display = 'block';
-    setTimeout(closeSheet, 550);
+  if (prior && prior.disp === entry.disp && (prior.takenAt||'')===(entry.takenAt||'') && (prior.beforeCoffee||'')===beforeCoffee && prior.iso && (new Date(t.iso) - new Date(prior.iso)) < 2 * 60 * 1000) {
+    const flash=document.getElementById('saved-flash');flash.dataset.readingId=prior.readingId||prior.iso;
+    readingSaveStatus(flash.dataset.readingId,readingOutbox().some(x=>x.id===flash.dataset.readingId));
+    await flushReadingOutbox();
     return;
   }
-  if (REPEATABLE_IDS.indexOf(inp.id) > -1) {
+  // Keep the timestamp unique even when two valid saves happen in one clock tick.
+  const latest=Math.max(0,...SESSION_ORDER.flatMap(s=>Object.values(day[s]||{}).flatMap(a=>Array.isArray(a)?a.map(r=>Date.parse(r.iso)||0):[])));
+  if(Date.parse(t.iso)<=latest)t.iso=new Date(latest+1).toISOString();
+  entry.iso=t.iso;entry.readingId=typeof crypto!=='undefined' && crypto.randomUUID?crypto.randomUUID():t.iso+'-'+Math.random().toString(36).slice(2);
+  // Version 17 keeps timeLocal even though it drops unknown request fields.
+  const timeLocal=t.local+' [readingId:'+entry.readingId+']'+(taken.takenAt?' [takenAt:'+taken.takenAt+';local:'+taken.takenAtLocal+']':'')+' · '+activeSession;
+  const requests=[{action:'log_entry',clientId:currentClientId,field:inp.id,session:activeSession,value,timestamp:t.iso,readingId:entry.readingId,beforeCoffee,...taken,timeLocal}];
+  const paired=inp.id==='glucose'&&activeSession==='morning'&&beforeCoffee==='yes';
+  if(paired)requests.push({...requests[0],field:'truefasting'});
+  try {
+    storeReadingOutbox(readingOutbox().concat(requests.map(payload=>({key:entry.readingId+':'+payload.field,id:entry.readingId,payload}))));
+  } catch(e) {return entryError('Your phone could not keep this reading. Please free some space and try Save again.');}
+  if (REPEATABLE_IDS.indexOf(inp.id) > -1 || inp.id==='truefasting') {
     day[activeSession][inp.id] = day[activeSession][inp.id] || [];
     day[activeSession][inp.id].push(entry);
   } else {
@@ -1320,13 +1461,15 @@ async function saveEntry() {
     day[activeSession] = day[activeSession] || {};
     day[activeSession][inp.id] = [entry];
   }
+  if(paired) {
+    day.morning.truefasting=day.morning.truefasting||[];
+    day.morning.truefasting.push({...entry});
+  }
   saveDay(day);
   renderSessions();
-  document.getElementById('saved-flash').style.display = 'block';
-  setTimeout(closeSheet, 550);
-  // timeLocal carries the session tag so it lands in the sheet even before the backend
-  // stores the separate session column; the dashboard parses it back out for grouping.
-  sheetCall({ action:'log_entry', clientId: currentClientId, field: inp.id, session: activeSession, value: value, timestamp: t.iso, timeLocal: t.local + ' · ' + activeSession });
+  document.getElementById('saved-flash').dataset.readingId=entry.readingId;
+  readingSaveStatus(entry.readingId,true);
+  await flushReadingOutbox();
 }
 
 /* ── CANCEL A LOGGED ENTRY ── Valerie can undo a mistaken tap, no going back needed */
@@ -1335,13 +1478,38 @@ async function cancelEntry(sid, mid, idx) {
   const log = sessionReadings(day, sid, mid);
   const entry = log[idx];
   if (!entry) return;
+  const id=entry.readingId||entry.iso;
+  const cancelled=cancelledReadings();cancelled[id]=Date.now()+READING_RETENTION;
+  localStorage.setItem(READING_CANCELLED+':'+currentClientId,JSON.stringify(cancelled));
+  const pending=readingOutbox().filter(x=>x.id===id && x.payload.action==='log_entry');
+  const fields=[mid];
   log.splice(idx, 1);
   if (log.length) { day[sid][mid] = log; } else { delete day[sid][mid]; }
+  let paired=0;
+  // The glucose and before-coffee rows describe one reading. Undo both.
+  if(entry.iso && (mid==='glucose'||mid==='truefasting')) {
+    const other=mid==='glucose'?'truefasting':'glucose';
+    SESSION_ORDER.forEach(s=>{
+      if(!day[s]||!Array.isArray(day[s][other]))return;
+      const kept=day[s][other].filter(r=>{if((r.readingId||r.iso)===id){paired++;return false;}return true;});
+      if(kept.length)day[s][other]=kept;else delete day[s][other];
+    });
+  }
+  if(paired)fields.push(mid==='glucose'?'truefasting':'glucose');
+  pending.forEach(x=>{if(!fields.includes(x.payload.field))fields.push(x.payload.field);});
+  // Remove every queued append for this reading. Deletions share the same
+  // worker, so an append already in flight finishes before its delete runs.
+  const kept=readingOutbox().filter(x=>x.id!==id || x.payload.action!=='log_entry');
+  fields.forEach(field=>{
+    const queued=pending.find(x=>x.payload.field===field);
+    if(entry.iso && (!queued || queued.attempted))kept.push({key:'delete:'+id+':'+field,id,
+      payload:{action:'delete_entry',clientId:currentClientId,sheet:'Daily Log',timestamp:entry.iso,readingId:id}});
+  });
+  storeReadingOutbox(kept);
   saveDay(day);
   renderSessions();
-  if (entry.iso) {
-    sheetCall({ action:'delete_entry', clientId: currentClientId, sheet: 'Daily Log', timestamp: entry.iso });
-  }
+  readingSaveStatus(id,kept.some(x=>x.id===id));
+  await flushReadingOutbox();
 }
 
 /* ── WHOOSH LOG ── standalone, not tied to morning/noon/night, can log many times a day */
@@ -1816,11 +1984,13 @@ async function hydrateFromSheet() {
   try {
     const r = await sheetCall({ action:'get_logs', clientId: currentClientId });
     if (!r || !r.success) return;
+    r.logs=dedupeReadings(r.logs||[]);
     window.__clientLogs = r;
     const todayStr = localDayStr();
     const day = loadDay();
     let changed = false;
     (r.logs || []).forEach(function(row){
+      if(readingOutbox().some(x=>x.payload.action==='delete_entry' && (x.id===readingIdOf(row) || x.payload.timestamp===row.timestamp)))return;
       const d = new Date(row.timestamp);
       if (isNaN(d) || localDayStr(d) !== todayStr) return;
       const inp = INPUTS.find(i => i.id === row.field);
@@ -1828,8 +1998,11 @@ async function hydrateFromSheet() {
       const sid = sessionFromRow(row) || sessionForEntry({ iso: row.timestamp });
       day[sid] = day[sid] || {};
       const arr = day[sid][inp.id] = day[sid][inp.id] || [];
-      if (arr.some(function(e){ return e.iso === row.timestamp; })) return;
-      arr.push({ disp: displayVal(inp, row.value), when: cleanTimeLocal(row.timeLocal), iso: row.timestamp });
+      if (arr.some(function(e){ return readingIdOf(row)?e.readingId===readingIdOf(row):e.iso===row.timestamp; })) return;
+      const taken=String(row.timeLocal||'').match(/\[takenAt:([^;]+);local:([^\]]+)\]/);
+      arr.push({ disp: displayVal(inp, row.value), when: cleanTimeLocal(row.timeLocal), iso: row.timestamp,
+        readingId:readingIdOf(row)||row.timestamp, beforeCoffee:row.beforeCoffee||'',
+        ...(taken?{takenAt:taken[1],takenAtLocal:taken[2]}:{}) });
       changed = true;
     });
     // once-a-day metrics keep only their latest reading
@@ -2746,7 +2919,11 @@ function sessionFromRow(r) {
   const m = String(r && r.timeLocal || '').match(/ · (morning|noon|night)$/i);
   return m ? m[1].toLowerCase() : '';
 }
-function cleanTimeLocal(t) { return String(t||'').replace(/ · (morning|noon|night)$/i, ''); }
+function cleanTimeLocal(t) {
+  return String(t||'').replace(/ · (morning|noon|night)$/i,'')
+    .replace(/\s*\[readingId:[^\]]+\]/g,'')
+    .replace(/\[takenAt:([^;]+);local:(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})\]/,'· taken $2 $3:$4');
+}
 
 function coachShowTab(name) {
   ['home','chat','updates','trends','entries'].forEach(function(t){
@@ -2781,7 +2958,7 @@ function renderCoachHome() {
   if (!el || !window.__lastGetLogs) return;
   try {
     const d = window.__lastGetLogs;
-    const logs = d.logs || [];
+    const logs = dedupeReadings(d.logs || []);
     const todayStr = localDayStr();
     const latest = function(field){ for (let i = logs.length - 1; i >= 0; i--) { if (logs[i].field === field) return logs[i]; } return null; };
     const fmtVal = function(r){
@@ -2821,6 +2998,7 @@ function coachLogRow(r) {
 }
 
 function initCoachView(logsData) {
+  logsData=dedupeReadings(logsData);
   // The dated log list renders FIRST so her history always shows, whatever the charts do.
   try {
     const todayStr = localDayStr();
@@ -2852,6 +3030,7 @@ function initCoachView(logsData) {
 }
 
 function initCoachCharts(logsData) {
+  logsData=dedupeReadings(logsData);
   // Charts are guarded: a chart failure can never blank the log list again.
   try {
     const ds = (rows, key) => rows.filter(r=>r.field===key).map(r=>({ t:(r.timeLocal||'').split(',')[0]||r.timestamp?.slice(5,10)||'', v:r.value, s: sessionFromRow(r) }));
@@ -2941,6 +3120,7 @@ function loadCoachChat() {
 function loadCoachLogs() {
   return sheetCall({ action:'get_logs', clientId: currentClientId }).then(r => {
     if (r.success) {
+      r.logs=dedupeReadings(r.logs||[]);
       window.__lastGetLogs = r;
       try { if (r.logs && r.logs.length) initCoachView(r.logs); } catch(e) { console.error('Future Health coach view error', e); }
       try { renderCoachHome(); } catch(e) { console.error('Future Health coach home error', e); }
@@ -3598,6 +3778,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   })();
   safeRun('migrate', migrateDay);
+  safeRun('reading saves', startReadingOutbox);
+  window.addEventListener('online',()=>safeRun('reading saves',startReadingOutbox));
+  window.addEventListener('pageshow',()=>safeRun('reading saves',startReadingOutbox));
+  setInterval(()=>safeRun('reading saves',startReadingOutbox),30000);
   safeRun('tiles', renderTiles);
   safeRun('whooshes', fetchWhooshesToday);
   safeRun('supplements', renderSupps);
