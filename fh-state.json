@@ -742,7 +742,7 @@
         "name": "MOTS-c",
         "starts": "2026-10-19",
         "ends": "2026-12-10",
-        "dose": "5mg Mondays to 9 November, then Monday and Thursday, 12 shots",
+        "dose": "5mg Mondays 19 October to 9 November, then Monday and Thursday from 16 November to 10 December, 12 shots",
         "penId": "mots"
       },
       {
@@ -902,7 +902,7 @@
       },
       "MOTS-c": {
         "say": "MOTS-c",
-        "dose": "5mg Mondays to 9 November, then Monday and Thursday, 12 shots",
+        "dose": "5mg Mondays 19 October to 9 November, then Monday and Thursday from 16 November to 10 December, 12 shots",
         "doses": [
           "5mg"
         ],
