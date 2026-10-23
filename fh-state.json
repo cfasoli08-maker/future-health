@@ -726,37 +726,37 @@
     "dated": [
       {
         "name": "BPC-157 + TB-500",
-        "starts": "2026-10-18",
-        "ends": "2027-01-09",
-        "dose": "15 units daily (0.5mg each)",
+        "starts": "2026-10-19",
+        "ends": "2027-01-10",
+        "dose": "20 units daily (0.5mg each)",
         "penId": "bpctb"
       },
       {
         "name": "ARA-290",
-        "starts": "2026-10-18",
-        "ends": "2026-11-14",
+        "starts": "2026-10-19",
+        "ends": "2026-11-15",
         "dose": "40 units daily (4mg)",
         "penId": "ara"
       },
       {
         "name": "MOTS-c",
-        "starts": "2026-10-18",
-        "ends": "2026-12-09",
-        "dose": "25 units on 18 and 25 October; 50 units on later scheduled shots",
+        "starts": "2026-10-19",
+        "ends": "2026-12-10",
+        "dose": "5mg Mondays to 9 November, then Monday and Thursday, 12 shots",
         "penId": "mots"
       },
       {
         "name": "Thymosin Alpha-1",
-        "starts": "2026-10-18",
-        "ends": "2026-11-25",
-        "dose": "32 units Sunday and Wednesday, 12 shots (1.6mg)",
+        "starts": "2026-10-19",
+        "ends": "2026-11-26",
+        "dose": "1.6mg Monday and Thursday, 12 shots",
         "penId": "ta1"
       },
       {
         "name": "Semax",
-        "starts": "2026-10-18",
-        "ends": "2026-11-28",
-        "dose": "1 spray days 1 to 3; then 2 sprays, up to 3 on foggy days. Optional second dose before noon; maximum 6 daily. 14 days on, 14 off, 14 on",
+        "starts": "2026-10-19",
+        "ends": "2026-11-29",
+        "dose": "2 sprays, up to 3 on foggy days. Optional second dose before noon; maximum 6 daily. 14 days on, 14 off, 14 on",
         "penId": "semax"
       }
     ],
@@ -878,9 +878,9 @@
       },
       "BPC-157 + TB-500": {
         "say": "BPC-157 + TB-500",
-        "dose": "15 units daily (0.5mg each)",
+        "dose": "20 units daily (0.5mg each)",
         "doses": [
-          "15 units",
+          "20 units",
           "0.5mg"
         ],
         "aliases": [
@@ -902,11 +902,8 @@
       },
       "MOTS-c": {
         "say": "MOTS-c",
-        "dose": "25 units on 18 and 25 October; 50 units on later scheduled shots",
+        "dose": "5mg Mondays to 9 November, then Monday and Thursday, 12 shots",
         "doses": [
-          "25 units",
-          "50 units",
-          "2.5mg",
           "5mg"
         ],
         "aliases": [
@@ -915,9 +912,8 @@
       },
       "Thymosin Alpha-1": {
         "say": "Thymosin Alpha-1",
-        "dose": "32 units Sunday and Wednesday, 12 shots (1.6mg)",
+        "dose": "1.6mg Monday and Thursday, 12 shots",
         "doses": [
-          "32 units",
           "1.6mg"
         ],
         "aliases": [
@@ -927,13 +923,11 @@
       },
       "Semax": {
         "say": "Semax",
-        "dose": "1 spray days 1 to 3; then 2 sprays, up to 3 on foggy days. Optional second dose before noon; maximum 6 daily. 14 days on, 14 off, 14 on",
+        "dose": "2 sprays, up to 3 on foggy days. Optional second dose before noon; maximum 6 daily. 14 days on, 14 off, 14 on",
         "doses": [
-          "1 spray",
           "2 sprays",
           "3 sprays",
           "6 sprays",
-          "0.1mg",
           "0.2mg",
           "0.3mg",
           "0.6mg"

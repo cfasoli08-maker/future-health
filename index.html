@@ -1538,15 +1538,15 @@ async function loadUpdatesClient() {
 
 /* ── SUPPLEMENTS ── */
 // BEGIN PENS: shared by the app and offline tools (pens.js).
-const PEN_START = '2026-10-18';
+const PEN_START = '2026-10-19';
 function penAdd(day, n) { return new Date(Date.parse(day+'T12:00:00Z')+n*86400000).toISOString().slice(0,10); }
 function penDays(a,b) { return Math.round((Date.parse(b)-Date.parse(a))/86400000); }
 const PENS = [
-  {id:'bpctb',name:'BPC-157 + TB-500',purpose:'For your back, left knee and gut lining.',units:15,length:84,days:'daily',mixOffsets:[0,20,40,60,80],keep:28,color:null},
-  {id:'ara',name:'ARA-290',purpose:'For the nerves behind your slow gut.',units:40,length:28,days:'daily',mixOffsets:[0,14],keep:14,color:null},
-  {id:'mots',name:'MOTS-c',purpose:'For muscle and blood sugar.',units:50,length:53,days:[0,7,14,21,28,31,35,38,42,45,49,52],mixOffsets:[0,21,31,38,45,52],throwOffsets:[14,28,35,42,49,52],color:null},
-  {id:'ta1',name:'Thymosin Alpha-1',purpose:'To build up your immune system.',units:32,length:39,days:[0,3,7,10,14,17,21,24,28,31,35,38],mixOffsets:[0,21],throwOffsets:[17,38],keep:28,color:null},
-  {id:'semax',name:'Semax',label:'Semax nose spray',purpose:'For brain fog and nerve repair.',units:null,length:42,days:'blocks',mixOffsets:[0,28],throwOffsets:[13,41],color:null}
+  {id:'bpctb',name:'BPC-157 + TB-500',purpose:'For your back, left knee and gut lining.',units:20,dose:'20 units',length:84,days:'daily',mixOffsets:[0],keep:28,color:null},
+  {id:'ara',name:'ARA-290',purpose:'For the nerves behind your slow gut.',units:40,dose:'40 units',length:28,days:'daily',mixOffsets:[0,14],keep:14,color:null},
+  {id:'mots',name:'MOTS-c',purpose:'For muscle and blood sugar.',units:null,dose:'5 mg',length:53,days:[0,7,14,21,28,31,35,38,42,45,49,52],mixOffsets:[0,14,28,35,42,49],throwOffsets:[7,21,31,38,45,52],color:null},
+  {id:'ta1',name:'Thymosin Alpha-1',purpose:'To build up your immune system.',units:null,dose:'1.6 mg',length:39,days:[0,3,7,10,14,17,21,24,28,31,35,38],mixOffsets:[0,21],throwOffsets:[17,38],keep:28,color:null},
+  {id:'semax',name:'Semax',label:'Semax nose spray',purpose:'For brain fog and nerve repair.',units:null,dose:'2 sprays',length:42,days:'blocks',mixOffsets:[0,28],throwOffsets:[13,41],color:null}
 ].map(p=>Object.assign(p,{start:PEN_START,end:penAdd(PEN_START,p.length-1),mixDates:p.mixOffsets.map(n=>penAdd(PEN_START,n)),throwRule:p.throwOffsets?'After its last dose':'At the next mix or storage limit, whichever comes first'}));
 function penState(p,day) {
   const n=penDays(p.start,day),active=n>=0&&day<=p.end;
@@ -1561,7 +1561,7 @@ function penState(p,day) {
   }
   let next=null;
   for(let i=Math.max(0,n+1);i<p.length;i++) if(p.days==='daily'||(p.days==='blocks'?(i<14||i>=28):p.days.includes(i))){next=penAdd(p.start,i);break;}
-  return {due,active,units:p.id==='mots'&&n<14?25:p.units,mix,discard,pen,next,nextMix:p.mixDates.find(x=>x>day)||null,mixToday:active&&p.mixDates.includes(day),blockDay:p.id==='semax'&&due?(n%28)+1:null,sprays:p.id==='semax'&&due?(n%28<3?1:2):0,off:p.id==='semax'&&active&&!due};
+  return {due,active,units:p.units,dose:p.dose,mix,discard,pen,next,nextMix:p.mixDates.find(x=>x>day)||null,mixToday:active&&p.mixDates.includes(day),blockDay:p.id==='semax'&&due?(n%28)+1:null,sprays:p.id==='semax'&&due?2:0,off:p.id==='semax'&&active&&!due};
 }
 // END PENS
 
@@ -1660,9 +1660,9 @@ function renderPens(day) {
         for(let n=1;n<=3;n++)out+='<button type="button" aria-label="'+slot+' '+n+' sprays" class="mag-box '+(count>=n?'on':'')+'" onclick="setSemax(\''+slot+'\','+n+')">'+n+'</button>';
         out+='</div>';
       });
-    }else out+='<button type="button" class="pen-action"><span class="supp-tick-box">'+(on?'✓':'')+'</span><span><span class="supp-tick-name">'+p.name+'</span><strong class="pen-units">'+s.units+' units</strong></span></button>';
+    }else out+='<button type="button" class="pen-action"><span class="supp-tick-box">'+(on?'✓':'')+'</span><span><span class="supp-tick-name">'+p.name+'</span><strong class="pen-units">'+s.dose+'</strong></span></button>';
     if(on)out+='<p>Done ✓ '+time+' · tap again to undo</p>';
-    out+='<p>'+p.purpose+'</p><small>Mixed '+penDate(s.mix)+'. '+(s.pen?'Pen '+s.pen+' of 2. ':'')+'Throw out by '+penDate(s.discard)+'. '+(s.nextMix?'Next mix '+penDate(s.nextMix)+'.':'No more mixes.')+'</small></div>';
+    out+='<p>'+p.purpose+'</p><small>'+(p.id==='bpctb'?'Mix a new pen when this one runs out. Use a mixed pen within 28 days.':'Mixed '+penDate(s.mix)+'. '+(s.pen?'Pen '+s.pen+' of 2. ':'')+'Throw out by '+penDate(s.discard)+'. '+(s.nextMix?'Next mix '+penDate(s.nextMix)+'.':'No more mixes.'))+'</small></div>';
   });
   return out+next.map(x=>'<p class="pen-next">'+x+'</p>').join('')+'</section>';
 }
@@ -1671,7 +1671,7 @@ function togglePen(id) {
   const day=loadDay(); day.supps=day.supps||{};day.suppTimes=day.suppTimes||{};
   day.supps[id]=!day.supps[id];day.suppTimes[id]=day.supps[id]?timeOnly():'';
   saveDay(day);renderSupps();
-  suppLogDebounced(id,{action:'log_supplement',clientId:currentClientId,supplement:p.name,taken:day.supps[id],note:s.units+' units'});
+  suppLogDebounced(id,{action:'log_supplement',clientId:currentClientId,supplement:p.name,taken:day.supps[id],note:s.dose});
 }
 function setSemax(slot,n) {
   const p=PENS.find(x=>x.id==='semax');if(!penState(p,localDayStr()).due)return;
