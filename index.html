@@ -84,7 +84,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .tile-sub { font-size:0.95rem; color:var(--muted); font-weight:400; margin-top:0.15rem; }
 .tile-value { font-family:'Oswald',sans-serif; font-size:2rem; font-weight:600; color:var(--luff1); flex-shrink:0; text-align:right; line-height:1.1; }
 .session { border-radius:var(--radius); margin-bottom:1rem; border:3px solid; overflow:hidden; }
-.session-head { display:flex; justify-content:space-between; align-items:center; padding:1.2rem 1.4rem; cursor:pointer; }
+.session-head { width:100%; border:0; background:transparent; text-align:left; font:inherit; display:flex; justify-content:space-between; align-items:center; padding:1.2rem 1.4rem; cursor:pointer; }
 .session-name { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:600; }
 .session-right { display:flex; align-items:center; gap:0.7rem; }
 .session-count { font-size:0.9rem; font-weight:600; opacity:0.85; }
@@ -388,6 +388,16 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
 .upd-tile-body strong { color:var(--sage); }
 @media (max-width:430px) { .nav-label { font-size:0.58rem; letter-spacing:0.03em; } .nav-icon { font-size:1.6rem; } .nav-btn { padding:0.5rem 0.1rem; } }
 .pen-tick{display:block;padding:1.2rem;overflow-wrap:anywhere;border-color:var(--pen-color,#D8D2C2)}.pen-action{display:flex;align-items:center;gap:1rem;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;padding:.8rem 0;cursor:pointer}.pen-action .supp-tick-box{flex-shrink:0;border-color:var(--pen-color,var(--sage))}.pen-tick.checked .supp-tick-box{background:var(--pen-color,var(--green));border-color:var(--pen-color,var(--green))}.pen-tick .mag-box.on{border-color:var(--pen-color,var(--green))}.pen-units{display:block;font-size:1.65rem}.pen-tick small{line-height:1.7}.pen-tick .mag-box{min-width:56px;min-height:56px;font-size:1.2rem}.pen-next{color:var(--muted)}
+.pen-tick { border-left:7px solid var(--pen-color, #a1a1a1) !important; }
+.supp-skip .supp-tick-dose { text-decoration:line-through; }
+.meal-buttons { display:flex; flex-wrap:wrap; gap:.6rem; margin:.8rem 0; }
+.meal-buttons button { min-height:48px; max-width:100%; white-space:normal; overflow-wrap:anywhere; }
+.focus-item span, .food-logged-text { overflow-wrap:anywhere; }
+.tile-stack-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:.35rem .5rem; }
+.tile-stack-val { min-width:0; overflow-wrap:anywhere; }
+.tile-stack-when { grid-column:1; grid-row:2; text-align:left; white-space:normal; overflow-wrap:normal; }
+.tile-stack-cancel { grid-column:2; grid-row:1 / 3; }
+.session-head:focus-visible, button:focus-visible { outline:3px solid var(--gold); outline-offset:2px; }
 </style>
 </head>
 <body>
@@ -418,7 +428,7 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     <div class="verse-card">
       <div class="verse-eyebrow">✦ Verse of the day</div>
       <div class="verse-text" id="verse-text"></div>
-      <div class="verse-ref" id="verse-ref"></div>
+      <div class="verse-ref" id="verse-ref"></div><small>NASB 1995. Used by permission.</small>
     </div>
 
 
@@ -430,23 +440,11 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
       <div class="days-sub">Since March 7, 2026</div>
     </div>
 
-    <div class="whoosh-card" id="whoosh-card">
-      <div class="whoosh-head">
-        <div><div class="whoosh-title">💨 Whoosh</div><div class="whoosh-sub">Tap any time it happens, log as many as you like</div></div>
-        <button class="whoosh-btn" onclick="openWhoosh()">Log a whoosh</button>
-      </div>
-      <div id="whoosh-list"></div>
+    <div class="focus-card" id="focus-card" aria-live="polite">
+      <div class="focus-eyebrow">This week's focus</div>
+      <p>Reading your recent mornings, evening sugar and pressure.</p>
     </div>
-
-    <div class="focus-card" id="focus-card">
-      <div class="focus-eyebrow">✦ This week's focus</div>
-      <div class="focus-goal">Four clear days.</div>
-      <div class="focus-sub">Your last whoosh was on 5 September, and you have had four clear days since.</div>
-      <div class="focus-item"><span class="focus-num">1</span><div><b>You found it, and you did log it.</b><br><span>That awful whoosh is on your record. You logged it on 5 September at four minutes past six in the evening, in your own words: a very bad one, twenty minutes after the one before it. Nothing was lost and nothing was missed. Since then you have had four clear days.</span></div></div>
-      <div class="focus-item"><span class="focus-num">2</span><div><b>Magnesium is not waiting on your whooshes.</b><br><span>It is out because of your blood pressure, not your gut, and it is not your pulse either. Look at the bottom number of your blood pressure, the second of the two. Your bottom number was 64 on 9 September, up from 55 on 28 August. It has to sit over 65 for a few days. Keep holding it for now.</span></div></div>
-      <div class="focus-item"><span class="focus-num">3</span><div><b>Your mornings are still going the right way.</b><br><span>Your morning number was 7.18 over the last seven days, down from 7.72 the week before. You started at 7.74 back in March.</span></div></div>
-      <div class="focus-item"><span class="focus-num">4</span><div><b>Your weight is steady.</b><br><span>Your weight was 141.6 on 9 September, down from 142.6 on 7 September. Your floor was 137.6 on 23 August, and you have stayed well above it.</span></div></div>
-    </div>
+    <div class="food-entry-card" id="yesterday-food-home"></div>
 
     <!-- ══ HER BUTTON ══
          She waited for her son to be at a computer. Now she does not. This
@@ -511,10 +509,15 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
   <div class="page" id="page-food">
     <div class="page-title">Food <em>log</em></div>
 
+    <div class="food-entry-card" id="yesterday-food"></div>
     <div class="food-entry-card">
-      <div class="section-label" style="margin-top:0;">🍽 Meal log</div>
+      <div class="section-label" style="margin-top:0;">Same as usual</div>
+      <p>Tap a familiar meal to save it with the time. These come from the meals you log most often.</p>
+      <div class="meal-buttons" id="usual-meals"></div>
+      <label class="sheet-field-label" for="meal-kind">Which meal?</label>
+      <select class="sheet-text" id="meal-kind" onchange="this.dataset.manual='yes'"><option>Breakfast</option><option>Lunch</option><option>Supper</option><option>Snack</option></select>
       <button class="food-save" style="width:100%;padding:1.3rem;font-size:1.4rem;" onclick="mealTap()">I just ate ✓</button>
-      <div class="food-hint" style="margin-top:0.6rem;">One tap saves the time for Christopher. Everything below is optional.</div>
+      <div class="food-hint" style="margin-top:0.6rem;">One tap saves the meal time. Add what you ate below, or use a familiar meal above.</div>
       <div class="sheet-field-label">Ate earlier and forgot? Type when:</div>
       <input class="sheet-text" id="meal-when" placeholder="For example: 8:30 this morning">
       <div class="sheet-field-label">What did you eat? (optional)</div>
@@ -581,10 +584,11 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     <div class="wins-hero">
       <div style="font-size:0.78rem;letter-spacing:0.25em;text-transform:uppercase;opacity:0.75;margin-bottom:0.4rem;">Valerie's results — Future Health protocol</div>
       <div class="wins-big" id="wins-count">20</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;font-style:italic;opacity:0.95;margin-top:0.2rem;text-align:center;">milestones since March 7, 2026</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;font-style:italic;opacity:0.95;margin-top:0.2rem;text-align:center;">wins in the last 14 days</div>
       <div style="font-size:0.82rem;letter-spacing:0.2em;text-transform:uppercase;opacity:0.8;margin-top:0.3rem;text-align:center;" id="wins-days-line">— days on protocol · 3 chronic medications eliminated</div>
     </div>
     <div id="wins-list"></div>
+    <details class="food-entry-card" id="wins-history"><summary>All your wins and history</summary><div id="wins-history-list"></div></details>
 
     <div class="section-label" style="margin-top:2rem;">Where you started — March 2026</div>
     <div class="baseline-hero">
@@ -615,38 +619,14 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     </div>
   </div>
 
-  <!-- ══ UPDATES ══ -->
-  <div class="page" id="page-updates">
-    <div class="page-title">Your <em>updates</em></div>
-    <div id="quest-section" style="display:none;">
-      <div class="section-label" style="margin-top:0.2rem;">Christopher has a question for you</div>
-      <div id="quest-wrap"></div>
-    </div>
-    <div class="section-label" style="margin-top:0.2rem;">Say something back</div>
-    <textarea class="reply-box" id="upd-comment" placeholder="Anything at all. A question, how you are feeling, or something you noticed."></textarea>
-    <button class="food-save" style="width:100%;margin-top:0.7rem;" onclick="sendUpdateComment()">Send to Christopher ✓</button>
-    <div class="food-hint" id="upd-comment-hint"></div>
-    <div style="font-size:0.95rem;color:var(--muted);margin:1.6rem 0 1rem;">Your progress report after every review. Tap any date to read it.</div>
-    <div id="updates-wrap" class="updates-wrap"></div>
-  </div>
+
 
   <!-- ══ PHASE TWO ══ -->
   <div class="page" id="page-phase2">
     <div id="p2-view"></div>
   </div>
 
-  <!-- ══ COACH ══ -->
-  <div class="page" id="page-message">
-    <div class="im-header">
-      <div class="im-avatar">CH</div>
-      <div><div class="im-name">Christopher</div><div class="im-status">Your coach</div></div>
-    </div>
-    <div class="im-thread" id="chat-thread"></div>
-    <div class="im-composer">
-      <textarea class="im-input" id="reply-input" rows="1" placeholder="Message" oninput="autoGrow(this)"></textarea>
-      <button class="im-send" onclick="sendReply()" aria-label="Send">↑</button>
-    </div>
-  </div>
+
 
   <!-- ══ COACH VIEW (Christopher only, ?coach=future1) ══ -->
   <div id="coach-view">
@@ -723,9 +703,7 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     <button class="nav-btn" onclick="showPage('supps',this)"><div class="nav-icon">💊</div><div class="nav-label">Supplements</div></button>
     <button class="nav-btn" onclick="showPage('food',this)"><div class="nav-icon">🍽️</div><div class="nav-label">Food</div></button>
     <button class="nav-btn" onclick="showPage('wins',this)"><div class="nav-icon">🏆</div><div class="nav-label">Wins</div></button>
-    <button class="nav-btn" onclick="showPage('updates',this)"><div class="nav-icon">🌿</div><div class="nav-label">Updates</div></button>
     <button class="nav-btn" id="nav-phase2" style="display:none" onclick="showPage('phase2',this)"><div class="nav-icon">🧬</div><div class="nav-label">Phase Two</div></button>
-    <button class="nav-btn" onclick="showPage('message',this)"><span class="nav-badge" id="coach-badge"></span><div class="nav-icon">💬</div><div class="nav-label">Coach</div></button>
   </div>
 
   <!-- ══ ENTRY SHEET ══ -->
@@ -778,8 +756,8 @@ const INPUTS = [
   // the morning poke, so every morning number in the record is post-cream. This
   // tile used to call it fasting. Keep her routine exactly as it is, because day
   // against day is still fair, and take the before-coffee number on its own tile.
-  { id:'glucose', icon:'🩸', label:'Blood sugar', sub:'Morning after your coffee, and 2 hours after supper', type:'number', unit:'mmol/L', step:'0.1', placeholder:'6.5',
-    help:'Morning: take it the way you always do, after your coffee. Keep it the same every day. That is what makes one day fair against the next. Night: take it two hours after your last bite, every night. Just the number from your meter.' },
+  { id:'glucose', icon:'🩸', label:'Blood sugar', sub:'Test before your coffee, as soon as you wake', type:'number', unit:'mmol/L', step:'0.1', placeholder:'6.5',
+    help:'Test before your coffee, as soon as you wake. This shows how your body handled the night. In the evening, test two hours after your last bite. If you took the reading earlier, you can save that time too.' },
   // 8 Oct 2026. Every morning for two weeks, not once a week, so we learn her
   // true morning number. Back to once a week after 22 October.
   { id:'truefasting', icon:'🌅', label:'Before-coffee sugar', sub:'Every morning for 2 weeks, before your coffee', type:'number', unit:'mmol/L', step:'0.1', placeholder:'7.0', plainSub:true,
@@ -838,8 +816,8 @@ const INPUTS = [
     help:'How much stress today? 1 means calm and easy. 10 means overwhelming. Then tap what caused it.' },
   { id:'gutache', icon:'🤢', label:'Gut ache', sub:'0 to 10, tap 0 on a good day', type:'scale', zeroOk:true,
     help:'How is your stomach today? 0 means no ache at all. 10 means the worst it gets. Please tap 0 on the good days too. A clear day tells me as much as a sore one, and without it I cannot see when something is working.' },
-  { id:'bowel', icon:'🚻', label:'Bowel movement', sub:'Bristol scale 1 to 7', type:'bristol',
-    help:'Pick the type that best matches, then tap whether it came with warning or no warning. Type 3 and 4 are the healthy middle.' },
+  { id:'bowel', icon:'🚻', label:'Bowel', sub:'One evening check, normal or accident', type:'bristol',
+    help:'Tell us how your bowel was today, including any whoosh. Normal means no accident. Accident lets you record a small or big whoosh here, so you only need one card.' },
   { id:'hydration', icon:'💧', label:'Water', sub:'How much did you drink today?', type:'hydration', optWord:'water',
     help:'Compared to a normal day, how much water did you drink today? Water only. Salt is its own tile now, because they were sharing one button and I could not tell them apart.' },
   { id:'salt', icon:'🧂', label:'Salt', sub:'How much salt today?', type:'hydration', optWord:'salt',
@@ -849,10 +827,12 @@ const INPUTS = [
            { v:'no',  label:'No', small:'I ate my usual amount' } ],
     help:'At supper tonight, did you feel full after only a few bites? Please tap No on the normal nights too. A normal night tells me as much as a full one.' }
 ];
-// Tiles that only make sense at one part of the day. How she woke is a morning
-// question, and so is the fasting poke. Supper is a night question.
-const MORNING_ONLY = ['truefasting','wakefeel'];
-const NIGHT_ONLY = ['fullfast'];
+// Old INPUTS stay readable for history. Only these lists can ask for a new entry.
+const MORNING_METRICS = ['sleephours','weight','glucose','pulse','bp','mood','kneepain','backpain','fibropain'];
+const EVENING_METRICS = ['glucose','pulse','bp','activity','stress','hydration','salt','headache','bowel'];
+function sessionMetrics(s) {
+  return s.metrics.concat(s.id==='night' && new Date(localDayStr()+'T12:00:00').getDay()===0 ? ['stairs'] : []);
+}
 
 // Metrics Valerie measures more than once a day. These keep every reading with its time instead of overwriting.
 const MULTI_READ = ['glucose','pulse','bp'];
@@ -860,30 +840,24 @@ function timeOnly(){ return new Date().toLocaleTimeString('en-CA',{hour:'numeric
 function stampFull(){ const n=new Date(); return n.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}) + ', ' + n.toLocaleDateString('en-CA',{month:'long',day:'numeric',year:'numeric'}); }
 
 const BRISTOL = [
-  { n:1, d:'Hard little lumps, like nuts. Hard to pass.' },
-  { n:2, d:'Lumpy and sausage-shaped.' },
-  { n:3, d:'Sausage-shaped with cracks on the surface. Healthy.' },
-  { n:4, d:'Smooth and soft, like a sausage. Ideal.' },
-  { n:5, d:'Soft blobs with clear edges.' },
-  { n:6, d:'Mushy with ragged edges.' },
-  { n:7, d:'Entirely liquid, no solid pieces.' }
+  { n:2, label:'Hard', range:[1,2], d:'Hard lumps or a lumpy stool.' },
+  { n:4, label:'Normal', range:[3,4], d:'Formed and easy to pass.' },
+  { n:5, label:'Soft', range:[5], d:'Soft pieces.' },
+  { n:7, label:'Watery', range:[6,7], d:'Loose, mushy or liquid.' }
 ];
 
 let activeInput = null;
 let activeSession = 'morning';
 let sheetSel = {};
 
-// Repeatable metrics logged morning, noon, and night. The rest are morning-only, once a day.
-const REPEATABLE_IDS = ['glucose','truefasting','pulse','bp','kneepain','backpain','fibropain','energy','activity','stress','bowel','hydration','salt','headache','mood'];
-// Once-a-day metrics. They used to live under Morning only, so if she opened the app in
-// the afternoon they were invisible and looked deleted. Reported by Valerie Aug 13.
-// They now show in every session and share one reading across all three.
+// Meter readings keep all values for the alarms. Other cards replace the day's value.
+const REPEATABLE_IDS = ['glucose','truefasting','pulse','bp'];
 const DAILY_IDS = INPUTS.map(i=>i.id).filter(id => REPEATABLE_IDS.indexOf(id) === -1);
+// Keep noon here only to read old saved days.
 const SESSION_ORDER = ['morning','noon','night'];
 const SESSIONS = [
-  { id:'morning', label:'Morning', metrics: INPUTS.map(i=>i.id).filter(id => NIGHT_ONLY.indexOf(id) === -1) },
-  { id:'noon',    label:'Noon',    metrics: REPEATABLE_IDS.concat(DAILY_IDS).filter(id => MORNING_ONLY.indexOf(id) === -1 && NIGHT_ONLY.indexOf(id) === -1) },
-  { id:'night',   label:'Night',   metrics: REPEATABLE_IDS.concat(DAILY_IDS).filter(id => MORNING_ONLY.indexOf(id) === -1) }
+  { id:'morning', label:'Morning', metrics:MORNING_METRICS },
+  { id:'night', label:'Evening', metrics:EVENING_METRICS }
 ];
 
 // For a once-a-day metric, find whichever session actually holds today's reading.
@@ -894,10 +868,15 @@ function dailyHolder(day, mid) {
   }
   return null;
 }
-let sessionOpen = { morning:false, noon:false, night:false };
+function defaultSessionOpen(){ return { morning:new Date().getHours()<12, night:false }; }
+let sessionOpen = defaultSessionOpen(), sessionDay = localDayStr();
 
 function sessionReadings(day, sid, mid){ return dedupeReadings((day[sid] && day[sid][mid]) || []); }
-function toggleSession(id){ sessionOpen[id] = !sessionOpen[id]; renderSessions(); }
+function toggleSession(id){
+  if (!SESSIONS.some(s=>s.id===id)) return;
+  sessionOpen[id] = !sessionOpen[id];
+  renderSessions();
+}
 
 /* ── ONE-TIME DAY MIGRATION ── runs at startup, before first render.
    Repairs two older storage shapes so past readings show on the tiles:
@@ -978,7 +957,7 @@ function migrateDay(){
 
 // Some tile subtitles mention "morning" and would read wrong inside Noon and Night.
 const SESSION_SUBS = {
-  glucose: { noon:'Before eating', night:'Before eating' },
+  glucose: { noon:'Old noon reading', night:'Two hours after your last bite' },
   pulse:   { noon:'Your heart rate', night:'Your heart rate' }
 };
 function tileHtml(day, sid, mid){
@@ -992,12 +971,12 @@ function tileHtml(day, sid, mid){
   let stack = '';
   if (done) {
     stack = '<div class="tile-stack">' + log.map((r,ri) =>
-      `<div class="tile-stack-row"><span class="tile-stack-val">${r.disp}</span><span class="tile-stack-when">${r.when || r.t || ''}</span><span class="tile-stack-cancel" onclick="event.stopPropagation();cancelEntry('${holder}','${mid}',${ri})" title="Cancel this entry">✕</span></div>`).join('') + '</div>';
+      `<div class="tile-stack-row"><span class="tile-stack-val">${r.disp}</span><span class="tile-stack-when">${readingDisplayTime(r)}</span><span class="tile-stack-cancel" onclick="event.stopPropagation();cancelEntry('${holder}','${mid}',${ri})" title="Cancel this entry">✕</span></div>`).join('') + '</div>';
   }
   const restSub = (SESSION_SUBS[mid] && SESSION_SUBS[mid][sid]) || inp.sub;
-  const sub = done ? (repeatable ? log.length + ' logged, tap to add another' : 'Logged ✓ tap to change')
-                   : (repeatable || inp.plainSub ? restSub : restSub + ' · once a day, any time');
-  return `<div class="tile ${done?'done tile-multi':''}" onclick="openEntry('${mid}','${holder}')">
+  const sub = done ? 'Logged ✓ tap to correct'
+                   : restSub;
+  return `<div class="tile ${done?'done tile-multi':''}" onclick="openEntry('${mid}','${sid}')">
       <div class="tile-head">
         <div class="tile-icon">${inp.icon}</div>
         <div class="tile-body"><div class="tile-label">${inp.label}</div><div class="tile-sub">${sub}</div></div>
@@ -1010,26 +989,30 @@ function tileHtml(day, sid, mid){
 function sessionCount(day, s){
   // Count repeatables for this session only. A once-a-day metric belongs to whichever
   // session recorded it, so it is never counted three times.
-  return s.metrics.reduce(function(a, mid){
+  return sessionMetrics(s).reduce(function(a, mid){
     if (REPEATABLE_IDS.indexOf(mid) > -1) return a + sessionReadings(day, s.id, mid).length;
     return a + (dailyHolder(day, mid) === s.id ? sessionReadings(day, s.id, mid).length : 0);
   }, 0);
 }
 
 function renderSessions(){
+  // A phone left open overnight starts the new morning with its log open too.
+  if(sessionDay!==localDayStr()){ sessionDay=localDayStr(); sessionOpen=defaultSessionOpen(); }
   const day = loadDay();
   const wrap = document.getElementById('sessions');
   if (!wrap) return;
   wrap.innerHTML = SESSIONS.map(s => {
     const open = sessionOpen[s.id];
     const count = sessionCount(day, s);
-    const tiles = s.metrics.map(mid => tileHtml(day, s.id, mid)).join('');
+    const tiles = s.id==='night'&&new Date().getHours()<17
+      ? '<p>Your evening log opens at 5 pm. It asks about the day after it has happened.</p>'
+      : sessionMetrics(s).map(mid => tileHtml(day, s.id, mid)).join('');
     return `<div class="session session-${s.id} ${open?'open':''}">
-      <div class="session-head" onclick="toggleSession('${s.id}')">
+      <button type="button" class="session-head" aria-expanded="${!!open}" aria-controls="session-${s.id}-body" onclick="toggleSession('${s.id}')">
         <div class="session-name">${s.label}</div>
         <div class="session-right">${count>0?`<span class="session-count">${count} logged</span>`:''}<span class="session-caret">${open?'▾':'▸'}</span></div>
-      </div>
-      <div class="session-body"${open?'':' style="display:none"'}>${tiles}</div>
+      </button>
+      <div class="session-body" id="session-${s.id}-body"${open?'':' style="display:none"'}>${tiles}</div>
     </div>`;
   }).join('');
 }
@@ -1039,7 +1022,7 @@ function displayVal(inp, v) {
   if (inp.type==='bp') return v.sys + '/' + v.dia;
   if (inp.type==='activity') return '✓';
   if (inp.type==='stress') return v.intensity;
-  if (inp.type==='bristol') return 'Type ' + v.type + (v.look && v.look !== 'normal' ? ', ' + v.look : '');
+  if (inp.type==='bristol') { const b=BRISTOL.find(b=>b.range.includes(Number(v.type))); return (v.kind==='accident'?'Accident, '+v.severity:'Normal')+', '+(b?b.label:'Type '+v.type); }
   if (inp.type==='hydration') return v.charAt(0).toUpperCase()+v.slice(1);
   if (inp.type==='choice') { const o = inp.opts.find(o => o.v === v); return o ? o.label : v; }
   if (inp.type==='multi') {
@@ -1103,19 +1086,18 @@ function openEntry(id, session) {
               <button class="opt-btn" onclick="pickOpt(this,'source','Other')">Other</button>
             </div>`;
   } else if (inp.type==='bristol') {
-    body = `<div class="opt-col">` + BRISTOL.map(b =>
-      `<button class="opt-btn" onclick="pickOpt(this,'type',${b.n})">Type ${b.n}<small>${b.d}</small></button>`).join('') + `</div>
-      <div class="sheet-field-label">Did it come with warning?</div>
-      <div class="opt-col">
-        <button class="opt-btn" onclick="pickOpt(this,'warning','With warning')">With warning<small>You had time to get there</small></button>
-        <button class="opt-btn" onclick="pickOpt(this,'warning','No warning')">No warning<small>It came on suddenly</small></button>
-      </div>
-      <div class="sheet-field-label">How did it look?</div>
-      <div class="opt-col">
-        <button class="opt-btn" onclick="pickOpt(this,'look','normal')">Normal</button>
-        <button class="opt-btn" onclick="pickOpt(this,'look','greasy')">Greasy<small>Shiny, oily, or hard to flush clean</small></button>
-        <button class="opt-btn" onclick="pickOpt(this,'look','floats')">Floats</button>
-      </div>`;
+    body = `<div class="sheet-field-label">How was your bowel today?</div><div class="opt-col">
+      <button class="opt-btn" onclick="pickBowel(this,'normal')">Normal<small>No accident today</small></button>
+      <button class="opt-btn" onclick="pickBowel(this,'accident')">Accident<small>A whoosh goes here too</small></button></div>
+      <div id="bowel-accident" hidden><div class="sheet-field-label">How big was the whoosh?</div><div class="opt-col">
+        <button class="opt-btn" onclick="pickOpt(this,'severity','Small')">Small</button>
+        <button class="opt-btn" onclick="pickOpt(this,'severity','Big')">Big</button></div>
+        <div class="sheet-field-label">Did you have warning?</div><div class="opt-col">
+        <button class="opt-btn" onclick="pickOpt(this,'warning','With warning')">With warning</button>
+        <button class="opt-btn" onclick="pickOpt(this,'warning','No warning')">No warning</button></div></div>
+      <div class="sheet-field-label">Stool type</div><div class="opt-col">` + BRISTOL.map(b=>
+        `<button class="opt-btn" onclick="pickOpt(this,'type',${b.n})">${b.label}<small>${b.d}</small></button>`).join('')+`</div>`;
+
   } else if (inp.type==='choice') {
     body = `<div class="opt-col">` + inp.opts.map(o =>
       `<button class="opt-btn" onclick="pickOpt(this,'choice','${o.v}')">${o.label}${o.small ? '<small>' + o.small + '</small>' : ''}</button>`).join('') + `</div>`;
@@ -1143,7 +1125,7 @@ function openEntry(id, session) {
     priorReadings = `<div class="today-readings"><div class="today-readings-label">${sessName} so far${repeatable?'. A new entry adds to this list, it does not replace it.':''}</div>` +
       sessLog.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${r.when || r.t || ''}</span></div>`).join('') + `</div>`;
   } else if (repeatable) {
-    priorReadings = `<div class="today-readings-hint">You can log this as many times this ${activeSession} as you like. Each reading is saved with its own date and time.</div>`;
+    priorReadings = `<div class="today-readings-hint">Save your reading for this ${activeSession==='night'?'evening':activeSession}. If you need to correct a number later, its time stays on your record.</div>`;
   }
   document.getElementById('sheet').innerHTML = `
     <div class="entry-content" oninput="entryError('')">
@@ -1153,7 +1135,6 @@ function openEntry(id, session) {
     ${priorReadings}
     ${sameAs}
     ${body}
-    ${inp.id==='glucose'&&activeSession==='morning'?beforeCoffeeControls():''}
     ${['glucose','truefasting','pulse','bp'].includes(inp.id)?readingTimeControls():''}
     <div id="entry-error" role="alert" style="color:var(--red);margin:1rem 0;"></div>
     </div>
@@ -1231,6 +1212,11 @@ function pickScale(el, n) {
   sheetSel.scale = n;
 }
 
+function pickBowel(el, kind) {
+  pickOpt(el,'kind',kind);
+  document.getElementById('bowel-accident').hidden=kind!=='accident';
+  if(kind!=='accident'){ delete sheetSel.severity; delete sheetSel.warning; }
+}
 function pickOpt(el, key, val) {
   el.parentElement.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
@@ -1315,6 +1301,31 @@ async function reconcileReadings() {
 }
 function readingOutbox() { return JSON.parse(localStorage.getItem(READING_OUTBOX) || '[]'); }
 function storeReadingOutbox(items) { localStorage.setItem(READING_OUTBOX, JSON.stringify(items)); }
+function eventIdOf(row,kind) {
+  return row[kind] || (String(row.timeLocal||'').match(new RegExp('\\['+kind+':([^\\]]+)\\]'))||[])[1] || '';
+}
+function dedupeSavedEvents(rows,kind) {
+  const seen=new Set();return (rows||[]).filter(r=>{
+    const id=eventIdOf(r,kind),key=JSON.stringify([r.clientId||'',id]);
+    if(!id)return true;if(seen.has(key))return false;seen.add(key);return true;
+  });
+}
+function dedupeMeals(rows) { return dedupeSavedEvents(rows,'mealId'); }
+function dedupeSupplements(rows) { return dedupeSavedEvents(rows,'supplementId'); }
+function queueSavedEvent(payload,kind,slot) {
+  const t=stamp(),id=typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():t.iso+'-'+Math.random().toString(36).slice(2);
+  payload={...payload,timestamp:t.iso,timeLocal:t.local+' ['+kind+':'+id+']',[kind]:id};
+  if(kind==='supplementId'&&slot){
+    const day=loadDay();day.suppChangedAt=day.suppChangedAt||{};
+    if(day.suppChangedRow)delete day.suppChangedRow[slot];
+    day.suppChangedAt[slot]=payload.timestamp;saveDay(day);
+  }
+  // Coalesce only unsent counter states. An in-flight state keeps its own identity.
+  const items=readingOutbox().filter(x=>!(slot&&x.slot===slot&&!x.attempted&&x.payload.clientId===payload.clientId&&
+    localDayStr(new Date(x.payload.timestamp))===localDayStr(new Date(payload.timestamp))));
+  storeReadingOutbox(items.concat({id,key:id,slot,payload}));readingSaveStatus(id,true);
+  return payload;
+}
 function readingSaveStatus(id, pending) {
   const flash=document.getElementById('saved-flash');
   if(flash && flash.dataset.readingId===id) {
@@ -1336,11 +1347,18 @@ function flushReadingOutbox() {
       let confirmed=false;
       try {
         // A failed read is unknown, never proof that an append is absent.
-        if(item.attempted && item.payload.action==='log_entry') {
+        if(item.attempted && ['log_entry','log_food','log_supplement'].includes(item.payload.action)) {
           const seen=await sheetCall({action:'get_logs',clientId:item.payload.clientId},20000);
           if(!seen || seen.success!==true || !Array.isArray(seen.logs))continue;
-          confirmed=seen.logs.some(r=>r.field===item.payload.field &&
+          const action=item.payload.action;
+          if(action==='log_entry')confirmed=seen.logs.some(r=>r.field===item.payload.field &&
             (/\[readingId:/.test(item.payload.timeLocal||'')?readingIdOf(r)===readingIdOf(item.payload):r.timestamp===item.payload.timestamp));
+          else {
+            const rows=action==='log_food'?seen.food:seen.supps;
+            if(!Array.isArray(rows))continue;
+            const kind=action==='log_food'?'mealId':'supplementId';
+            confirmed=rows.some(r=>(!r.clientId||r.clientId===item.payload.clientId)&&eventIdOf(r,kind)===item.id);
+          }
         }
         // Undo may remove this append while readback is in flight.
         if(!confirmed && readingOutbox().some(x=>x.key===item.key) &&
@@ -1352,6 +1370,7 @@ function flushReadingOutbox() {
       } catch(e) { /* Keep the request until the sheet confirms it. */ }
       if(confirmed)storeReadingOutbox(readingOutbox().filter(x=>x.key!==item.key));
       readingSaveStatus(item.id,readingOutbox().some(x=>x.id===item.id));
+      if(item.payload.action==='log_food')mealSaveStatus(item.id);
     }
     try { await reconcileReadings(); } catch(e) { /* Next open or sync retries cleanup. */ }
   })().finally(()=>{readingFlush=null;});
@@ -1362,9 +1381,8 @@ function startReadingOutbox() {
   if(pending.length)readingSaveStatus(pending[0].id,true);
   return flushReadingOutbox();
 }
-function beforeCoffeeControls() {
-  return `<div class="sheet-field-label">Before coffee?</div><div class="opt-col"><button class="opt-btn" onclick="pickOpt(this,'beforeCoffee','yes')">Yes</button><button class="opt-btn" onclick="pickOpt(this,'beforeCoffee','no')">No</button></div>`;
-}
+
+
 function readingTimeControls() {
   const n=new Date(),value=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
   return `<label class="opt-btn" style="display:block;min-height:44px;"><input id="taken-earlier" type="checkbox" onchange="document.getElementById('taken-time-wrap').hidden=!this.checked"> Taken earlier?</label><div id="taken-time-wrap" hidden><label for="taken-time">Time taken</label><input id="taken-time" class="big-input" type="time" value="${value}"></div>`;
@@ -1392,7 +1410,6 @@ async function saveEntry() {
       return entryError(inp.id==='pulse'?'That looks like a sugar number. Pulse is usually 50 to 100. Please check it.':
         (inp.id==='glucose'||inp.id==='truefasting')?'Please check your sugar number. Enter a number from 2 to 30.':'Please check that number. Enter '+R[0]+' to '+R[1]+'.');
     }
-    if(inp.id==='glucose'&&activeSession==='morning'&&!sheetSel.beforeCoffee)return entryError('Please tap Yes or No for Before coffee.');
     value = v;
   } else if (inp.type==='bp') {
     const sys = Number(document.getElementById('entry-sys').value || NaN);
@@ -1413,7 +1430,9 @@ async function saveEntry() {
     value = { intensity: sheetSel.scale, source: sheetSel.source || '' };
   } else if (inp.type==='bristol') {
     if (sheetSel.type === undefined) return;
-    value = { type: sheetSel.type, warning: sheetSel.warning || '', look: sheetSel.look || '' };
+    if(!sheetSel.kind)return entryError('Please choose Normal or Accident.');
+    if(sheetSel.kind==='accident'&&!sheetSel.severity)return entryError('Please choose Small or Big.');
+    value = { type: sheetSel.type, kind:sheetSel.kind, severity:sheetSel.kind==='accident'?sheetSel.severity:'', warning:sheetSel.kind==='accident'?(sheetSel.warning||''):'', range:BRISTOL.find(b=>b.n===sheetSel.type).range };
   } else if (inp.type==='hydration') {
     if (!sheetSel.tag) return;
     value = sheetSel.tag;
@@ -1426,14 +1445,19 @@ async function saveEntry() {
   }
   const t = stamp();
   const taken=readingTime(t);if(taken===null)return entryError('Please choose the time you took this reading.');
+  const automaticTime=!document.getElementById('taken-earlier')?.checked;
+  if (['glucose','truefasting','pulse','bp'].includes(inp.id) && !taken.takenAt) {
+    const d=new Date(t.iso);
+    taken.takenAt=t.iso; taken.takenAtLocal=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
   const day = loadDay();
   day[activeSession] = day[activeSession] || {};
   const beforeCoffee=sheetSel.beforeCoffee||'';
-  const entry = { disp: displayVal(inp, value), when: stampFull()+(taken.takenAtLocal?' · taken '+taken.takenAtLocal.replace('T',' '):''), iso: t.iso, beforeCoffee, ...taken };
+  const entry = { disp: displayVal(inp, value), when: stampFull(), iso: t.iso, value, beforeCoffee, takenAtAuto:automaticTime, ...taken };
   // double-tap guard: an identical reading within 2 minutes of the last one is a duplicate
   const priorList = (day[activeSession][inp.id] || []);
   const prior = priorList[priorList.length - 1];
-  if (prior && prior.disp === entry.disp && (prior.takenAt||'')===(entry.takenAt||'') && (prior.beforeCoffee||'')===beforeCoffee && prior.iso && (new Date(t.iso) - new Date(prior.iso)) < 2 * 60 * 1000) {
+  if (prior && JSON.stringify(prior.value) === JSON.stringify(entry.value) && ((automaticTime&&(prior.takenAtAuto||prior.takenAt===prior.iso))||(prior.takenAt||'')===(entry.takenAt||'')) && (prior.beforeCoffee||'')===beforeCoffee && prior.iso && (new Date(t.iso) - new Date(prior.iso)) < 2 * 60 * 1000) {
     const flash=document.getElementById('saved-flash');flash.dataset.readingId=prior.readingId||prior.iso;
     readingSaveStatus(flash.dataset.readingId,readingOutbox().some(x=>x.id===flash.dataset.readingId));
     await flushReadingOutbox();
@@ -1467,6 +1491,7 @@ async function saveEntry() {
   }
   saveDay(day);
   renderSessions();
+  if(typeof renderFocusCard==='function')renderFocusCard();
   document.getElementById('saved-flash').dataset.readingId=entry.readingId;
   readingSaveStatus(entry.readingId,true);
   await flushReadingOutbox();
@@ -1693,15 +1718,9 @@ function sendUpdateComment() {
 }
 
 async function loadUpdatesClient() {
-  const wrap = document.getElementById('updates-wrap');
-  if (!wrap) return;
-  const r = await sheetCall({ action:'get_updates', clientId: currentClientId });
-  if (!r.success || !r.updates || !r.updates.length) { wrap.innerHTML = '<div class="im-empty">Your first progress report will appear here soon. 🌿</div>'; return; }
-  wrap.innerHTML = r.updates.map((u,i) =>
-    `<div class="upd-tile${i===0?' open':''}" onclick="this.classList.toggle('open')">`
-    + `<div class="upd-tile-head"><div><div class="upd-tile-title">${(u.title||'Update').replace(/</g,'&lt;')}</div><div class="upd-tile-date">${(u.timeLocal||'').toString().replace(/</g,'&lt;')}</div></div><div class="upd-tile-chev">▾</div></div>`
-    + `<div class="upd-tile-body">${fmtUpdateBody(u.body)}</div></div>`
-  ).join('');
+  const r=await sheetCall({action:'get_updates',clientId:currentClientId});
+  window.__focusUpdates=r&&r.success ? r.updates||[] : [];
+  renderFocusCard();
 }
 
 /* ── SUPPLEMENTS ── */
@@ -1734,14 +1753,14 @@ function penState(p,day) {
 // END PENS
 
 const SUPPS = [
-  { id:'ala',      name:'Alpha lipoic acid 600mg', dose:'Six 100mg capsules together, with your largest meal' },
+  { id:'ala',      name:'Alpha lipoic acid 600mg', dose:"All six capsules together, 30 minutes before breakfast, with a full glass of water. It feeds the nerves in your feet and your gut. If it upsets your stomach, take it with breakfast instead." },
   { id:'florastor',name:'Florastor', dose:'1 capsule with breakfast' },
   { id:'d3',       name:'Vitamin D3', dose:'Four 1000 IU capsules in the morning (4000 IU)' },
   { id:'k2',       name:'Vitamin K2 (MK-7)', dose:'One 100mcg capsule in the morning, with your D3' },
   { id:'vitc_am',  name:'Vitamin C — morning', dose:'500mg chewable' },
   { id:'vitc_pm',  name:'Vitamin C — evening', dose:'500mg chewable' },
   { id:'kraut',    name:'Sauerkraut', dose:'One tablespoon in the morning' },
-  { id:'creatine', name:'Creatine', dose:'3g once a day, with food' }
+  { id:'creatine', name:'Creatine', dose:'4 scoops (20 g) with food, every day' }
 ];
 // Pulled Aug 20 for the washout, restored Aug 29 for the reintroduction.
 // A tile you can still tick is a tile that gets ticked, which is why it came off.
@@ -1751,7 +1770,7 @@ const SUPPS = [
 // readout had nothing behind it. Guard G10 now stops the scan dead whenever a
 // running test names a variable she has no way to log.
 
-// Magnesium is a separate count tile: each tap logs one 200mg pill (1=200, 2=400, 3=600)
+// Magnesium is one 200mg dose, with a tap to log or undo.
 const MAG = { id:'mag_pm', name:'Magnesium glycinate — bedtime', pill:200, max:1 };
 // One switch, so the tile and the focus card can never disagree again. Set to
 // false and the every-second-night wording comes back on its own.
@@ -1761,7 +1780,11 @@ const MAG_PAUSE_WHY = 'This is nothing to do with your gut. It is your blood pre
 // kept offering them. 200mg is the dose. There is nothing above it to tap.
 // Her dose is 200mg every SECOND night. The tile never said so and never looked
 // at last night, so it ran four nights straight into the 18 Aug gut ache.
+const MAG_DAILY_FROM = '2026-11-02';
+function magDaily(day=localDayStr()){ return day >= MAG_DAILY_FROM; }
+function magSkipTonight(){ return MAG_PAUSED || (!magDaily() && magTookLastNight()); }
 function magTookLastNight(){
+  if(window.__magLastNight!==undefined&&window.__magLastNight!==null)return window.__magLastNight;
   try {
     const y = JSON.parse(localStorage.getItem('fh_' + localDayStr(new Date(Date.now() - 86400000)))) || {};
     return (y.magCount || 0) > 0;
@@ -1770,24 +1793,24 @@ function magTookLastNight(){
 // Pain relief counters, same tap-the-boxes pattern. They log to the Supplement Log so
 // Christopher's dashboard and the weekly scan pick them up automatically.
 const TYL = { name:'Tylenol 650', pill:650, max:4, sub:'Tap the box that matches your TOTAL pills so far today' };
-const GUM = { name:'Indica gummy 2.5mg', max:4, sub:'Tap the box that matches your TOTAL gummies so far today' };
+const GUM = { name:'Indica gummy 2.5mg', max:1, sub:"Not part of your plan. Your sleep was the same on gummy nights and other nights. If pain keeps you awake, one gummy at most, and sit on the edge of the bed for a moment before you stand." };
 
 const SUPP_GREEN = [
   ...PENS.map(p=>({name:p.name,note:p.purpose})),
-  { name:'Alpha Lipoic Acid', note:'600mg daily. Six 100mg capsules taken together with the largest meal. Always with food.' },
+  { name:'Alpha Lipoic Acid', note:"600 mg: all six capsules together, 30 minutes before breakfast, with a full glass of water. It feeds the nerves in your feet and your gut. If it upsets your stomach, take it with breakfast instead." },
   { name:'Florastor (Saccharomyces boulardii)', note:'1 capsule with breakfast daily.' },
-  { name:'Magnesium Glycinate', note:'ONE PILL, 200mg. Settled. You proved this yourself twice: 400mg on Aug 10 gave you a sore gut on the 11th, 400mg again on the 12th gave you the same on the 13th, and at 200mg you have no trouble at all. Your read was right and your dose is now 200mg at bedtime every second night. No more increases. It is still doing the work on your blood pressure, which is sitting in the 120s.' },
+  { name:'Magnesium Glycinate', note:magDaily() ? "Magnesium glycinate 200 mg: take tonight, at bedtime. Every night now. It helps you sleep deeper and wake less. Never take more than one 200 mg dose in a night." : '200mg at bedtime every second night. Take tonight or Not tonight is shown above. From Monday 2 November, 200mg every night.' },
   { name:'Vitamin D3', note:'4000 IU in the morning. Four 1000 IU capsules.' },
   { name:'Vitamin K2 as MK-7', note:'One 100mcg capsule in the morning with your D3. You told me on August 21 that you take one, not two, and the app was still saying two. That is corrected. It directs calcium into your bones and away from your arteries, and it needs a little fat in the meal to be absorbed.' },
   { name:'Vitamin C', note:'500mg chewable, morning and evening.' },
   { name:'Sauerkraut', note:'Cleared, both ways, on September 8. It is not causing your episodes and it is not raising your morning number. The nine day reintroduction answered both. Keep having your tablespoon in the morning and keep ticking the tile.' },
-  { name:'Creatine', note:'3g once a day, with food. It is the best studied thing there is for holding muscle at your age, and holding muscle is the whole point right now. It waited until your magnesium check was read out, so it starts on its own. Tick the Creatine box each day you take it.' },
+  { name:'Creatine', note:"Creatine: 4 scoops (20 g) with food, every day. 2 scoops with breakfast and 2 scoops with supper, each stirred into a full glass of water, milk or your shake. Drink 2 extra glasses of water during the day. It holds the muscle in your arms and legs. If your stool gets loose, take 1 scoop with each meal instead." },
   { name:'Whey Protein Isolate (Diesel)', note:'Cleared. The label question is settled: zero sugar, zero carbs per scoop, sweetened with stevia. One condition only, drink it before 4pm. Both high bedtime readings followed a late-day drink. Your last one was August 18. This is the easiest way to hold the muscle on your arms and legs, and you told me you enjoyed it, so it is worth starting again.' }
 ];
 const SUPP_YELLOW = [
   { name:'Magnesium — the amount above 200mg', note:'Closed Aug 14, and the answer is no. Two separate 400mg nights, two sore guts the next day. 200mg is your number. Nothing above it goes back in without a reason.' },
   { name:'Melatonin', note:'Not currently in use. Situational only if reintroduced, 0.5mg to a maximum of 1mg.' },
-  { name:'Indica gummy 2.5mg', note:'Sleep support trial. Two unbroken nights logged with it this week, one rough night. Keep noting each use in the coach chat.' },
+  { name:'Indica gummy 2.5mg', note:"Not part of your plan. Your sleep was the same on gummy nights and other nights. If pain keeps you awake, one gummy at most, and sit on the edge of the bed for a moment before you stand." },
   { name:'Enterogermina — NO, not while Florastor is working', note:'Answered. You already take Florastor, and you told me yourself that your night episodes stopped after you started it. Adding a second gut bug on top would muddy the one thing you have credited with working. It is not a no forever. It is a no while Florastor is doing the job.' },
   { name:'Ashwagandha — NO, there is nothing for it to treat', note:'Answered. It is for stress, and you told me you do not get wound up and worried, and your record agrees: stress is logged on 6 of your last 30 days, never above 5 out of 10, and mostly marked Other. There is no problem here for it to solve, so it would only be one more pill.' },
   { name:'Marine Collagen', note:'Not yet added. Queued in sequence.' },
@@ -1815,7 +1838,7 @@ function renderPens(day) {
     const s=penState(p,today);
     if(!s.due){ next.push(s.off?'Off week. No spray. Back on '+penDate(s.next,true)+'.':p.name+': next shot '+penDate(s.next,true)+'.');return; }
     const on=!!(day.supps||{})[p.id],time=(day.suppTimes||{})[p.id]||'';
-    const style=p.color?'--pen-color:'+p.color+';border-color:var(--pen-color);':'';
+    const style='--pen-color:'+(p.color||'#a1a1a1')+';';
     out+='<div class="supp-tick pen-tick '+(on?'checked':'')+'" style="'+style+'" data-pen="'+p.id+'"'+(p.id==='semax'?'':' onclick="togglePen(\''+p.id+'\')"')+'>';
     if(s.mixToday)out+='<strong>Mix a new '+(p.id==='semax'?'vial':'pen')+' today.</strong>';
     if(p.id==='semax'){
@@ -1829,7 +1852,7 @@ function renderPens(day) {
         out+='</div>';
       });
     }else out+='<button type="button" class="pen-action"><span class="supp-tick-box">'+(on?'✓':'')+'</span><span><span class="supp-tick-name">'+p.name+'</span><strong class="pen-units">'+s.dose+'</strong></span></button>';
-    if(on)out+='<p>Done ✓ '+time+' · tap again to undo</p>';
+    if(on)out+='<p>Done ✓ '+time+' · Tap again to undo</p>';
     out+='<p>'+p.purpose+'</p><small>'+(p.id==='bpctb'?'Mix a new pen when this one runs out. Use a mixed pen within 28 days.':'Mixed '+penDate(s.mix)+'. '+(s.pen?'Pen '+s.pen+' of 2. ':'')+'Throw out by '+penDate(s.discard)+'. '+(s.nextMix?'Next mix '+penDate(s.nextMix)+'.':'No more mixes.'))+'</small></div>';
   });
   return out+next.map(x=>'<p class="pen-next">'+x+'</p>').join('')+'</section>';
@@ -1854,33 +1877,28 @@ function renderSupps() {
   const taken = day.supps || {};
   const times = day.suppTimes || {};
   const magCount = day.magCount || 0;
-  let html = renderPens(day) + SUPPS.map(s => `
+  const ordered=['ala','vitc_am','kraut','d3','k2','florastor','vitc_pm'].map(id=>SUPPS.find(s=>s.id===id));
+  let html = ordered.map(s => (s.id==='ala'?'<h2>Morning</h2>':s.id==='vitc_pm'?renderCreatine(day)+'<h2>Evening</h2>':'')+ `
     <div class="supp-tick ${taken[s.id]?'checked':''}" onclick="toggleSuppTick('${s.id}',this)">
       <div class="supp-tick-box">${taken[s.id]?'✓':''}</div>
       <div><div class="supp-tick-name">${s.name}</div><div class="supp-tick-dose">${taken[s.id]
-        ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${times[s.id]||''}</span> · tap again to undo`
+        ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${times[s.id]||''}</span> · <small>Tap again to undo</small>`
         : s.dose}</div></div>
     </div>`).join('');
-  // Magnesium counter tile
+  // Magnesium dose button
   let boxes = '';
   for (let n=1; n<=MAG.max; n++) {
     const on = magCount >= n;
-    boxes += `<div class="mag-box ${on?'on':''}" onclick="setMag(${n},event)">${on?'✓':''}<span class="mag-mg">${n*MAG.pill}mg</span></div>`;
+    boxes += `<button type="button" class="mag-box ${on?'on':''}" aria-label="I took it" aria-pressed="${on}" onclick="setMag(${n},event)">I took it${on?' ✓':''}<span class="mag-mg">${n*MAG.pill} mg</span></button>`;
   }
   html += `
-    <div class="supp-tick ${magCount>0?'checked':''}" style="flex-wrap:wrap;">
+    <div id="magnesium-tile" class="supp-tick ${magCount>0?'checked':''} ${magSkipTonight()?'supp-skip':''}" style="flex-wrap:wrap;">
       <div style="flex:1 1 100%;display:flex;align-items:center;gap:1rem;">
-        <div class="supp-tick-box">${magCount>0?'✓':''}</div>
-        <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">${magCount>0
-          ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${magCount*MAG.pill}mg ${day.magTime?'· '+day.magTime:''}</span> · tap a box to change it`
-          : (MAG_PAUSED
-              ? '<span style="color:var(--gold);font-weight:700;">Paused. Do not take it tonight.</span> ' + MAG_PAUSE_WHY + ' If you do take it, tap the box anyway, so I see the truth.'
-              : (magTookLastNight()
-                ? '<span style="color:var(--gold);font-weight:700;">You took it last night, so tonight is a skip night.</span> 200mg every second night. If you did take it anyway, tap it, so I see the truth.'
-                : 'Tap the box when you take your 200mg pill. Every second night, not every night.'))}</div></div>
+        <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">${magSkipTonight()?'Not tonight':'Take tonight'}</div></div>
       </div>
       <div class="mag-row">${boxes}</div>
     </div>`;
+  html += renderPens(day);
   // Pain relief counters, same pattern as magnesium
   const counterTile = function(label, icon, count, time, max, setFn, sub){
     let b = '';
@@ -1893,7 +1911,7 @@ function renderSupps() {
       <div style="flex:1 1 100%;display:flex;align-items:center;gap:1rem;">
         <div class="supp-tick-box">${count > 0 ? '✓' : ''}</div>
         <div><div class="supp-tick-name">${icon} ${label}</div><div class="supp-tick-dose">${count > 0
-          ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${count}${label === TYL.name ? ' pills today, ' + (count * TYL.pill) + 'mg' : ''} ${time ? '· ' + time : ''}</span> · tap a box to change it`
+          ? `<span style="color:var(--sage);font-weight:700;">Logged ✓ ${count}${label === TYL.name ? ' pills today, ' + (count * TYL.pill) + 'mg' : ''} ${time ? '· ' + time : ''}</span> · <small>Tap again to undo</small>`
           : sub}</div></div>
       </div>
       <div class="mag-row">${b}</div>
@@ -1901,9 +1919,10 @@ function renderSupps() {
   };
   html += `<div class="section-label" style="margin:1.4rem 0 0.8rem;">Pain relief today</div>`;
   html += counterTile(TYL.name, '💊', day.tylCount || 0, day.tylTime || '', TYL.max, 'setTyl', TYL.sub);
-  html += counterTile(GUM.name, '🍬', day.gumCount || 0, day.gumTime || '', GUM.max, 'setGum', GUM.sub);
+  html += '<div class="section-label">Only if you took one</div><p>'+GUM.sub+'</p>';
+  html += counterTile(GUM.name, '', day.gumCount || 0, day.gumTime || '', GUM.max, 'setGum', 'Log one gummy only if you took it.');
   document.getElementById('supp-ticks').innerHTML = html;
-  document.getElementById('supp-green').innerHTML  = SUPP_GREEN.map(tierItem).join('');
+  document.getElementById('supp-green').innerHTML  = SUPP_GREEN.map(x=>x.name==='Magnesium Glycinate'?{...x,note:magDaily()?"Magnesium glycinate 200 mg: take tonight, at bedtime. Every night now. It helps you sleep deeper and wake less. Never take more than one 200 mg dose in a night.":'200mg at bedtime every second night. From Monday 2 November, 200mg every night.'}:x).map(tierItem).join('');
   document.getElementById('supp-yellow').innerHTML = SUPP_YELLOW.map(tierItem).join('');
   document.getElementById('supp-red').innerHTML    = SUPP_RED.map(tierItem).join('');
 }
@@ -1914,17 +1933,16 @@ const _suppTimers = {};
 // then write once with the final count.
 function suppLogDebounced(key, payload) {
   if (_suppTimers[key]) clearTimeout(_suppTimers[key]);
+  queueSavedEvent(payload,'supplementId',key);
   _suppTimers[key] = setTimeout(function () {
     delete _suppTimers[key];
-    const t = stamp();
-    payload.timestamp = t.iso;
-    payload.timeLocal = t.local;
-    sheetCall(payload);
+    flushReadingOutbox();
   }, 2500);
 }
 
 function setMag(n, ev) {
   if (ev) ev.stopPropagation();
+  if(!Number.isInteger(n)||n<1||n>MAG.max)return;
   const day = loadDay();
   // tapping the same count again clears back one; tapping a higher box sets to that count
   day.magCount = (day.magCount === n) ? n-1 : n;
@@ -1945,6 +1963,7 @@ function setTyl(n, ev) {
 }
 
 function setGum(n, ev) {
+  if(!Number.isInteger(n)||n<1||n>GUM.max)return;
   if (ev) ev.stopPropagation();
   const day = loadDay();
   day.gumCount = (day.gumCount === n) ? n - 1 : n;
@@ -1958,6 +1977,21 @@ function tierItem(x) {
   return `<div class="tier-item"><div class="tier-item-name">${x.name}</div><div class="tier-item-note">${x.note}</div></div>`;
 }
 
+function renderCreatine(day) {
+  return '<h2>With food</h2><div class="supp-tick"><div><div class="supp-tick-name">Creatine: 4 scoops (20 g) with food, every day</div><p>2 scoops with breakfast and 2 scoops with supper, each stirred into a full glass of water, milk or your shake. Drink 2 extra glasses of water during the day. It holds the muscle in your arms and legs. If your stool gets loose, take 1 scoop with each meal instead.</p><div class="mag-row">'+['Breakfast','Supper'].map(label=>{
+    const slot=label.toLowerCase(),on=!!(day.creatine||{})[slot];
+    return '<button type="button" class="same-btn '+(on?'checked':'')+'" aria-pressed="'+on+'" onclick="toggleCreatine(\''+slot+'\')">'+label+(on?' ✓ '+((day.creatineTimes||{})[slot]||'')+' · Tap again to undo':'')+'</button>';
+  }).join('')+'</div></div></div>';
+}
+function toggleCreatine(slot) {
+  if(!['breakfast','supper'].includes(slot))return;
+  const day=loadDay();day.creatine=day.creatine||{};day.creatineTimes=day.creatineTimes||{};
+  const on=day.creatine[slot]=!day.creatine[slot];day.creatineTimes[slot]=on?timeOnly():'';
+  day.supps=day.supps||{};day.supps.creatine=!!(day.creatine.breakfast||day.creatine.supper);
+  saveDay(day);renderSupps();
+  queueSavedEvent({action:'log_supplement',clientId:currentClientId,supplement:'Creatine',taken:on,note:slot+' 10g (2 scoops)'},'supplementId','creatine-'+slot);
+  return flushReadingOutbox();
+}
 function toggleSuppTick(id, el) {
   const day = loadDay();
   day.supps = day.supps || {};
@@ -1967,9 +2001,9 @@ function toggleSuppTick(id, el) {
   day.suppTimes[id] = nowOn ? timeOnly() : '';
   saveDay(day);
   renderSupps();
-  const t = stamp();
   const s = SUPPS.find(x=>x.id===id);
-  sheetCall({ action:'log_supplement', clientId: currentClientId, supplement: s.name, taken: nowOn, timestamp: t.iso, timeLocal: t.local });
+  queueSavedEvent({ action:'log_supplement', clientId: currentClientId, supplement: s.name, taken: nowOn },'supplementId',id);
+  return flushReadingOutbox();
 }
 
 function toggleTier(id, btn) {
@@ -1980,6 +2014,19 @@ function toggleTier(id, btn) {
 /* ── SHEET HYDRATION ── the sheet is the shared truth. Tiles, supplement ticks, and food
    load today's state from it on every open, so her phone, Christopher's phone, and any
    other device all show the same thing (the whoosh list already worked this way). */
+function supplementSlot(row) {
+  const name=String(row.supplement||'');
+  if(/^Magnesium glycinate bedtime/.test(name))return 'mag';
+  if(/^Tylenol 650/.test(name))return 'tyl';
+  if(/^Indica gummy 2.5mg/.test(name))return 'gum';
+  const pen=PENS.find(x=>name===x.name||name.startsWith(x.name+' ('));
+  if(pen)return pen.id;
+  if(/^Creatine(?: \(|$)/.test(name)){
+    const slot=String(row.note||name).match(/\b(breakfast|supper)\b/i);
+    return slot?'creatine-'+slot[1].toLowerCase():'';
+  }
+  return (SUPPS.find(x=>name===x.name)||{}).id||'';
+}
 async function hydrateFromSheet() {
   try {
     const r = await sheetCall({ action:'get_logs', clientId: currentClientId });
@@ -2001,24 +2048,44 @@ async function hydrateFromSheet() {
       if (arr.some(function(e){ return readingIdOf(row)?e.readingId===readingIdOf(row):e.iso===row.timestamp; })) return;
       const taken=String(row.timeLocal||'').match(/\[takenAt:([^;]+);local:([^\]]+)\]/);
       arr.push({ disp: displayVal(inp, row.value), when: cleanTimeLocal(row.timeLocal), iso: row.timestamp,
-        readingId:readingIdOf(row)||row.timestamp, beforeCoffee:row.beforeCoffee||'',
+        value:row.value, readingId:readingIdOf(row)||row.timestamp, beforeCoffee:row.beforeCoffee||'',
         ...(taken?{takenAt:taken[1],takenAtLocal:taken[2]}:{}) });
       changed = true;
     });
     // once-a-day metrics keep only their latest reading
-    ['weight','sleephours','sleepquality','wakeups'].forEach(function(mid){
-      if (day.morning && day.morning[mid] && day.morning[mid].length > 1) { day.morning[mid] = [day.morning[mid][day.morning[mid].length - 1]]; changed = true; }
+    DAILY_IDS.forEach(function(mid){
+      const entries=SESSION_ORDER.flatMap(sid=>((day[sid]||{})[mid]||[]).map(entry=>({sid,entry}))).sort((a,b)=>Date.parse(a.entry.iso)-Date.parse(b.entry.iso));
+      if(entries.length>1){
+        const last=entries[entries.length-1];
+        SESSION_ORDER.forEach(sid=>{if(day[sid])delete day[sid][mid];});
+        day[last.sid][mid]=[last.entry];changed=true;
+      }
     });
     // supplement ticks from today's rows, last state per supplement wins
     day.supps = day.supps || {};
     day.suppTimes = day.suppTimes || {};
-    (r.supps || []).slice().sort((a,b)=>Date.parse(a.timestamp)-Date.parse(b.timestamp)).forEach(function(srow){
+    dedupeSupplements((r.supps || []).map((row,rowIndex)=>({...row,rowIndex}))).sort((a,b)=>Date.parse(a.timestamp)-Date.parse(b.timestamp)||a.rowIndex-b.rowIndex).forEach(function(srow){
       const d = new Date(srow.timestamp);
       if (isNaN(d) || localDayStr(d) !== todayStr) return;
       const name = String(srow.supplement || '');
+      const slot=supplementSlot(srow);
+      if(!slot)return;
+      // Pending local saves always win. Equal saved times use sheet row order;
+      // a local change has no row index, so an equal-time read cannot undo it.
+      if(readingOutbox().some(x=>x.payload.action==='log_supplement'&&x.payload.clientId===currentClientId&&
+        localDayStr(new Date(x.payload.timestamp))===todayStr&&x.slot===slot))return;
+      day.suppChangedAt=day.suppChangedAt||{};
+      day.suppChangedRow=day.suppChangedRow||{};
+      const time=Date.parse(srow.timestamp),lastTime=Date.parse(day.suppChangedAt[slot]);
+      if(time<lastTime || (time===lastTime && srow.rowIndex<=(day.suppChangedRow[slot]??Infinity)))return;
+      day.suppChangedRow[slot]=srow.rowIndex;
+      day.suppChangedAt[slot]=srow.timestamp;changed=true;
+      if(/^Magnesium glycinate bedtime/.test(name)&&/^(NO|false)$/i.test(String(srow.taken))){day.magCount=0;changed=true;return;}
+      if(/^Tylenol 650/.test(name)&&/^(NO|false)$/i.test(String(srow.taken))){day.tylCount=0;changed=true;return;}
+      if(/^Indica gummy 2.5mg/.test(name)&&/^(NO|false)$/i.test(String(srow.taken))){day.gumCount=0;changed=true;return;}
       const magM = name.match(/^Magnesium glycinate bedtime \((\d+)mg \((\d+) pills?\)\)/);
       if (magM) {
-        const c = parseInt(magM[2], 10);
+        const c = /^(NO|false)$/i.test(String(srow.taken))?0:parseInt(magM[2], 10);
         if (day.magCount !== c) { day.magCount = c; day.magTime = cleanTimeLocal(srow.timeLocal); changed = true; }
         return;
       }
@@ -2035,22 +2102,37 @@ async function hydrateFromSheet() {
         return;
       }
       const pen = PENS.find(x=>name===x.name || name.startsWith(x.name+' ('));
-      if(pen && !_suppTimers[pen.id]) {
+      if(pen) {
         const on=srow.taken===true || srow.taken==='YES' || srow.taken==='yes';
         day.supps[pen.id]=on;day.suppTimes[pen.id]=on?cleanTimeLocal(srow.timeLocal):'';
-        if(pen.id==='semax') { const m=(srow.note||name).match(/Semax (\d) sprays morning, (\d) second dose/);day.semax=m?{morning:+m[1],second:+m[2]}:{morning:0,second:0}; }
+        if(pen.id==='semax') { const m=(srow.note||name).match(/Semax (\d) sprays morning, (\d) second dose/);day.semax=on&&m?{morning:+m[1],second:+m[2]}:{morning:0,second:0}; }
         changed=true;return;
+      }
+      if(/^Creatine(?: \(|$)/.test(name)) {
+        const slot=String(srow.note||name).match(/\b(breakfast|supper)\b/i);
+        if(slot){const key=slot[1].toLowerCase(),on=/^(YES|true)$/i.test(String(srow.taken));
+          day.creatine=day.creatine||{};day.creatineTimes=day.creatineTimes||{};
+          day.creatine[key]=on;day.creatineTimes[key]=on?cleanTimeLocal(srow.timeLocal):'';
+          day.supps.creatine=!!(day.creatine.breakfast||day.creatine.supper);changed=true;return;}
       }
       const sdef = SUPPS.find(function(x){ return x.name === name; });
       if (!sdef) return;
-      const on = srow.taken === 'YES';
+      const on = /^(YES|true)$/i.test(String(srow.taken));
       if (day.supps[sdef.id] !== on) { day.supps[sdef.id] = on; day.suppTimes[sdef.id] = cleanTimeLocal(srow.timeLocal); changed = true; }
     });
-    window.__foodHistory = r.food || [];
+    window.__foodHistory = dedupeMeals(r.food || []);
+    window.__focusState = window.__focusState || {};
+    // Magnesium's skip night must agree across devices, not just this phone.
+    const yesterday=localDayStr(new Date(Date.now()-86400000));
+    const magRows=(r.supps||[]).filter(x=>localDayStr(new Date(x.timestamp))===yesterday&&/^Magnesium glycinate bedtime/.test(x.supplement||'')).sort((a,b)=>Date.parse(a.timestamp)-Date.parse(b.timestamp));
+    window.__magLastNight=magRows.length ? /^(YES|true)$/i.test(String(magRows.at(-1).taken)) : null;
     if (changed) saveDay(day);
     renderSessions();
     renderSupps();
     renderFoodHistory();
+    renderFoodQuick();
+    renderYesterdayFood();
+    renderFocusCard();
   } catch(e) { console.error('Future Health hydrate error', e); }
 }
 
@@ -2095,16 +2177,703 @@ async function loadReviewLists() {
 function renderFoodHistory() {
   const el = document.getElementById('food-history-list');
   if (!el) return;
-  const rows = (window.__foodHistory || []).slice(-20).reverse();
+  const rows = dedupeMeals(window.__foodHistory || []).slice(-20).reverse();
   el.innerHTML = rows.length
-    ? rows.map(function(f){ return `<div class="tier-item"><div class="tier-item-name">${String(f.food).replace(/</g,'&lt;')}</div><div class="tier-item-note">${String(f.timeLocal||'').replace(/</g,'&lt;')}</div></div>`; }).join('')
+    ? rows.map(function(f){ return `<div class="tier-item"><div class="tier-item-name">${String(f.food).replace(/</g,'&lt;')}</div><div class="tier-item-note">${escapeHtml(cleanTimeLocal(f.timeLocal))}</div></div>`; }).join('')
     : '<div class="tier-item"><div class="tier-item-note">Your logged meals will appear here.</div></div>';
 }
 
+// The focus and food summaries use the same saved rows as the rest of the app.
+// Counts run on the phone; food feedback comes from the brain's saved card.
+function escapeHtml(s) {
+  return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function calendarDay(day,n) {
+  const d=new Date(day+'T12:00:00'); d.setDate(d.getDate()+n); return localDayStr(d);
+}
+function focusReadings() {
+  const rows=((window.__clientLogs||{}).logs||[]).slice();
+  const day=loadDay();
+  for(const sid of SESSION_ORDER)for(const [field,entries] of Object.entries(day[sid]||{})) {
+    for(const e of entries)if(e.value!==undefined)rows.push({field,value:e.value,timestamp:e.iso,readingId:e.readingId,
+      takenAt:e.takenAt,takenAtLocal:e.takenAtLocal,timeLocal:e.when+' · '+sid,session:sid});
+  }
+  return dedupeReadings(rows).filter(r=>!readingOutbox().some(x=>x.payload.action==='delete_entry'&&x.payload.timestamp===r.timestamp));
+}
+function readingDay(r) {
+  const local=r.takenAtLocal||(String(r.timeLocal||'').match(/\[takenAt:[^;]+;local:([^\]]+)\]/)||[])[1];
+  return local?local.slice(0,10):localDayStr(new Date(r.takenAt||r.timestamp));
+}
+function focusModel(rows,state,today) {
+  const week=rows.filter(r=>readingDay(r)>=calendarDay(today,-6)&&readingDay(r)<=today);
+  const perMorning=new Map();
+  week.filter(r=>r.field==='glucose'&&(r.session||sessionFromRow(r))==='morning'&&Number(r.value)>0)
+    .sort((a,b)=>Date.parse(a.takenAt||a.timestamp)-Date.parse(b.takenAt||b.timestamp))
+    .forEach(r=>{if(!perMorning.has(readingDay(r)))perMorning.set(readingDay(r),Number(r.value));});
+  const mornings=[...perMorning.values()],inRange=mornings.filter(v=>v>=4&&v<=7).length;
+  const lastNight=rows.filter(r=>r.field==='glucose'&&readingDay(r)===calendarDay(today,-1)&&(r.session||sessionFromRow(r))==='night')
+    .sort((a,b)=>Date.parse(b.takenAt||b.timestamp)-Date.parse(a.takenAt||a.timestamp))[0];
+  const pressure=week.filter(r=>r.field==='bp'&&r.value&&Number(r.value.sys)>0&&Number(r.value.dia)>0);
+  const avg=a=>a.reduce((n,v)=>n+v,0)/a.length;
+  const running=(state.tests||[]).filter(t=>/^running/i.test(t.status||'')&&(!t.start||t.start<=today)&&(!t.opened||t.opened<=today));
+  // Root-cause tests go first. Show one full ask, with any other active name below it.
+  running.sort((a,b)=>Number(!!b.rootCause)-Number(!!a.rootCause));
+  return {mornings,inRange,lastNight: lastNight?Number(lastNight.value):null,
+    pressure:pressure.length?{n:pressure.length,sys:Math.round(avg(pressure.map(r=>+r.value.sys))),dia:Math.round(avg(pressure.map(r=>+r.value.dia)))}:null,
+    test:running[0]||null,otherTests:running.slice(1)};
+}
+function focusNews(updates,news,today) {
+  const list=(updates||[]).map(u=>({date:u.timestamp||u.date,title:u.title,body:u.body}));
+  const saved=Array.isArray(news)?news:news&&Array.isArray(news.items)?news.items:[];
+  saved.filter(n=>n.told||n.toldAt).forEach(n=>list.push({date:n.toldAt||n.at||n.date,title:n.title||'From your review',body:n.text||n.body||''}));
+  const seen=new Set();
+  return list.filter(n=>{const d=String(n.date||'').slice(0,10),key=n.title+'|'+n.body;
+    if(!d||d>today||d<calendarDay(today,-13)||seen.has(key))return false;seen.add(key);return true;})
+    .sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,6);
+}
+function renderFocusCard() {
+  const el=document.getElementById('focus-card');if(!el)return;
+  const today=localDayStr(),m=focusModel(focusReadings(),window.__focusState||{},today);
+  const mean=m.mornings.length?(m.mornings.reduce((a,b)=>a+b,0)/m.mornings.length).toFixed(1):null;
+  const items=[['Morning sugar, night sugar',m.mornings.length?
+    'Your last '+m.mornings.length+' logged morning'+(m.mornings.length===1?' in the past week was ':'s in the past week average ')+mean+'. '+m.inRange+(m.inRange===1?' was':' were')+' in the healthy 4 to 7 range.' :
+    'There are no morning readings in the past seven days yet. Your next reading will appear here.'],
+    ['Last night',m.lastNight===null?'No sugar reading was saved for last night.':'Your last night reading was '+m.lastNight+' mmol/L. The healthy range is 4 to 7.'],
+    ['Your pressure this week',m.pressure?'Your '+m.pressure.n+' pressure reading'+(m.pressure.n===1?' was ':'s average ')+m.pressure.sys+'/'+m.pressure.dia+'. Healthy pressure is under 130/80.':'No pressure readings are saved for the past seven days yet.'],
+    ['The test running',m.test?(m.test.ask||m.test.exposure||m.test.id)+(m.test.readout?' We will look at the result on '+m.test.readout+'.':''):'There is no test running today. Keep your usual routine and your daily log.']];
+  const food=((window.__focusCard||{}).items||[]).find(i=>i.head==="Yesterday's food");
+  if(food&&typeof food.body==='string')items.push([food.head,food.body]);
+  let html='<div class="focus-eyebrow">This week\'s focus · '+escapeHtml(today)+'</div><div class="focus-goal">Your week, from your own readings.</div>';
+  items.forEach(([head,body],i)=>{html+='<div class="focus-item"><span class="focus-num">'+(i+1)+'</span><div><b>'+escapeHtml(head)+'</b><p>'+escapeHtml(body)+'</p>'+
+    (i===0?'<p>Morning shows how your body handled the night. Night shows how it handled the day\'s food.</p>':'')+'</div></div>';});
+  if(m.otherTests.length)html+='<p>Also being followed: '+m.otherTests.map(t=>escapeHtml(t.exposure||t.id)).join('; ')+'.</p>';
+  const news=focusNews(window.__focusUpdates,window.__focusNews,today);
+  html+='<h3>What\'s new</h3><p>News from your reviews lives here, with the day it was shared.</p>';
+  html+=news.length?news.map(n=>'<div class="focus-item"><div><small>'+escapeHtml(String(n.date).slice(0,10))+'</small><p><b>'+escapeHtml(n.title)+'</b></p><p>'+escapeHtml(n.body)+'</p></div></div>').join(''):'<p>No new review news in the past two weeks.</p>';
+  el.innerHTML=html;
+}
+
+function mealName(food) {
+  return String(food||'').replace(/Â·/g,'·').replace(/^(Breakfast|Lunch|Supper|Snack):\s*/i,'').replace(/\s*·\s*ate\s+.*$/i,'').trim();
+}
+function mealKindAt(hour) { return hour<11?'Breakfast':hour<15?'Lunch':hour<21?'Supper':'Snack'; }
+function selectedMeal() {
+  const el=document.getElementById('meal-kind');return el&&el.value||mealKindAt(new Date().getHours());
+}
+function usualMeals(rows) {
+  const counts=new Map();
+  for(const r of rows){const name=mealName(r.food||r.text),key=name.toLowerCase();
+    if(!name||/^meal$/i.test(name)||foodTier(name)==='red')continue;
+    const prior=counts.get(key)||{name,count:0};prior.count++;counts.set(key,prior);}
+  return [...counts.values()].sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name)).slice(0,8);
+}
+function allFoodRows() {
+  const rows=dedupeMeals(window.__foodHistory||[]).slice(),d=loadDay();
+  for(const f of d.foodLog||[])if(!rows.some(r=>f.mealId?eventIdOf(r,'mealId')===f.mealId:r.timestamp===f.iso||r.food===f.text&&r.timeLocal===f.time))rows.push({food:f.text,timeLocal:f.time,timestamp:f.iso,mealId:f.mealId});
+  return dedupeMeals(rows);
+}
+function renderFoodQuick() {
+  const kind=document.getElementById('meal-kind');
+  if(kind&&!kind.dataset.manual)kind.value=mealKindAt(new Date().getHours());
+  const el=document.getElementById('usual-meals');if(!el)return;
+  const meals=usualMeals(allFoodRows());
+  el.innerHTML=meals.length?meals.map(m=>'<button type="button" class="same-btn" data-food="'+escapeHtml(m.name)+'" onclick="quickFood(this.dataset.food)">'+escapeHtml(m.name)+'</button>').join(''):'<p>Your familiar meals will appear here as you log them.</p>';
+}
+function yesterdayNightSugar(date) {
+  const local=JSON.parse(localStorage.getItem('fh_'+date)||'{}');
+  const rows=((window.__clientLogs||{}).logs||[]).filter(r=>r.field==='glucose'&&(r.session||sessionFromRow(r))==='night'&&readingDay(r)===date);
+  const readings=rows.map(r=>({value:r.value,iso:r.takenAt||r.timestamp})).concat(((local.night||{}).glucose||[]));
+  const last=readings.sort((a,b)=>Date.parse(a.iso)-Date.parse(b.iso)).at(-1),n=last&&Number(last.value);
+  return '<p>'+((!last||!Number.isFinite(n))?'Night sugar: no reading saved.':'Night sugar: '+n.toFixed(1)+'; range 4 to 7. '+(n>=4&&n<=7?'In range.':'Outside range.'))+'</p>';
+}
+function renderYesterdayFood() {
+  const yesterday=calendarDay(localDayStr(),-1),rows=allFoodRows().filter(f=>f.timestamp&&localDayStr(new Date(f.timestamp))===yesterday);
+  const slots=new Map();
+  for(const r of rows){
+    const match=String(r.food||'').match(/^(Breakfast|Lunch|Supper|Dinner|Snack):/i);
+    const slot=match?(/dinner/i.test(match[1])?'Supper':match[1][0].toUpperCase()+match[1].slice(1).toLowerCase()):mealKindAt(new Date(r.timestamp).getHours());
+    const foods=slots.get(slot)||new Map(),name=mealName(r.food).replace(/^Dinner:\s*/i,'');
+    for(const food of name.split(/[,;\n]+/).map(f=>f.trim()).filter(Boolean))foods.set(food.toLowerCase(),food);
+    slots.set(slot,foods);
+  }
+  const html='<h3>Yesterday\'s food</h3><p>Your meals from yesterday, checked against your food guide.</p>'+
+    (rows.length?['Breakfast','Lunch','Supper','Snack'].filter(s=>slots.get(s)?.size).map(s=>{
+      const foods=[...slots.get(s).values()],names=foods.slice(0,3).join(', ')+(foods.length>3?' and '+(foods.length-3)+' more':'');
+      const hits=foodMatches(foods.join(', ')),hit=['red','yellow','green'].map(tier=>hits.find(h=>h.tier===tier)).find(Boolean);
+      const feedback=hit?(hit.tier==='green'?'Good: ':'Watch: ')+hit.why[0].toLowerCase()+hit.why.slice(1):'Add the foods next time so your food guide can check this meal.';
+      return '<div class="tier-item"><div class="meal-foods">'+escapeHtml(s+': '+names)+'</div><p class="meal-feedback">'+escapeHtml(feedback)+'</p></div>';
+    }).join(''):'<p>No meals were saved yesterday.</p>')+
+    yesterdayNightSugar(yesterday);
+  for(const id of ['yesterday-food','yesterday-food-home']){const el=document.getElementById(id);if(el){el.innerHTML=html;el.hidden=new Date().getHours()>=12;}}
+}
+async function quickFood(text) {
+  if(foodTier(text)==='red')return;
+  document.getElementById('food-input').value=text;
+  await saveFood();
+}
+
 /* ── FOOD ── */
-const FOOD_GREEN = ['Beef','Lamb','Pork','Ham','Chicken skin-on','Turkey','Bacon','Organ meats','Eggs any style','Salmon','Mackerel','Sardines','Herring','White fish','Shellfish','Butter','Ghee','Tallow','Duck fat','Olive oil','Avocado oil','Coconut oil','MCT oil','Heavy cream','Parmesan','Aged cheddar','Gruyere','Gouda','Manchego','Spinach','Zucchini','Green beans','Carrots','Squash','Peppers','Asparagus','Avocado','Macadamia','Pecans','Walnuts','Raspberries','Strawberries','Blueberries','Fresh orange','Water with Redmond salt','Coffee with heavy cream','Green tea','Black tea','Redmond salt','Herbs and spices','Old Dutch bacon puffs (lard)','Plain vinegars','Mustard','Olive oil and vinegar dressing','Ginger tea','Stevia (pure leaf, a small amount to sweeten)'];
-const FOOD_YELLOW = ['Sauerkraut (cleared Sept 8)','Mozzarella','Burrata','Ricotta','Cottage cheese','Cream cheese','Fluid milk','Raw vegetables and salads','Onion and garlic in quantity','Large cruciferous loads','Almonds','Hazelnuts','Cashews','Pistachios','Chia','Ground flax','Sourdough','White rice small portions','Potato cooked then cooled','One beer occasionally','Dry wine','Spirits','Havarti','Pork puffs (check bag for seed oils)','Beets small portions','Beet chips (check bag for seed oils)'];
-const FOOD_RED = ['Canola oil','Soybean oil','Corn oil','Sunflower oil','Safflower oil','Grapeseed oil','Apple','Pear','Mango','Grapes','Watermelon','Cherries','Dried fruit','Peanuts','Peanut butter','Legumes','Bean soup any source','Added sugar','Refined flour with no ferment','Diet pop','Artificial sweeteners','Sugar alcohols','Honey','Concentrated balsamic glaze','Splenda and sucralose','Corn on the cob','Corn and cornmeal','Restaurant and delivery pizza (here, not in Italy)','Beer on a night out (one occasionally is still fine, several is not)'];
+// BEGIN FOOD GUIDE: shared by the app and offline brain.
+const FOOD_RULES = {
+  "green": [
+    {
+      "food": "Beef",
+      "why": "Protein for muscle, no sugar."
+    },
+    {
+      "food": "Lamb",
+      "why": "Protein for muscle, no sugar."
+    },
+    {
+      "food": "Pork",
+      "why": "Protein for muscle, no sugar."
+    },
+    {
+      "food": "Chicken skin-on",
+      "why": "Protein and fat, no sugar; the skin keeps calories up."
+    },
+    {
+      "food": "Turkey",
+      "why": "Lean protein, no sugar."
+    },
+    {
+      "food": "Organ meats",
+      "why": "Iron, B12 and vitamin A in a small portion; once or twice a week."
+    },
+    {
+      "food": "Eggs any style",
+      "why": "Protein and fat, no sugar; easy on a slow stomach."
+    },
+    {
+      "food": "Salmon",
+      "why": "Omega-3 fat and protein, no sugar."
+    },
+    {
+      "food": "Mackerel",
+      "why": "Omega-3 fat and protein, no sugar."
+    },
+    {
+      "food": "Sardines",
+      "why": "Omega-3, protein and calcium from the soft bones."
+    },
+    {
+      "food": "Herring",
+      "why": "Omega-3 fat and protein, no sugar."
+    },
+    {
+      "food": "White fish",
+      "why": "Lean protein, soft and easy to digest."
+    },
+    {
+      "food": "Shellfish",
+      "why": "Protein and zinc, no sugar."
+    },
+    {
+      "food": "Butter",
+      "why": "Fat with no sugar; keeps her calories up."
+    },
+    {
+      "food": "Ghee",
+      "why": "Fat with no sugar, good for cooking."
+    },
+    {
+      "food": "Tallow",
+      "why": "Stable cooking fat, no sugar."
+    },
+    {
+      "food": "Duck fat",
+      "why": "Stable cooking fat, no sugar."
+    },
+    {
+      "food": "Olive oil",
+      "why": "The best studied fat for the heart; no sugar."
+    },
+    {
+      "food": "Avocado oil",
+      "why": "Stable cooking oil, no sugar."
+    },
+    {
+      "food": "Coconut oil",
+      "why": "Cooking fat, no sugar."
+    },
+    {
+      "food": "Heavy cream",
+      "why": "No sugar to speak of; tested on her gut 1 Sep and cleared."
+    },
+    {
+      "food": "Parmesan",
+      "why": "Protein and calcium, almost no milk sugar."
+    },
+    {
+      "food": "Aged cheddar",
+      "why": "Protein and calcium, almost no milk sugar."
+    },
+    {
+      "food": "Gruyere",
+      "why": "Protein and calcium, almost no milk sugar."
+    },
+    {
+      "food": "Gouda",
+      "why": "Protein and calcium, almost no milk sugar."
+    },
+    {
+      "food": "Manchego",
+      "why": "Protein and calcium, almost no milk sugar."
+    },
+    {
+      "food": "Havarti",
+      "why": "Low milk sugar; moved up from yellow, soft dairy cleared 29 Aug."
+    },
+    {
+      "food": "Mozzarella",
+      "why": "Protein, little sugar; soft dairy cleared by her washout 29 Aug."
+    },
+    {
+      "food": "Burrata",
+      "why": "Protein and fat, little sugar; soft dairy cleared 29 Aug."
+    },
+    {
+      "food": "Ricotta",
+      "why": "Protein for muscle, little sugar; soft dairy cleared 29 Aug."
+    },
+    {
+      "food": "Cottage cheese",
+      "why": "High protein for muscle with creatine; soft dairy cleared 29 Aug."
+    },
+    {
+      "food": "Cream cheese",
+      "why": "Fat with little sugar; soft dairy cleared 29 Aug."
+    },
+    {
+      "food": "Spinach",
+      "why": "Cooked soft, almost no sugar; magnesium and folate."
+    },
+    {
+      "food": "Zucchini",
+      "why": "Cooked soft, almost no sugar."
+    },
+    {
+      "food": "Green beans",
+      "why": "Cooked soft, low sugar."
+    },
+    {
+      "food": "Carrots",
+      "why": "Cooked, a side portion; low sugar load."
+    },
+    {
+      "food": "Squash",
+      "why": "Cooked soft, a side portion; gentle on a slow stomach."
+    },
+    {
+      "food": "Peppers",
+      "why": "Low sugar, vitamin C."
+    },
+    {
+      "food": "Asparagus",
+      "why": "Cooked soft, almost no sugar."
+    },
+    {
+      "food": "Tomato",
+      "why": "Low sugar, soft; she eats it often."
+    },
+    {
+      "food": "Cucumber",
+      "why": "Almost no sugar, mostly water."
+    },
+    {
+      "food": "Avocado",
+      "why": "Fat and potassium, almost no sugar."
+    },
+    {
+      "food": "Macadamia",
+      "why": "Fat with almost no sugar; a small handful, chewed well."
+    },
+    {
+      "food": "Pecans",
+      "why": "Fat with almost no sugar; a small handful, chewed well."
+    },
+    {
+      "food": "Walnuts",
+      "why": "Omega-3 fat, low sugar; a small handful, chewed well."
+    },
+    {
+      "food": "Almonds",
+      "why": "Low sugar, magnesium; moved up from yellow; a small handful, chewed well."
+    },
+    {
+      "food": "Hazelnuts",
+      "why": "Low sugar; moved up from yellow; a small handful, chewed well."
+    },
+    {
+      "food": "Pistachios",
+      "why": "Low sugar, protein; moved up from yellow; a small handful."
+    },
+    {
+      "food": "Raspberries",
+      "why": "The lowest sugar fruit; a small bowl."
+    },
+    {
+      "food": "Strawberries",
+      "why": "Low sugar fruit; a small bowl, with cream is perfect."
+    },
+    {
+      "food": "Blueberries",
+      "why": "Low sugar fruit; a small bowl."
+    },
+    {
+      "food": "Sauerkraut",
+      "why": "Cleared 8 Sep: her morning number went down on it, not up."
+    },
+    {
+      "food": "Coffee with heavy cream",
+      "why": "Fine, but after the morning finger poke, not before."
+    },
+    {
+      "food": "Green tea",
+      "why": "No sugar."
+    },
+    {
+      "food": "Black tea",
+      "why": "No sugar."
+    },
+    {
+      "food": "Ginger tea",
+      "why": "No sugar; ginger helps a slow stomach empty."
+    },
+    {
+      "food": "Herbs and spices",
+      "why": "Flavour with no sugar or salt."
+    },
+    {
+      "food": "Plain vinegars",
+      "why": "Vinegar with a meal blunts the sugar rise after it."
+    },
+    {
+      "food": "Mustard",
+      "why": "Flavour with no sugar."
+    },
+    {
+      "food": "Olive oil and vinegar dressing",
+      "why": "Good fat plus vinegar, which blunts the sugar rise."
+    },
+    {
+      "food": "Stevia (pure leaf, a small amount)",
+      "why": "Sweet with no sugar rise."
+    },
+    {
+      "food": "Protein shake, no added sugar",
+      "why": "Easy protein for muscle; a good place to stir in creatine."
+    }
+  ],
+  "yellow": [
+    {
+      "food": "Bacon",
+      "why": "Fine a few times a week; very salty, and her pressure is high."
+    },
+    {
+      "food": "Ham",
+      "why": "Fine a few times a week; very salty, and her pressure is high."
+    },
+    {
+      "food": "Cured meats (mortadella, salami, prosciutto, cold cuts)",
+      "why": "Salty; a few slices, not a plateful, while her pressure is over 130."
+    },
+    {
+      "food": "Old Dutch bacon puffs (lard)",
+      "why": "No sugar, but salty; a small bowl."
+    },
+    {
+      "food": "Pork puffs (check bag for seed oils)",
+      "why": "No sugar, but salty; check the oil on the bag."
+    },
+    {
+      "food": "Redmond salt",
+      "why": "Salt food lightly; her top number is over 130 most days."
+    },
+    {
+      "food": "Water with Redmond salt",
+      "why": "Only on a low day (top under 115), a hot day, or if she feels light-headed."
+    },
+    {
+      "food": "MCT oil",
+      "why": "One teaspoon at most; more loosens stools."
+    },
+    {
+      "food": "Fresh orange",
+      "why": "Fruit sugar; one small orange, with a meal."
+    },
+    {
+      "food": "Half a banana",
+      "why": "Ripe banana is sugary; half, with cream or nuts."
+    },
+    {
+      "food": "Fluid milk",
+      "why": "About 12 g of milk sugar per cup; a splash or half a cup."
+    },
+    {
+      "food": "Raw vegetables and salads",
+      "why": "Raw fibre sits long in a slow stomach; a side, not a big bowl."
+    },
+    {
+      "food": "Onion and garlic in quantity",
+      "why": "Gas in a slow gut; flavour amounts are fine."
+    },
+    {
+      "food": "Large cruciferous loads",
+      "why": "Broccoli and cabbage in big amounts cause gas and fullness; a side portion."
+    },
+    {
+      "food": "Cashews",
+      "why": "More starch than other nuts; about 10."
+    },
+    {
+      "food": "Peanuts",
+      "why": "Low sugar, good fat and protein; moved from red; a small handful."
+    },
+    {
+      "food": "Natural peanut butter (peanuts and salt only)",
+      "why": "Low sugar, helps her eat enough; moved from red; no added oils or sugar."
+    },
+    {
+      "food": "Chia",
+      "why": "Forms a gel that slows the stomach further; a teaspoon only."
+    },
+    {
+      "food": "Ground flax",
+      "why": "Fibre that slows the stomach; a teaspoon only."
+    },
+    {
+      "food": "Sourdough",
+      "why": "Raises sugar less than plain bread; one slice, with protein."
+    },
+    {
+      "food": "Rye, flax or multigrain bread",
+      "why": "Still starch; one slice, with eggs, cheese or meat on it."
+    },
+    {
+      "food": "Oats",
+      "why": "Starch; a small bowl, made with cream or eggs on the side."
+    },
+    {
+      "food": "White rice small portions",
+      "why": "Fast starch; a few spoonfuls next to protein."
+    },
+    {
+      "food": "Potato cooked then cooled",
+      "why": "Cooling makes some starch resist digestion; a small portion."
+    },
+    {
+      "food": "Mashed or baked potato",
+      "why": "Fast starch; three of her nights over 10 came after it; a few spoonfuls with butter."
+    },
+    {
+      "food": "Pasta, small side portion",
+      "why": "Starch; a small side with meat or fish, never the whole plate."
+    },
+    {
+      "food": "Beets small portions",
+      "why": "Sweet root; a few slices."
+    },
+    {
+      "food": "Beet chips (check bag for seed oils)",
+      "why": "Sweet and often fried in seed oils; check the bag."
+    },
+    {
+      "food": "Dark chocolate 85% or more",
+      "why": "Little sugar; one or two squares."
+    },
+    {
+      "food": "One beer occasionally",
+      "why": "Starch and alcohol; one, with food, not every night."
+    },
+    {
+      "food": "Dry wine",
+      "why": "One glass with food; more raises her pressure."
+    },
+    {
+      "food": "Spirits",
+      "why": "One, with water or soda, never a sweet mixer."
+    }
+  ],
+  "red": [
+    {
+      "food": "Canola oil",
+      "why": "Industrial seed oil; we cook with butter, olive and avocado oil instead."
+    },
+    {
+      "food": "Soybean oil",
+      "why": "Industrial seed oil, mostly in fried and packaged food."
+    },
+    {
+      "food": "Corn oil",
+      "why": "Industrial seed oil, mostly in fried and packaged food."
+    },
+    {
+      "food": "Sunflower oil",
+      "why": "Industrial seed oil, mostly in chips and packaged food."
+    },
+    {
+      "food": "Safflower oil",
+      "why": "Industrial seed oil, mostly in packaged food."
+    },
+    {
+      "food": "Grapeseed oil",
+      "why": "Industrial seed oil; use olive or avocado oil."
+    },
+    {
+      "food": "Sweet baked goods (muffins, croissants, banana loaf, cookies, ginger snaps, biscotti, cake, cheesecake, pastries, Tim Bits)",
+      "why": "Sugar plus white flour; her log is full of these and they come before her high nights."
+    },
+    {
+      "food": "Added sugar",
+      "why": "Goes straight into her blood sugar."
+    },
+    {
+      "food": "Refined flour with no ferment",
+      "why": "White flour turns to sugar fast."
+    },
+    {
+      "food": "Rice crackers and rice cakes",
+      "why": "Puffed rice raises sugar about as fast as table sugar; swap for pork rinds or cheese."
+    },
+    {
+      "food": "Perogies",
+      "why": "White flour wrapped around potato; one of her highest nights (13.8, 27 Sep)."
+    },
+    {
+      "food": "Ice cream",
+      "why": "Sugar plus cream; a half bowl is about 20 g of sugar."
+    },
+    {
+      "food": "Jam and jelly",
+      "why": "Almost pure sugar; mashed berries with cream instead."
+    },
+    {
+      "food": "Honey",
+      "why": "Sugar."
+    },
+    {
+      "food": "Concentrated balsamic glaze",
+      "why": "Boiled-down sugar; plain vinegar is fine."
+    },
+    {
+      "food": "Sweet drinks (chai latte, cider, sweet iced tea, juice, liqueurs like Amaretto)",
+      "why": "Liquid sugar hits the blood fastest of all."
+    },
+    {
+      "food": "Apple",
+      "why": "About 19 g of sugar each, mostly fructose and sorbitol, which ferment in a slow gut."
+    },
+    {
+      "food": "Pear",
+      "why": "High fructose and sorbitol; sugar plus gut gas."
+    },
+    {
+      "food": "Mango",
+      "why": "Very sugary fruit."
+    },
+    {
+      "food": "Grapes",
+      "why": "Very sugary fruit, easy to eat a lot of."
+    },
+    {
+      "food": "Watermelon",
+      "why": "Raises sugar fast, high in fructose."
+    },
+    {
+      "food": "Cherries",
+      "why": "Sugary, high in sorbitol."
+    },
+    {
+      "food": "Dried fruit",
+      "why": "Sugar packed tight; a small handful is a lot of sugar."
+    },
+    {
+      "food": "Legumes",
+      "why": "Mostly starch, and gas and bulk in a slow stomach."
+    },
+    {
+      "food": "Bean soup any source",
+      "why": "Starch and gas in a slow stomach."
+    },
+    {
+      "food": "Corn on the cob",
+      "why": "Starch; her 12.3 on 3 Aug came with corn."
+    },
+    {
+      "food": "Corn and cornmeal",
+      "why": "Fast starch."
+    },
+    {
+      "food": "Restaurant and delivery pizza (here, not in Italy)",
+      "why": "White flour plus fat keeps her sugar high late into the night."
+    },
+    {
+      "food": "Several drinks in one evening (beer, wine, cider)",
+      "why": "Raises pressure the next day; after 3 wine nights her top hit 178 on 23 Oct."
+    },
+    {
+      "food": "Diet pop",
+      "why": "Sweeteners keep the sweet craving going and upset some guts."
+    },
+    {
+      "food": "Artificial sweeteners",
+      "why": "Can worsen the sugar response in some people; stevia is the one allowed."
+    },
+    {
+      "food": "Splenda and sucralose",
+      "why": "Same as artificial sweeteners; stevia instead."
+    },
+    {
+      "food": "Sugar alcohols",
+      "why": "Sorbitol, xylitol and similar cause gas and loose stools."
+    }
+  ]
+};
+const FOOD_GREEN=FOOD_RULES.green.map(x=>x.food), FOOD_YELLOW=FOOD_RULES.yellow.map(x=>x.food), FOOD_RED=FOOD_RULES.red.map(x=>x.food);
+const FOOD_TERMS = {
+  'Beef':['beef','steak'],
+  'Chicken skin-on':['chicken'], 'Eggs any style':['egg','eggs'], 'White fish':['cod','halibut','white fish'],
+  'Organ meats':['liver','organ meat'], 'Aged cheddar':['cheddar'], 'Coffee with heavy cream':['coffee'],
+  'Protein shake, no added sugar':['protein shake','protein drink','diesel'],
+  'Sweet baked goods (muffins, croissants, banana loaf, cookies, ginger snaps, biscotti, cake, cheesecake, pastries, Tim Bits)':['muffin','croissant','banana loaf','cookie','ginger snap','biscotti','cake','cheesecake','pastry','pastries','tim bit','timbit','lemon meringue'],
+  'Sweet drinks (chai latte, cider, sweet iced tea, juice, liqueurs like Amaretto)':['chai latte','cider','sweet iced tea','juice','liqueur','amaretto'],
+  'Rice crackers and rice cakes':['rice cracker','rice cake'], 'Jam and jelly':['jam','jelly'],
+  'Several drinks in one evening (beer, wine, cider)':['several drinks','several beers','several wines','two beers','2 beers','three beers','3 beers','two glasses of wine','2 glasses of wine','three glasses of wine','3 glasses of wine'],
+  'Cured meats (mortadella, salami, prosciutto, cold cuts)':['mortadella','salami','prosciutto','cold cut'],
+  'Old Dutch bacon puffs (lard)':['bacon puff'], 'Pork puffs (check bag for seed oils)':['pork puff','pork rind'],
+  'Water with Redmond salt':['salt water','water with redmond salt'], 'Fresh orange':['orange'], 'Half a banana':['banana'],
+  'Natural peanut butter (peanuts and salt only)':['peanut butter'], 'Peanuts':['peanut'],
+  'Raw vegetables and salads':['salad','raw vegetables'], 'Onion and garlic in quantity':['onion','garlic'],
+  'Large cruciferous loads':['broccoli','cabbage','cruciferous'], 'Rye, flax or multigrain bread':['rye bread','flax bread','multigrain bread'],
+  'White rice small portions':['rice'], 'Potato cooked then cooled':['cooled potato'], 'Mashed or baked potato':['mashed potato','baked potato','potato','potatoes'],
+  'Pasta, small side portion':['pasta'], 'Beets small portions':['beet'], 'Beet chips (check bag for seed oils)':['beet chip'],
+  'Dark chocolate 85% or more':['dark chocolate'], 'One beer occasionally':['beer'], 'Dry wine':['wine'],
+  'Stevia (pure leaf, a small amount)':['stevia'], 'Diet pop':['diet soda'], 'Splenda and sucralose':['splenda','sucralose'],
+  'Refined flour with no ferment':['white flour','refined flour'], 'Restaurant and delivery pizza (here, not in Italy)':['pizza'],
+  'Bean soup any source':['bean soup'], 'Corn on the cob':['corn on the cob'], 'Corn and cornmeal':['corn','cornmeal'],
+  'Mango':['mango','mangoes'], 'Legumes':['legume','lentil','beans'], 'Added sugar':['sugar']
+};
+function foodMatches(text) {
+  const q=String(text||'').toLowerCase().normalize('NFKD').replace(/\b(?:no|without|free of)\s+(?:added\s+)?sugar\b/g,'').replace(/\bpeanut[- ]free\b/g,'');
+  const matches=[];
+  for(const tier of ['red','yellow','green'])for(const item of FOOD_RULES[tier]){
+    const terms=FOOD_TERMS[item.food]||[item.food.replace(/\([^)]*\)/g,'').trim()];
+    if(terms.some(term=>new RegExp('(^|[^a-z])'+term.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'s?(?=$|[^a-z])','i').test(q)))matches.push({...item,tier});
+  }
+  // Green beans are a vegetable, not the legumes entry.
+  return matches.filter(x=>!(x.food==='Legumes'&&/green beans/.test(q)&&!/(?:lentils|legumes|kidney beans|black beans)/.test(q)));
+}
+function foodTier(text){ return (foodMatches(text)[0]||{}).tier||'unknown'; }
+function foodWhy(name){return Object.values(FOOD_RULES).flat().find(x=>x.food===name)?.why||'';}
+function foodFeedback(text) {
+  const hits=foodMatches(text),tier=hits[0]?.tier;
+  if(!tier)return 'This meal is not clear enough to match your food guide yet. Add the foods next time so it can be checked.';
+  const why=hits.filter(x=>x.tier===tier).map(x=>x.why).join(' ');
+  return (tier==='green'?'Keep enjoying your full meals. ':'')+why+(tier==='red'?' Swap for eggs, cheese, meat or green vegetables and keep a full meal.':'');
+}
+
+// END FOOD GUIDE
 
 function renderFoodLists() {
   const chip = f => `<span class="food-chip">${f}</span>`;
@@ -2123,10 +2892,12 @@ function searchFood(q) {
   const hits = [];
   FOOD_GREEN.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'green', label:'Enjoy freely', color:'var(--green)'}); });
   FOOD_YELLOW.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'yellow', label:'Caution, small amounts', color:'var(--amber)'}); });
-  FOOD_RED.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'red', label:'Avoid', color:'var(--red)'}); });
+  // Red foods are explained by the guide, never offered as a meal suggestion.
   out.innerHTML = hits.length
-    ? hits.slice(0,8).map(h=>`<div class="search-result"><div class="tier-dot" style="background:${h.color};width:20px;height:20px;flex-shrink:0;border-radius:50%;"></div><div>${h.f}<div style="font-size:0.9rem;color:${h.color};font-weight:700;">${h.label}</div></div></div>`).join('')
-    : `<div class="search-result" id="food-noresult"><div>Not on your lists yet. Tap Send to Christopher below and he will review it.</div></div>`;
+    ? hits.slice(0,8).map(h=>`<button type="button" class="search-result" data-food="${escapeHtml(h.f)}" onclick="quickFood(this.dataset.food)"><div class="tier-dot" style="background:${h.color};width:20px;height:20px;flex-shrink:0;border-radius:50%;"></div><div>${h.f}<p>${escapeHtml(foodWhy(h.f))}</p><div style="font-size:0.9rem;color:${h.color};font-weight:700;">${h.label}</div></div></button>`).join('')
+    : (foodTier(rawQ)==='red'
+      ? `<div class="search-result" id="food-noresult"><div>${escapeHtml(foodFeedback(rawQ))}</div></div>`
+      : `<div class="search-result" id="food-noresult"><div>Not on your lists yet. Tap Send to Christopher below and he will review it.</div></div>`);
   // matched searches log quietly for the weekly review; unmatched ones use the send button
   clearTimeout(foodSearchLogTimer);
   if (hits.length) foodSearchLogTimer = setTimeout(() => { logFoodSearchQuery(rawQ, true); }, 2500);
@@ -2178,9 +2949,8 @@ function renderFoodToday() {
     <div class="food-logged">
       <div class="food-logged-body">
         <div class="food-logged-text">${f.text.replace(/</g,'&lt;')}</div>
-        <div class="food-logged-time">Sent to Christopher ✓ · ${f.time}</div>
+        <div class="food-logged-time">${readingOutbox().some(x=>x.id===f.mealId)?'Saving... We will retry.':'Sent to Christopher ✓'} · ${f.time}</div>
       </div>
-      <button class="food-logged-edit" onclick="editFood(${i})">Edit</button>
     </div>`).join('');
 }
 
@@ -2196,47 +2966,43 @@ function mealWhenSuffix() {
 function clearMealWhen() { const el = document.getElementById('meal-when'); if (el) el.value = ''; }
 
 // duplicate guard: the same food text arriving within 2 minutes is a double tap, not a meal
-let lastFoodSent = { text: '', at: 0 };
+let lastFoodSent = { text: '', at: 0, day: '', clientId: '' };
 function foodIsDuplicate(txt) {
-  const now = Date.now();
-  if (txt === lastFoodSent.text && now - lastFoodSent.at < 2 * 60 * 1000) return true;
-  lastFoodSent = { text: txt, at: now };
+  const now = Date.now(),day=localDayStr();
+  if((loadDay().foodLog||[]).some(f=>f.text===txt&&now-Date.parse(f.iso)>=0&&now-Date.parse(f.iso)<2*60*1000))return true;
+  if (txt === lastFoodSent.text && day===lastFoodSent.day && currentClientId===lastFoodSent.clientId && now - lastFoodSent.at < 2 * 60 * 1000) return true;
+  lastFoodSent = { text: txt, at: now, day, clientId: currentClientId };
   return false;
 }
 
-async function mealTap() {
-  const t = stamp();
-  const txt = ('Meal' + mealWhenSuffix()).trim();
-  const hint = document.getElementById('food-hint');
-  if (foodIsDuplicate(txt)) { hint.textContent = 'Already saved ✓'; setTimeout(()=>{ hint.textContent = 'Your entries stay below so you can see everything you logged today.'; }, 3000); return; }
-  const day = loadDay();
-  day.foodLog = day.foodLog || [];
-  day.foodLog.push({ text: txt, time: t.local });
-  saveDay(day);
-  clearMealWhen();
-  hint.textContent = 'Saved 🌿 Christopher has the time: ' + t.local;
-  renderFoodToday();
-  sheetCall({ action:'log_food', clientId: currentClientId, food: txt, timestamp: t.iso, timeLocal: t.local });
-  setTimeout(()=>{ hint.textContent = 'Your entries stay below so you can see everything you logged today.'; }, 4000);
+async function logMeal(text) {
+  const hint=document.getElementById('food-hint');
+  if(foodIsDuplicate(text)){
+    const meal=(loadDay().foodLog||[]).find(f=>f.text===text&&Date.now()-Date.parse(f.iso)>=0&&Date.now()-Date.parse(f.iso)<2*60*1000);
+    const pending=meal&&readingOutbox().find(x=>x.payload.action==='log_food'&&x.payload.clientId===currentClientId&&x.payload.mealId===meal.mealId);
+    if(pending){await flushReadingOutbox();mealSaveStatus(pending.id);return !readingOutbox().some(x=>x.id===pending.id);}
+    hint.textContent='Already saved ✓';return true;
+  }
+  const p=queueSavedEvent({action:'log_food',clientId:currentClientId,food:text},'mealId');
+  const day=loadDay();day.foodLog=day.foodLog||[];
+  day.foodLog.push({text,time:cleanTimeLocal(p.timeLocal),iso:p.timestamp,mealId:p.mealId});saveDay(day);
+  window.__foodHistory=window.__foodHistory||[];
+  window.__foodHistory.push(p);
+  await flushReadingOutbox();mealSaveStatus(p.mealId);
+  const confirmed=!readingOutbox().some(x=>x.id===p.mealId);
+  if(confirmed)clearMealWhen();
+  renderFoodToday();renderFoodHistory();renderFoodQuick();renderYesterdayFood();
+  return confirmed;
 }
-
-async function saveFood() {
-  const raw = document.getElementById('food-input').value.trim();
-  if (!raw) return;
-  const txt = raw + mealWhenSuffix();
-  const hint = document.getElementById('food-hint');
-  if (foodIsDuplicate(txt)) { hint.textContent = 'Already saved ✓'; setTimeout(()=>{ hint.textContent = 'Your entries stay below so you can see everything you logged today.'; }, 3000); return; }
-  const t = stamp();
-  const day = loadDay();
-  day.foodLog = day.foodLog || [];
-  day.foodLog.push({ text: txt, time: t.local });
-  saveDay(day);
-  document.getElementById('food-input').value = '';
-  clearMealWhen();
-  hint.textContent = 'Sent to Christopher 🌿 ' + t.local;
+function mealSaveStatus(id) {
+  const pending=readingOutbox().some(x=>x.id===id),hint=document.getElementById('food-hint');
+  if(hint)hint.textContent=pending?'Your meal did not save yet. Saving... We will retry. Your words are still here.':'Saved ✓';
   renderFoodToday();
-  sheetCall({ action:'log_food', clientId: currentClientId, food: txt, timestamp: t.iso, timeLocal: t.local });
-  setTimeout(()=>{ hint.textContent = 'Your entries stay below so you can see everything you logged today.'; }, 4000);
+}
+async function mealTap() { await logMeal(selectedMeal()+': Meal'+mealWhenSuffix()); }
+async function saveFood() {
+  const input=document.getElementById('food-input'),raw=input.value.trim();if(!raw)return;
+  if(await logMeal(selectedMeal()+': '+raw+mealWhenSuffix()))input.value='';
 }
 
 function editFood(i) {
@@ -2266,17 +3032,520 @@ function foodPhoto(input) {
 }
 
 /* ── VERSES ── */
+// NASB 1995 excerpts. Permission terms: https://www.lockman.org/permission-to-quote-copyright-trademark-information/
 const verses = [
-  { ref:"Jeremiah 29:11 — NASB", text:"For I know the plans that I have for you, declares the Lord, plans for prosperity and not for disaster, to give you a future and a hope." },
-  { ref:"Isaiah 40:31 — NASB",   text:"Yet those who wait for the Lord will gain new strength; they will mount up with wings like eagles, they will run and not get tired, they will walk and not become weary." },
-  { ref:"Philippians 4:13 — NASB",text:"I can do all things through Him who strengthens me." },
-  { ref:"Psalm 46:10 — NASB",    text:"Stop striving and know that I am God; I will be exalted among the nations, I will be exalted in the earth." },
-  { ref:"Matthew 6:33 — NASB",   text:"But seek first His kingdom and His righteousness, and all these things will be provided to you." },
-  { ref:"Romans 8:28 — NASB",    text:"And we know that God causes all things to work together for good to those who love God, to those who are called according to His purpose." },
-  { ref:"Psalm 103:2–3 — NASB",  text:"Bless the Lord, O my soul, and forget none of His benefits; who pardons all your guilt, who heals all your diseases." },
-  { ref:"3 John 1:2 — NASB",     text:"Beloved, I pray that in all respects you may prosper and be in good health, just as your soul prospers." },
-  { ref:"Proverbs 3:7–8 — NASB", text:"Do not be wise in your own eyes; fear the Lord and turn away from evil. It will be healing to your body and refreshment to your bones." },
-  { ref:"Isaiah 41:10 — NASB",   text:"Do not fear, for I am with you; do not be afraid, for I am your God. I will strengthen you, I will also help you, I will also uphold you with My righteous right hand." }
+  {
+    "ref": "Psalm 3:3 · NASB 1995 (excerpt)",
+    "text": "You, O LORD, are a shield about me"
+  },
+  {
+    "ref": "Psalm 3:5 · NASB 1995 (excerpt)",
+    "text": "I lay down and slept; I awoke, for the LORD sustains me."
+  },
+  {
+    "ref": "Psalm 4:8 · NASB 1995 (excerpt)",
+    "text": "In peace I will both lie down and sleep"
+  },
+  {
+    "ref": "Psalm 5:3 · NASB 1995 (excerpt)",
+    "text": "In the morning, O LORD, You will hear my voice"
+  },
+  {
+    "ref": "Psalm 5:12 · NASB 1995 (excerpt)",
+    "text": "It is You who blesses the righteous man, O LORD"
+  },
+  {
+    "ref": "Psalm 9:9 · NASB 1995 (excerpt)",
+    "text": "The LORD also will be a stronghold for the oppressed"
+  },
+  {
+    "ref": "Psalm 9:10 · NASB 1995 (excerpt)",
+    "text": "Those who know Your name will put their trust in You"
+  },
+  {
+    "ref": "Psalm 16:8 · NASB 1995 (excerpt)",
+    "text": "I have set the LORD continually before me"
+  },
+  {
+    "ref": "Psalm 16:11 · NASB 1995 (excerpt)",
+    "text": "In Your presence is fullness of joy"
+  },
+  {
+    "ref": "Psalm 18:1 · NASB 1995 (excerpt)",
+    "text": "I love You, O LORD, my strength."
+  },
+  {
+    "ref": "Psalm 18:2 · NASB 1995 (excerpt)",
+    "text": "The LORD is my rock and my fortress and my deliverer"
+  },
+  {
+    "ref": "Psalm 18:30 · NASB 1995 (excerpt)",
+    "text": "The word of the LORD is tried"
+  },
+  {
+    "ref": "Psalm 19:14 · NASB 1995 (excerpt)",
+    "text": "Let the words of my mouth and the meditation of my heart"
+  },
+  {
+    "ref": "Psalm 23:1 · NASB 1995 (excerpt)",
+    "text": "The LORD is my shepherd, I shall not want."
+  },
+  {
+    "ref": "Psalm 23:2 · NASB 1995 (excerpt)",
+    "text": "He makes me lie down in green pastures"
+  },
+  {
+    "ref": "Psalm 23:3 · NASB 1995 (excerpt)",
+    "text": "He restores my soul"
+  },
+  {
+    "ref": "Psalm 23:4 · NASB 1995 (excerpt)",
+    "text": "I fear no evil, for You are with me"
+  },
+  {
+    "ref": "Psalm 23:5 · NASB 1995 (excerpt)",
+    "text": "You prepare a table before me in the presence of my enemies"
+  },
+  {
+    "ref": "Psalm 23:6 · NASB 1995 (excerpt)",
+    "text": "Surely goodness and lovingkindness will follow me all the days of my life"
+  },
+  {
+    "ref": "Psalm 27:1 · NASB 1995 (excerpt)",
+    "text": "The LORD is my light and my salvation; Whom shall I fear?"
+  },
+  {
+    "ref": "Psalm 27:5 · NASB 1995 (excerpt)",
+    "text": "In the day of trouble He will conceal me in His tabernacle"
+  },
+  {
+    "ref": "Psalm 27:13 · NASB 1995 (excerpt)",
+    "text": "I would have despaired unless I had believed that I would see the goodness of the LORD"
+  },
+  {
+    "ref": "Psalm 27:14 · NASB 1995 (excerpt)",
+    "text": "Wait for the LORD; Be strong and let your heart take courage"
+  },
+  {
+    "ref": "Psalm 28:7 · NASB 1995 (excerpt)",
+    "text": "The LORD is my strength and my shield"
+  },
+  {
+    "ref": "Psalm 29:11 · NASB 1995 (excerpt)",
+    "text": "The LORD will bless His people with peace."
+  },
+  {
+    "ref": "Psalm 30:5 · NASB 1995 (excerpt)",
+    "text": "Weeping may last for the night, But a shout of joy comes in the morning."
+  },
+  {
+    "ref": "Psalm 30:11 · NASB 1995 (excerpt)",
+    "text": "You have turned for me my mourning into dancing"
+  },
+  {
+    "ref": "Psalm 31:14 · NASB 1995 (excerpt)",
+    "text": "But as for me, I trust in You, O LORD"
+  },
+  {
+    "ref": "Psalm 31:24 · NASB 1995 (excerpt)",
+    "text": "Be strong and let your heart take courage, All you who hope in the LORD."
+  },
+  {
+    "ref": "Psalm 32:7 · NASB 1995 (excerpt)",
+    "text": "You are my hiding place; You preserve me from trouble"
+  },
+  {
+    "ref": "Psalm 32:8 · NASB 1995 (excerpt)",
+    "text": "I will instruct you and teach you in the way which you should go"
+  },
+  {
+    "ref": "Psalm 33:20 · NASB 1995 (excerpt)",
+    "text": "Our soul waits for the LORD; He is our help and our shield."
+  },
+  {
+    "ref": "Psalm 33:22 · NASB 1995 (excerpt)",
+    "text": "Let Your lovingkindness, O LORD, be upon us"
+  },
+  {
+    "ref": "Psalm 34:1 · NASB 1995 (excerpt)",
+    "text": "I will bless the LORD at all times"
+  },
+  {
+    "ref": "Psalm 34:4 · NASB 1995 (excerpt)",
+    "text": "I sought the LORD, and He answered me"
+  },
+  {
+    "ref": "Psalm 34:8 · NASB 1995 (excerpt)",
+    "text": "O taste and see that the LORD is good"
+  },
+  {
+    "ref": "Psalm 34:17 · NASB 1995 (excerpt)",
+    "text": "The righteous cry, and the LORD hears"
+  },
+  {
+    "ref": "Psalm 34:18 · NASB 1995 (excerpt)",
+    "text": "The LORD is near to the brokenhearted"
+  },
+  {
+    "ref": "Psalm 36:7 · NASB 1995 (excerpt)",
+    "text": "How precious is Your lovingkindness, O God!"
+  },
+  {
+    "ref": "Psalm 37:3 · NASB 1995 (excerpt)",
+    "text": "Trust in the LORD and do good"
+  },
+  {
+    "ref": "Psalm 37:4 · NASB 1995 (excerpt)",
+    "text": "Delight yourself in the LORD"
+  },
+  {
+    "ref": "Psalm 37:5 · NASB 1995 (excerpt)",
+    "text": "Commit your way to the LORD, Trust also in Him, and He will do it."
+  },
+  {
+    "ref": "Psalm 37:7 · NASB 1995 (excerpt)",
+    "text": "Rest in the LORD and wait patiently for Him"
+  },
+  {
+    "ref": "Psalm 37:23 · NASB 1995 (excerpt)",
+    "text": "The steps of a man are established by the LORD"
+  },
+  {
+    "ref": "Psalm 37:24 · NASB 1995 (excerpt)",
+    "text": "The LORD is the One who holds his hand."
+  },
+  {
+    "ref": "Psalm 40:1 · NASB 1995 (excerpt)",
+    "text": "I waited patiently for the LORD; And He inclined to me and heard my cry."
+  },
+  {
+    "ref": "Psalm 40:2 · NASB 1995 (excerpt)",
+    "text": "He set my feet upon a rock making my footsteps firm."
+  },
+  {
+    "ref": "Psalm 40:3 · NASB 1995 (excerpt)",
+    "text": "He put a new song in my mouth, a song of praise to our God"
+  },
+  {
+    "ref": "Psalm 42:5 · NASB 1995 (excerpt)",
+    "text": "Hope in God, for I shall again praise Him"
+  },
+  {
+    "ref": "Psalm 46:1 · NASB 1995 (excerpt)",
+    "text": "God is our refuge and strength, A very present help in trouble."
+  },
+  {
+    "ref": "Psalm 46:2 · NASB 1995 (excerpt)",
+    "text": "Therefore we will not fear, though the earth should change"
+  },
+  {
+    "ref": "Psalm 46:10 · NASB 1995 (excerpt)",
+    "text": "Cease striving and know that I am God"
+  },
+  {
+    "ref": "Psalm 46:11 · NASB 1995 (excerpt)",
+    "text": "The LORD of hosts is with us"
+  },
+  {
+    "ref": "Psalm 55:22 · NASB 1995 (excerpt)",
+    "text": "Cast your burden upon the LORD and He will sustain you"
+  },
+  {
+    "ref": "Psalm 56:3 · NASB 1995 (excerpt)",
+    "text": "When I am afraid, I will put my trust in You."
+  },
+  {
+    "ref": "Psalm 56:4 · NASB 1995 (excerpt)",
+    "text": "In God I have put my trust; I shall not be afraid."
+  },
+  {
+    "ref": "Psalm 57:1 · NASB 1995 (excerpt)",
+    "text": "My soul takes refuge in You"
+  },
+  {
+    "ref": "Psalm 59:16 · NASB 1995 (excerpt)",
+    "text": "I shall joyfully sing of Your lovingkindness in the morning"
+  },
+  {
+    "ref": "Psalm 61:2 · NASB 1995 (excerpt)",
+    "text": "Lead me to the rock that is higher than I."
+  },
+  {
+    "ref": "Psalm 61:3 · NASB 1995 (excerpt)",
+    "text": "For You have been a refuge for me"
+  },
+  {
+    "ref": "Psalm 62:1 · NASB 1995 (excerpt)",
+    "text": "My soul waits in silence for God only"
+  },
+  {
+    "ref": "Psalm 62:2 · NASB 1995 (excerpt)",
+    "text": "He only is my rock and my salvation"
+  },
+  {
+    "ref": "Psalm 62:5 · NASB 1995 (excerpt)",
+    "text": "My soul, wait in silence for God only"
+  },
+  {
+    "ref": "Psalm 62:6 · NASB 1995 (excerpt)",
+    "text": "My stronghold; I shall not be shaken."
+  },
+  {
+    "ref": "Psalm 62:8 · NASB 1995 (excerpt)",
+    "text": "Trust in Him at all times, O people"
+  },
+  {
+    "ref": "Psalm 63:3 · NASB 1995 (excerpt)",
+    "text": "Your lovingkindness is better than life"
+  },
+  {
+    "ref": "Psalm 63:7 · NASB 1995 (excerpt)",
+    "text": "You have been my help"
+  },
+  {
+    "ref": "Psalm 68:19 · NASB 1995 (excerpt)",
+    "text": "Blessed be the Lord, who daily bears our burden"
+  },
+  {
+    "ref": "Psalm 71:5 · NASB 1995 (excerpt)",
+    "text": "You are my hope; O Lord GOD, You are my confidence from my youth."
+  },
+  {
+    "ref": "Psalm 71:20 · NASB 1995 (excerpt)",
+    "text": "You who have shown me many troubles and distresses Will revive me again"
+  },
+  {
+    "ref": "Psalm 73:23 · NASB 1995 (excerpt)",
+    "text": "Nevertheless I am continually with You"
+  },
+  {
+    "ref": "Psalm 73:26 · NASB 1995 (excerpt)",
+    "text": "God is the strength of my heart and my portion forever."
+  },
+  {
+    "ref": "Psalm 84:11 · NASB 1995 (excerpt)",
+    "text": "For the LORD God is a sun and shield"
+  },
+  {
+    "ref": "Psalm 86:5 · NASB 1995 (excerpt)",
+    "text": "You, Lord, are good, and ready to forgive"
+  },
+  {
+    "ref": "Psalm 86:7 · NASB 1995 (excerpt)",
+    "text": "In the day of my trouble I shall call upon You, For You will answer me."
+  },
+  {
+    "ref": "Psalm 90:14 · NASB 1995 (excerpt)",
+    "text": "O satisfy us in the morning with Your lovingkindness"
+  },
+  {
+    "ref": "Psalm 91:1 · NASB 1995 (excerpt)",
+    "text": "He who dwells in the shelter of the Most High Will abide in the shadow of the Almighty."
+  },
+  {
+    "ref": "Psalm 91:2 · NASB 1995 (excerpt)",
+    "text": "My refuge and my fortress, My God, in whom I trust!"
+  },
+  {
+    "ref": "Psalm 91:4 · NASB 1995 (excerpt)",
+    "text": "Under His wings you may seek refuge"
+  },
+  {
+    "ref": "Psalm 91:11 · NASB 1995 (excerpt)",
+    "text": "He will give His angels charge concerning you"
+  },
+  {
+    "ref": "Psalm 92:1 · NASB 1995 (excerpt)",
+    "text": "It is good to give thanks to the LORD"
+  },
+  {
+    "ref": "Psalm 94:18 · NASB 1995 (excerpt)",
+    "text": "Your lovingkindness, O LORD, will hold me up."
+  },
+  {
+    "ref": "Psalm 94:19 · NASB 1995 (excerpt)",
+    "text": "Your consolations delight my soul."
+  },
+  {
+    "ref": "Psalm 95:6 · NASB 1995 (excerpt)",
+    "text": "Come, let us worship and bow down"
+  },
+  {
+    "ref": "Psalm 100:3 · NASB 1995 (excerpt)",
+    "text": "Know that the LORD Himself is God"
+  },
+  {
+    "ref": "Psalm 100:5 · NASB 1995 (excerpt)",
+    "text": "For the LORD is good; His lovingkindness is everlasting"
+  },
+  {
+    "ref": "Psalm 103:1 · NASB 1995 (excerpt)",
+    "text": "Bless the LORD, O my soul"
+  },
+  {
+    "ref": "Psalm 103:2 · NASB 1995 (excerpt)",
+    "text": "Forget none of His benefits"
+  },
+  {
+    "ref": "Psalm 103:3 · NASB 1995 (excerpt)",
+    "text": "Who heals all your diseases"
+  },
+  {
+    "ref": "Psalm 103:4 · NASB 1995 (excerpt)",
+    "text": "Who crowns you with lovingkindness and compassion"
+  },
+  {
+    "ref": "Psalm 103:5 · NASB 1995 (excerpt)",
+    "text": "Your youth is renewed like the eagle."
+  },
+  {
+    "ref": "Psalm 103:8 · NASB 1995 (excerpt)",
+    "text": "The LORD is compassionate and gracious, Slow to anger and abounding in lovingkindness."
+  },
+  {
+    "ref": "Psalm 103:11 · NASB 1995 (excerpt)",
+    "text": "So great is His lovingkindness toward those who fear Him."
+  },
+  {
+    "ref": "Psalm 103:12 · NASB 1995 (excerpt)",
+    "text": "As far as the east is from the west"
+  },
+  {
+    "ref": "Psalm 103:13 · NASB 1995 (excerpt)",
+    "text": "Just as a father has compassion on his children"
+  },
+  {
+    "ref": "Psalm 107:1 · NASB 1995 (excerpt)",
+    "text": "Oh give thanks to the LORD, for He is good"
+  },
+  {
+    "ref": "Psalm 107:9 · NASB 1995 (excerpt)",
+    "text": "He has satisfied the thirsty soul"
+  },
+  {
+    "ref": "Psalm 107:20 · NASB 1995 (excerpt)",
+    "text": "He sent His word and healed them"
+  },
+  {
+    "ref": "Psalm 112:7 · NASB 1995 (excerpt)",
+    "text": "His heart is steadfast, trusting in the LORD."
+  },
+  {
+    "ref": "Psalm 116:1 · NASB 1995 (excerpt)",
+    "text": "I love the LORD, because He hears My voice and my supplications."
+  },
+  {
+    "ref": "Psalm 116:2 · NASB 1995 (excerpt)",
+    "text": "Therefore I shall call upon Him as long as I live."
+  },
+  {
+    "ref": "Psalm 116:7 · NASB 1995 (excerpt)",
+    "text": "Return to your rest, O my soul"
+  },
+  {
+    "ref": "Psalm 118:6 · NASB 1995 (excerpt)",
+    "text": "The LORD is for me; I will not fear"
+  },
+  {
+    "ref": "Psalm 118:14 · NASB 1995 (excerpt)",
+    "text": "The LORD is my strength and song"
+  },
+  {
+    "ref": "Psalm 118:24 · NASB 1995 (excerpt)",
+    "text": "This is the day which the LORD has made"
+  },
+  {
+    "ref": "Psalm 119:50 · NASB 1995 (excerpt)",
+    "text": "Your word has revived me."
+  },
+  {
+    "ref": "Psalm 119:76 · NASB 1995 (excerpt)",
+    "text": "O may Your lovingkindness comfort me"
+  },
+  {
+    "ref": "Psalm 119:105 · NASB 1995 (excerpt)",
+    "text": "Your word is a lamp to my feet And a light to my path."
+  },
+  {
+    "ref": "Psalm 121:1 · NASB 1995 (excerpt)",
+    "text": "I will lift up my eyes to the mountains"
+  },
+  {
+    "ref": "Psalm 121:2 · NASB 1995 (excerpt)",
+    "text": "My help comes from the LORD, Who made heaven and earth."
+  },
+  {
+    "ref": "Psalm 121:3 · NASB 1995 (excerpt)",
+    "text": "He who keeps you will not slumber."
+  },
+  {
+    "ref": "Psalm 121:4 · NASB 1995 (excerpt)",
+    "text": "He who keeps Israel Will neither slumber nor sleep."
+  },
+  {
+    "ref": "Psalm 121:5 · NASB 1995 (excerpt)",
+    "text": "The LORD is your keeper"
+  },
+  {
+    "ref": "Psalm 121:7 · NASB 1995 (excerpt)",
+    "text": "The LORD will protect you from all evil"
+  },
+  {
+    "ref": "Psalm 121:8 · NASB 1995 (excerpt)",
+    "text": "The LORD will guard your going out and your coming in"
+  },
+  {
+    "ref": "Psalm 123:2 · NASB 1995 (excerpt)",
+    "text": "Our eyes look to the LORD our God"
+  },
+  {
+    "ref": "Psalm 130:5 · NASB 1995 (excerpt)",
+    "text": "I wait for the LORD, my soul does wait"
+  },
+  {
+    "ref": "Psalm 138:3 · NASB 1995 (excerpt)",
+    "text": "On the day I called, You answered me"
+  },
+  {
+    "ref": "Psalm 138:8 · NASB 1995 (excerpt)",
+    "text": "The LORD will accomplish what concerns me"
+  },
+  {
+    "ref": "Psalm 139:5 · NASB 1995 (excerpt)",
+    "text": "You have enclosed me behind and before"
+  },
+  {
+    "ref": "Psalm 139:10 · NASB 1995 (excerpt)",
+    "text": "Even there Your hand will lead me"
+  },
+  {
+    "ref": "Psalm 143:8 · NASB 1995 (excerpt)",
+    "text": "Let me hear Your lovingkindness in the morning"
+  },
+  {
+    "ref": "Psalm 145:8 · NASB 1995 (excerpt)",
+    "text": "The LORD is gracious and merciful"
+  },
+  {
+    "ref": "Psalm 145:9 · NASB 1995 (excerpt)",
+    "text": "The LORD is good to all"
+  },
+  {
+    "ref": "Psalm 145:14 · NASB 1995 (excerpt)",
+    "text": "The LORD sustains all who fall"
+  },
+  {
+    "ref": "Psalm 145:18 · NASB 1995 (excerpt)",
+    "text": "The LORD is near to all who call upon Him"
+  },
+  {
+    "ref": "Psalm 146:5 · NASB 1995 (excerpt)",
+    "text": "How blessed is he whose help is the God of Jacob"
+  },
+  {
+    "ref": "Psalm 147:3 · NASB 1995 (excerpt)",
+    "text": "He heals the brokenhearted And binds up their wounds."
+  }
 ];
 
 // The Peptide questions card on her home page. The questions live on a separate
@@ -2307,18 +3576,14 @@ function paintPeptideCard() {
   }
 }
 
+function verseForDay(day) {
+  const n=Math.floor(Date.parse(day+'T12:00:00Z')/86400000);
+  return verses[((n%verses.length)+verses.length)%verses.length];
+}
 function initVerse() {
-  const today = new Date();
-  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000*60*60*24));
-  const verse = verses[dayOfYear % verses.length];
-  document.getElementById('verse-text').textContent = verse.text;
-  document.getElementById('verse-ref').textContent = verse.ref;
-  sheetCall({ action:"get_verse", clientId: currentClientId }).then(r => {
-    if (r.success && r.verse) {
-      document.getElementById('verse-text').textContent = r.verse.text;
-      document.getElementById('verse-ref').textContent  = r.verse.reference + ' — NASB';
-    }
-  });
+  const verse=verseForDay(localDayStr());
+  document.getElementById('verse-text').textContent=verse.text;
+  document.getElementById('verse-ref').textContent=verse.ref;
 }
 
 /* ── WINS ── */
@@ -2418,23 +3683,13 @@ function stampInto(id, iso) {
 // The agent writes this every run. Until today the code threw it away and the
 // page showed whatever was last typed into the HTML by hand.
 async function initFocusCard() {
-  const card = document.getElementById('focus-card');
-  if (!card) return;
-  let r;
-  try { r = await sheetCall({ action:'get_card', clientId: currentClientId }); }
-  catch (e) { return; }
-  if (!r || !r.card || !r.card.goal) { stampInto('focus-card', null); return; }
-  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-  const c = r.card;
-  const bits = ['<div class="focus-eyebrow">✦ This week\'s focus</div>',
-    '<div class="focus-goal">' + esc(c.goal) + '</div>'];
-  if (c.sub) bits.push('<div class="focus-sub">' + esc(c.sub) + '</div>');
-  (c.items || []).forEach(function (it, i) {
-    bits.push('<div class="focus-item"><span class="focus-num">' + (i + 1) + '</span><div><b>' +
-      esc(it.head) + '</b><br><span>' + esc(it.body) + '</span></div></div>');
-  });
-  card.innerHTML = bits.join('');
-  stampInto('focus-card', r.timestamp);
+  try { const r=await fetch('fh-state.json',{cache:'no-store'}); if(r.ok)window.__focusState=await r.json(); } catch(e) {}
+  try { const r=await sheetCall({action:'get_card',clientId:currentClientId});
+    if(r&&r.success){const card=typeof r.card==='string'?JSON.parse(r.card):r.card;window.__focusCard=card&&Array.isArray(card.items)?card:null;}
+  } catch(e) {}
+  // claude/news.json is private. The brain sends that queue as checked update
+  // tiles; loadUpdatesClient reads those same rows into What's new here.
+  renderFocusCard();
 }
 
 // A WIN THAT WAS RIGHT WHEN IT WAS WRITTEN AND IS WRONG NOW. 4 Oct 2026.
@@ -2449,19 +3704,24 @@ const WIN_FIXES = {
     date: '2026-09-14T07:00:00.000Z'
   }
 };
+function recentWins(list) {
+  const now=Date.parse(localDayStr()+'T12:00:00Z');
+  return list.filter(w=>{const t=Date.parse(w._iso||w.date);return Number.isFinite(t)&&t<=now+43200000&&t>=now-13*86400000;});
+}
 async function initWins() {
-  renderWins(wins);
+  let all=wins.slice();
   try {
-    const r = await sheetCall({ action: 'get_milestones', clientId: currentClientId });
-    const fresh = ((r && r.milestones) || [])
-      .filter(m => m && m.title)
-      .map(m => WIN_FIXES[m.title] ? Object.assign({}, m, WIN_FIXES[m.title]) : m)
-      .map(m => ({ icon: m.icon || '✦', title: m.title, desc: m.desc, date: niceWinDate(m.date),
-                   _when: Date.parse(String(m.date)) || 0 }))
-      .sort((a, b) => b._when - a._when);
-    if (fresh.length) renderWins(fresh.concat(wins));
-    stampInto('wins-list', (r && r.milestones && r.milestones.length) ? r.milestones[r.milestones.length-1].timestamp : null);
-  } catch (e) { /* the typed list is already on screen */ }
+    const r=await sheetCall({action:'get_milestones',clientId:currentClientId});
+    const fresh=((r&&r.milestones)||[]).filter(m=>m&&m.title).map(m=>WIN_FIXES[m.title]?Object.assign({},m,WIN_FIXES[m.title]):m)
+      .map(m=>({icon:m.icon||'✦',title:m.title,desc:m.desc,date:niceWinDate(m.date),_iso:m.date}));
+    all=fresh.concat(all);
+  } catch(e) {}
+  const history=document.getElementById('wins-history-list');
+  renderWins(all);
+  if(history)history.innerHTML=document.getElementById('wins-list').innerHTML;
+  const recent=recentWins(all);
+  renderWins(recent);
+  if(!recent.length)document.getElementById('wins-list').innerHTML='<p>No new win in the last two weeks. Your full history is just below.</p>';
 }
 
 /* ── COACH CHAT ── */
@@ -2921,8 +4181,15 @@ function sessionFromRow(r) {
 }
 function cleanTimeLocal(t) {
   return String(t||'').replace(/ · (morning|noon|night)$/i,'')
-    .replace(/\s*\[readingId:[^\]]+\]/g,'')
-    .replace(/\[takenAt:([^;]+);local:(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})\]/,'· taken $2 $3:$4');
+    .replace(/\s*\[(?:readingId|mealId|supplementId|takenAt):[^\]]+\]/g,'');
+}
+function readingDisplayTime(r) {
+  const when=cleanTimeLocal(r.when||r.t||r.timeLocal||'').replace(/\s*· taken .*$/,'');
+  const marker=String(r.timeLocal||'').match(/\[takenAt:([^;]+);local:([^\]]+)\]/);
+  const taken=r.takenAt||(marker&&marker[1]),local=r.takenAtLocal||(marker&&marker[2]);
+  if(!taken||Math.floor(Date.parse(taken)/60000)===Math.floor(Date.parse(r.iso||r.timestamp)/60000))return escapeHtml(when);
+  const m=String(local||'').match(/T(\d{2}):(\d{2})/);
+  return m?(Number(m[1])%12||12)+':'+m[2]+(Number(m[1])<12?' a.m.':' p.m.'):escapeHtml(when);
 }
 
 function coachShowTab(name) {
@@ -3146,20 +4413,15 @@ function initCoachMode() {
 
 /* ── NAV ── */
 function showPage(id, btn) {
+  if (!document.getElementById('page-'+id)) return;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+  if(btn)btn.classList.add('active');
   window.scrollTo(0,0);
-  if (id === 'message') {
-    setCoachBadge(false);
-    if (typeof fetchCoachMsgs === 'function') Promise.resolve(fetchCoachMsgs()).then(function(){ setTimeout(scrollChatToEnd, 60); });
-    setTimeout(scrollChatToEnd, 120);   // and again once the thread has laid out
-  }
-  if (id === 'updates') {
-    if (typeof loadUpdatesClient === 'function') loadUpdatesClient();
-    if (typeof loadQuestionsClient === 'function') loadQuestionsClient();
-  }
+  if (id === 'home') { renderFocusCard(); renderYesterdayFood(); }
+  if (id === 'food') { renderFoodQuick(); renderYesterdayFood(); }
+
   if (id === 'phase2') { p2Stack = []; p2Render(); }
 }
 
@@ -3676,7 +4938,7 @@ const P2 = {
       <h4>Probably nothing, and that is the point</h4>
       <p>You are not likely to feel this one working. Its win is what does not happen: a winter without a bad cold or infection, and a trip you enjoy without getting sick.</p>
       <p>If you do catch something, people often find it is milder and passes faster.</p>
-      <div class="pull">Tell Christopher in Coach if you ever feel a cold coming on.</div>` },
+      <div class="pull">Keep logging how you feel each morning, so Christopher can follow your progress.</div>` },
     { id:'taken', icon:'💉', title:'How it is taken', body:`
       <h4>A small shot under the skin</h4>
       <p>Thymosin Alpha-1 is given as a small shot just under the skin with a very fine, short needle. It is not needed every day.</p>
@@ -3710,12 +4972,8 @@ function p2Log() {
   } catch(e) {}
 }
 // Her question lands in the Coach thread, which the reasoning step reads.
-function p2Ask() {
-  const btn = [...document.querySelectorAll('#main-nav .nav-btn')].find(b => (b.getAttribute('onclick') || '').indexOf("'message'") > -1);
-  showPage('message', btn);
-  const box = document.getElementById('reply-input');
-  if (box) { box.value = 'About ' + p2Path().join(', ') + ': '; box.focus(); if (typeof autoGrow === 'function') autoGrow(box); }
-}
+
+
 function p2Tile(c) {
   const empty = !c.body && !(c.children && c.children.length);
   return `<button class="p2-tile${c.wide ? ' wide' : ''}${empty ? ' soon' : ''}" onclick="p2Open('${c.id}')">
@@ -3732,13 +4990,21 @@ function p2Render() {
   const title = p2Stack.length ? `<div class="page-title">${n.title}</div>` : `<div class="page-title">Phase <em>Two</em></div>`;
   let main = '';
   if (n.body) {
-    main = `<div class="p2-read">${n.body}</div><button class="p2-ask" onclick="p2Ask()">Ask Christopher about this</button>`;
+    main = `<div class="p2-read">${n.body}</div>`;
   } else if (n.children && n.children.length) {
     main = `<div class="p2-grid">${n.children.map(p2Tile).join('')}</div>`;
   } else {
     main = `<div class="p2-read"><p>Christopher is still writing this one. It will be here soon.</p></div>`;
   }
-  v.innerHTML = back + kicker + title + main;
+  const penMap={bpc157:'bpctb',tb500:'bpctb',ara290:'ara',motsc:'mots',semax:'semax',ta1:'ta1',thymosin:'ta1'};
+  const p=PENS.find(p=>p.id===penMap[p2Stack[0]]);
+  const intro=!p2Stack.length?'<div class="p2-read"><p>Why phase two: phase one fixed food, sleep and supplements; phase two adds peptides to repair nerves, gut and muscle.</p><p>A peptide is a short chain of the building blocks of protein. It carries messages between your cells.</p></div>':'';
+  let dose='';
+  if(p && p2Stack.length===1){
+    const st=penState(p,localDayStr());
+    dose='<div class="p2-read" id="peptide-today"><h4>What it is</h4><p>'+p.name+'. '+p.purpose+'</p><h4>How you take it</h4><p>'+(p.id==='semax'?'A nose spray. Nothing after noon.':'A small shot under your skin, in the pen Christopher prepares for you.')+'</p><h4>Your dose today</h4><p>'+(st.due?st.dose:st.active?'Not due today.' : localDayStr()<p.start?'Your course has not started.':'Your course is finished.')+'</p></div>';
+  }
+  v.innerHTML = back + kicker + title + intro + dose + main;
 }
 try { if (P2_PREVIEW || P2_LIVE) document.getElementById('nav-phase2').style.display = ''; } catch(e) {}
 
@@ -3786,18 +5052,20 @@ document.addEventListener('DOMContentLoaded', function() {
   safeRun('whooshes', fetchWhooshesToday);
   safeRun('supplements', renderSupps);
   let pensClock=localDayStr()+':'+new Date().getHours();
-  setInterval(function(){const clock=localDayStr()+':'+new Date().getHours();if(clock!==pensClock){pensClock=clock;safeRun('supplements',renderSupps);}},30000);
+  setInterval(function(){const clock=localDayStr()+':'+new Date().getHours();if(clock!==pensClock){pensClock=clock;safeRun('supplements',renderSupps);safeRun('sessions',renderSessions);safeRun('focus',renderFocusCard);safeRun('yesterdayfood',renderYesterdayFood);}},30000);
   safeRun('foodlists', renderFoodLists);
+  safeRun('foodquick', renderFoodQuick);
+  safeRun('yesterdayfood', renderYesterdayFood);
   safeRun('foodtoday', renderFoodToday);
   safeRun('wins', initWins);
   safeRun('focuscard', initFocusCard);
   if (coachMode) { safeRun('coachmode', initCoachMode); safeRun('coachupdates', loadCoachUpdates); safeRun('coachnotes', loadCoachNotes);
     if (__pendingNav) { const p = __pendingNav; __pendingNav = null; safeRun('pendingnav', function(){ showPage(p.id, p.btn); }); }
     return; }
-  safeRun('coachchat', initCoach);
+  safeRun('news', loadUpdatesClient);
   safeRun('hydrate', hydrateFromSheet);
   safeRun('reviewlists', loadReviewLists);
-  safeRun('questions', loadQuestionsClient);
+
   if (__pendingNav) { const p = __pendingNav; __pendingNav = null; safeRun('pendingnav', function(){ showPage(p.id, p.btn); }); }
 });
 </script>

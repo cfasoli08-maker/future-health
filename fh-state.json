@@ -177,6 +177,60 @@
       "change": "none yet",
       "why": "12 days pizza/bread/beer in Italy = 0 episodes. One night pizza/beer here = 3 next day. Points at the North American ingredient list, not the food.",
       "status": "queued. Do not start while underfeeding, meal-timing and sauerkraut are all running."
+    },
+    {
+      "id": "magnesium-nightly-2026-11-02",
+      "opened": "2026-11-02",
+      "start": "2026-11-02",
+      "readout": "2026-11-16",
+      "status": "running, starts 2026-11-02",
+      "variable": "magnesiumMg",
+      "change": "200mg magnesium glycinate every night from 2 November",
+      "success": "Morning bottom over 60, top at or over 105, gut no worse over 14 days.",
+      "readoutSpec": {
+        "days": 14,
+        "dose": {
+          "field": "magnesiumMg",
+          "called": "magnesium",
+          "expectAtLeast": 10
+        },
+        "checks": [
+          {
+            "called": "morning bottom over 60",
+            "series": "diastolicAm",
+            "rule": "min>",
+            "value": 60,
+            "safety": true,
+            "minDays": 7
+          },
+          {
+            "called": "morning top at or over 105",
+            "series": "systolicAm",
+            "rule": "min>=",
+            "value": 105,
+            "safety": true,
+            "minDays": 7
+          },
+          {
+            "called": "loose stool days no worse than the week before",
+            "series": "looseStoolDays",
+            "rule": "meanNotAbovePrior",
+            "tolerance": 0,
+            "safety": true,
+            "minDays": 7,
+            "minPriorDays": 3
+          },
+          {
+            "called": "bowel accidents no worse than the week before",
+            "series": "bowelAccidents",
+            "rule": "meanNotAbovePrior",
+            "tolerance": 0,
+            "safety": true,
+            "minDays": 7,
+            "minPriorDays": 3
+          }
+        ]
+      }
     }
   ],
   "closed": [
@@ -431,7 +485,7 @@
       "Vitamin C",
       "Sauerkraut (cleared 8 Sep)",
       "Whey Protein Isolate (Diesel)",
-      "Creatine (3g daily with food, on from 5 Oct)"
+      "Creatine (20 g daily with food, dose set 25 Oct)"
     ],
     "SUPP_YELLOW": [
       "Magnesium above 200mg (closed, no)",
@@ -714,7 +768,7 @@
       "Collagen-Biotin",
       "Psyllium"
     ],
-    "reviewedOn": "2026-10-16",
+    "reviewedOn": "2026-10-25",
     "restored": [
       {
         "name": "Magnesium glycinate",
@@ -763,7 +817,7 @@
     "detail": {
       "Alpha lipoic acid": {
         "say": "Alpha Lipoic Acid",
-        "dose": "600mg daily with her largest meal",
+        "dose": "600mg once a day, 30 minutes before breakfast",
         "doses": [
           "600mg",
           "100mg"
@@ -819,18 +873,27 @@
           "magnesium"
         ],
         "dayField": "magnesiumMg",
-        "appSwitch": "MAG_PAUSED"
+        "appSwitch": "MAG_PAUSED",
+        "changes": [
+          {
+            "on": "2026-11-02",
+            "dose": "200mg every night"
+          }
+        ]
       },
       "Creatine": {
         "say": "Creatine",
-        "dose": "3g once a day, with food",
+        "dose": "20g a day, 10g with breakfast and 10g with supper",
         "doses": [
-          "3g"
+          "20g",
+          "10g",
+          "5g"
         ],
         "aliases": [
           "creatine"
         ],
-        "since": "2026-10-05"
+        "since": "2026-10-05",
+        "changed": "2026-10-25 to 20g"
       },
       "Ibuprofen": {
         "say": "Ibuprofen"
@@ -935,15 +998,36 @@
         "aliases": [
           "semax nasal"
         ]
+      },
+      "Indica gummy": {
+        "say": "Indica gummy",
+        "aliases": [
+          "gummy",
+          "indica"
+        ],
+        "dose": "Not part of the daily plan; logging only, one gummy at most if pain keeps her awake",
+        "doses": [
+          "2.5mg"
+        ],
+        "dayField": "gummy"
       }
-    }
+    },
+    "loggingOnly": [
+      {
+        "name": "Indica gummy",
+        "since": "2026-10-25",
+        "why": "Not part of your plan. Your sleep was the same on gummy nights and other nights. If pain keeps you awake, one gummy at most, and sit on the edge of the bed for a moment before you stand."
+      }
+    ],
+    "labsRequest": "A1c, creatinine with eGFR, cystatin C (she takes creatine), B12, ferritin, CRP, albumin, lipids."
   },
   "labs": {
     "status": "NONE IN THE RECORD. 177 days on protocol and not one blood test in this file.",
     "expected": "Late September or early October 2026, when she is back in Alberta. Told by Christopher on 2 Sep 2026.",
     "wanted": [
       "A1c",
-      "eGFR and creatinine",
+      "creatinine with eGFR",
+      "cystatin C (she takes creatine)",
       "B12",
       "ferritin",
       "CRP",
