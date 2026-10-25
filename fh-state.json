@@ -231,6 +231,30 @@
           }
         ]
       }
+    },
+    {
+      "id": "root:sugar:waking-before-coffee",
+      "outcome": "sugar",
+      "outcomeField": "fasting",
+      "exposure": "Morning sugar taken on waking before coffee",
+      "start": "2026-10-25",
+      "opened": "2026-10-25",
+      "readout": "2026-11-08",
+      "status": "running",
+      "rootCause": true,
+      "ask": "Please take your morning sugar before coffee, as soon as you wake, every day for 14 days. Save its time with Taken earlier if needed.",
+      "why": "Persistent healthy-range red since 2026-07-13. Observational comparison; an association is not proof of cause.",
+      "readoutSpec": {
+        "checks": [
+          {
+            "minDays": 14,
+            "series": "wakingSugar",
+            "called": "waking morning sugar mean under 7.0",
+            "rule": "mean<",
+            "value": 7
+          }
+        ]
+      }
     }
   ],
   "closed": [
