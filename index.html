@@ -440,6 +440,9 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
       <div class="days-sub">Since March 7, 2026</div>
     </div>
 
+    <button type="button" class="ask-btn" id="bowel-button" onclick="openBowel()">Bowel</button>
+    <p>Tap whenever you go, any time of day. You do not have to go every day.</p>
+
     <div class="focus-card" id="focus-card" aria-live="polite">
       <div class="focus-eyebrow">This week's focus</div>
       <p>Reading your recent mornings, evening sugar and pressure.</p>
@@ -816,8 +819,8 @@ const INPUTS = [
     help:'How much stress today? 1 means calm and easy. 10 means overwhelming. Then tap what caused it.' },
   { id:'gutache', icon:'🤢', label:'Gut ache', sub:'0 to 10, tap 0 on a good day', type:'scale', zeroOk:true,
     help:'How is your stomach today? 0 means no ache at all. 10 means the worst it gets. Please tap 0 on the good days too. A clear day tells me as much as a sore one, and without it I cannot see when something is working.' },
-  { id:'bowel', icon:'🚻', label:'Bowel', sub:'One evening check, normal or accident', type:'bristol',
-    help:'Tell us how your bowel was today, including any whoosh. Normal means no accident. Accident lets you record a small or big whoosh here, so you only need one card.' },
+  { id:'bowel', icon:'🚻', label:'Bowel', sub:'Log each movement when it happens', type:'bristol',
+    help:'Log this movement. You can come back as often as you need. If it happened earlier, choose the time below.' },
   { id:'hydration', icon:'💧', label:'Water', sub:'How much did you drink today?', type:'hydration', optWord:'water',
     help:'Compared to a normal day, how much water did you drink today? Water only. Salt is its own tile now, because they were sharing one button and I could not tell them apart.' },
   { id:'salt', icon:'🧂', label:'Salt', sub:'How much salt today?', type:'hydration', optWord:'salt',
@@ -829,7 +832,7 @@ const INPUTS = [
 ];
 // Old INPUTS stay readable for history. Only these lists can ask for a new entry.
 const MORNING_METRICS = ['sleephours','weight','glucose','pulse','bp','mood','kneepain','backpain','fibropain'];
-const EVENING_METRICS = ['glucose','pulse','bp','activity','stress','hydration','salt','headache','bowel'];
+const EVENING_METRICS = ['glucose','pulse','bp','activity','stress','hydration','salt','headache'];
 function sessionMetrics(s) {
   return s.metrics.concat(s.id==='night' && new Date(localDayStr()+'T12:00:00').getDay()===0 ? ['stairs'] : []);
 }
@@ -850,8 +853,8 @@ let activeInput = null;
 let activeSession = 'morning';
 let sheetSel = {};
 
-// Meter readings keep all values for the alarms. Other cards replace the day's value.
-const REPEATABLE_IDS = ['glucose','truefasting','pulse','bp'];
+// Meter readings and bowel movements keep every entry. Other cards replace the day's value.
+const REPEATABLE_IDS = ['glucose','truefasting','pulse','bp','bowel'];
 const DAILY_IDS = INPUTS.map(i=>i.id).filter(id => REPEATABLE_IDS.indexOf(id) === -1);
 // Keep noon here only to read old saved days.
 const SESSION_ORDER = ['morning','noon','night'];
@@ -868,12 +871,13 @@ function dailyHolder(day, mid) {
   }
   return null;
 }
-function defaultSessionOpen(){ return { morning:new Date().getHours()<12, night:false }; }
-let sessionOpen = defaultSessionOpen(), sessionDay = localDayStr();
+function defaultSessionOpen(){ return { morning:new Date().getHours()<17, night:new Date().getHours()>=17 }; }
+let sessionOpen = defaultSessionOpen(), sessionDay = localDayStr(), sessionEvening = new Date().getHours()>=17;
 
 function sessionReadings(day, sid, mid){ return dedupeReadings((day[sid] && day[sid][mid]) || []); }
 function toggleSession(id){
   if (!SESSIONS.some(s=>s.id===id)) return;
+  if(id==='night' && new Date().getHours()<17)return;
   sessionOpen[id] = !sessionOpen[id];
   renderSessions();
 }
@@ -944,7 +948,7 @@ function migrateDay(){
         const all = bucket[mid] || [];
         const kept = all.filter(function(r){
           if (!r || !r.iso) return true;
-          const d = new Date(r.iso);
+          const d = new Date(mid==='bowel'?(r.takenAt||r.iso):r.iso);
           return isNaN(d) || localDayStr(d) === today;
         });
         if (kept.length !== all.length) changed = true;
@@ -995,9 +999,29 @@ function sessionCount(day, s){
   }, 0);
 }
 
+function bowelToday(day){
+  return dedupeReadings(SESSION_ORDER.flatMap(sid=>((day[sid]||{}).bowel||[])))
+    .filter(r=>localDayStr(new Date(r.takenAt||r.iso||Date.now()))===localDayStr());
+}
+function bowelTodayTile(day){
+  const entries=bowelToday(day), movements=entries.filter(r=>r.value?.kind!=='none');
+  const text=movements.length?'Logged today: '+movements.length:entries.length?'No movement today':'';
+  return `<div class="tile" id="bowel-today"><div class="tile-label">Bowel today</div>${text
+    ? '<p>'+text+'</p>'
+    : '<p>Did you have a movement today?</p><div class="opt-col"><button class="opt-btn" onclick="logNoBowelToday()">No movement today</button><button class="opt-btn" onclick="openBowel()">I forgot to log one</button></div>'}</div>`;
+}
+function openBowel(){ openEntry('bowel',sessionForEntry({iso:new Date().toISOString()})); }
+async function logNoBowelToday(){
+  if(new Date().getHours()<17 || bowelToday(loadDay()).length)return;
+  openEntry('bowel','night','none');
+  await saveEntry();
+}
 function renderSessions(){
   // A phone left open overnight starts the new morning with its log open too.
-  if(sessionDay!==localDayStr()){ sessionDay=localDayStr(); sessionOpen=defaultSessionOpen(); }
+  const evening=new Date().getHours()>=17;
+  if(sessionDay!==localDayStr() || evening!==sessionEvening){
+    sessionDay=localDayStr(); sessionEvening=evening; sessionOpen=defaultSessionOpen();
+  }
   const day = loadDay();
   const wrap = document.getElementById('sessions');
   if (!wrap) return;
@@ -1006,10 +1030,10 @@ function renderSessions(){
     const count = sessionCount(day, s);
     const tiles = s.id==='night'&&new Date().getHours()<17
       ? '<p>Your evening log opens at 5 pm. It asks about the day after it has happened.</p>'
-      : sessionMetrics(s).map(mid => tileHtml(day, s.id, mid)).join('');
+      : sessionMetrics(s).map(mid => tileHtml(day, s.id, mid)).join('')+(s.id==='night'?bowelTodayTile(day):'');
     return `<div class="session session-${s.id} ${open?'open':''}">
       <button type="button" class="session-head" aria-expanded="${!!open}" aria-controls="session-${s.id}-body" onclick="toggleSession('${s.id}')">
-        <div class="session-name">${s.label}</div>
+        <div class="session-name">${s.label}${s.id==='night'&&!evening?'<div class="tile-sub">Opens at 5 pm</div>':''}</div>
         <div class="session-right">${count>0?`<span class="session-count">${count} logged</span>`:''}<span class="session-caret">${open?'▾':'▸'}</span></div>
       </button>
       <div class="session-body" id="session-${s.id}-body"${open?'':' style="display:none"'}>${tiles}</div>
@@ -1022,7 +1046,7 @@ function displayVal(inp, v) {
   if (inp.type==='bp') return v.sys + '/' + v.dia;
   if (inp.type==='activity') return '✓';
   if (inp.type==='stress') return v.intensity;
-  if (inp.type==='bristol') { const b=BRISTOL.find(b=>b.range.includes(Number(v.type))); return (v.kind==='accident'?'Accident, '+v.severity:'Normal')+', '+(b?b.label:'Type '+v.type); }
+  if (inp.type==='bristol') { if(v.kind==='none')return 'No movement today'; const b=BRISTOL.find(b=>b.range.includes(Number(v.type))); return (v.kind==='accident'?'Accident, '+v.severity:'Normal')+', '+(b?b.label:'Type '+v.type); }
   if (inp.type==='hydration') return v.charAt(0).toUpperCase()+v.slice(1);
   if (inp.type==='choice') { const o = inp.opts.find(o => o.v === v); return o ? o.label : v; }
   if (inp.type==='multi') {
@@ -1037,12 +1061,14 @@ const SESSION_HELP = {
   glucose: 'Your blood sugar from your meter, before eating if you can. The time is recorded for you automatically.',
   pulse: 'Your pulse in beats per minute. The time is recorded for you automatically.'
 };
-function openEntry(id, session) {
+let sheetReadingId = null;
+function openEntry(id, session, kind) {
   activeInput = INPUTS.find(i=>i.id===id);
   activeSession = session || 'morning';
-  sheetSel = {};
+  sheetSel = kind==='none'?{kind:'none'}:{};
+  sheetReadingId = null;
   const inp = activeInput;
-  const helpText = (activeSession !== 'morning' && SESSION_HELP[inp.id]) ? SESSION_HELP[inp.id] : inp.help;
+  const helpText = kind==='none'?'A day with no movement.':(activeSession !== 'morning' && SESSION_HELP[inp.id]) ? SESSION_HELP[inp.id] : inp.help;
   let body = '';
   if (inp.type==='number') {
     body = `<input class="big-input" type="number" inputmode="decimal" step="${inp.step}" id="entry-val" placeholder="${inp.placeholder}">
@@ -1086,9 +1112,9 @@ function openEntry(id, session) {
               <button class="opt-btn" onclick="pickOpt(this,'source','Other')">Other</button>
             </div>`;
   } else if (inp.type==='bristol') {
-    body = `<div class="sheet-field-label">How was your bowel today?</div><div class="opt-col">
-      <button class="opt-btn" onclick="pickBowel(this,'normal')">Normal<small>No accident today</small></button>
-      <button class="opt-btn" onclick="pickBowel(this,'accident')">Accident<small>A whoosh goes here too</small></button></div>
+    body = kind==='none'?'<p>No movement today.</p>':`<div class="sheet-field-label">This movement</div><div class="opt-col">
+      <button class="opt-btn" onclick="pickBowel(this,'normal')">Normal<small>No accident</small></button>
+      <button class="opt-btn" onclick="pickBowel(this,'accident')">Accident (whoosh)</button></div>
       <div id="bowel-accident" hidden><div class="sheet-field-label">How big was the whoosh?</div><div class="opt-col">
         <button class="opt-btn" onclick="pickOpt(this,'severity','Small')">Small</button>
         <button class="opt-btn" onclick="pickOpt(this,'severity','Big')">Big</button></div>
@@ -1115,27 +1141,27 @@ function openEntry(id, session) {
   }
   let priorReadings = '';
   const yday = yesterdayValue(inp.id);
-  const sameAs = (yday === null || sheetHasTodayValue(inp.id)) ? '' :
+  const sameAs = (inp.id==='bowel' || yday === null || sheetHasTodayValue(inp.id)) ? '' :
     `<button class="same-btn" onclick="useYesterday()">Same as yesterday: <b>${yday.disp}</b></button>`;
   const repeatable = REPEATABLE_IDS.indexOf(inp.id) > -1;
-  const sessLog = sessionReadings(loadDay(), activeSession, inp.id);
-  const sessName = activeSession.charAt(0).toUpperCase()+activeSession.slice(1);
+  const sessLog = inp.id==='bowel'?bowelToday(loadDay()):sessionReadings(loadDay(), activeSession, inp.id);
+  const sessName = inp.id==='bowel'?'Today':activeSession.charAt(0).toUpperCase()+activeSession.slice(1);
   const sessColor = activeSession === 'morning' ? 'var(--green)' : (activeSession === 'noon' ? 'var(--gold)' : 'var(--luff1)');
   if (sessLog.length) {
     priorReadings = `<div class="today-readings"><div class="today-readings-label">${sessName} so far${repeatable?'. A new entry adds to this list, it does not replace it.':''}</div>` +
       sessLog.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${r.when || r.t || ''}</span></div>`).join('') + `</div>`;
   } else if (repeatable) {
-    priorReadings = `<div class="today-readings-hint">Save your reading for this ${activeSession==='night'?'evening':activeSession}. If you need to correct a number later, its time stays on your record.</div>`;
+    priorReadings = inp.id==='bowel'?'<div class="today-readings-hint">Each movement gets its own time. You can log another whenever you need.</div>':`<div class="today-readings-hint">Save your reading for this ${activeSession==='night'?'evening':activeSession}. If you need to correct a number later, its time stays on your record.</div>`;
   }
   document.getElementById('sheet').innerHTML = `
     <div class="entry-content" oninput="entryError('')">
     <div class="sheet-icon">${inp.icon}</div>
-    <div class="sheet-title">${inp.label} <span style="color:${sessColor};">· ${sessName}</span></div>
+    <div class="sheet-title">${inp.label}${inp.id==='bowel'?'':` <span style="color:${sessColor};">· ${sessName}</span>`}</div>
     <div class="sheet-help">${helpText}</div>
     ${priorReadings}
     ${sameAs}
     ${body}
-    ${['glucose','truefasting','pulse','bp'].includes(inp.id)?readingTimeControls():''}
+    ${REPEATABLE_IDS.includes(inp.id)&&kind!=='none'?readingTimeControls():''}
     <div id="entry-error" role="alert" style="color:var(--red);margin:1rem 0;"></div>
     </div>
     <div class="entry-actions">
@@ -1401,6 +1427,12 @@ function readingTime(t) {
 async function saveEntry() {
   const inp = activeInput;
   if (!inp) return;
+  // One Save per bowel sheet. Reopening Home's button always starts a new event,
+  // even when its values and clock match the last movement.
+  if(inp.id==='bowel' && sheetReadingId){
+    readingSaveStatus(sheetReadingId,readingOutbox().some(x=>x.id===sheetReadingId));
+    await flushReadingOutbox();return;
+  }
   let value = null;
   if (inp.type==='number') {
     const v = Number(document.getElementById('entry-val').value || NaN);
@@ -1429,10 +1461,14 @@ async function saveEntry() {
     if (sheetSel.scale === undefined) return;
     value = { intensity: sheetSel.scale, source: sheetSel.source || '' };
   } else if (inp.type==='bristol') {
-    if (sheetSel.type === undefined) return;
-    if(!sheetSel.kind)return entryError('Please choose Normal or Accident.');
-    if(sheetSel.kind==='accident'&&!sheetSel.severity)return entryError('Please choose Small or Big.');
-    value = { type: sheetSel.type, kind:sheetSel.kind, severity:sheetSel.kind==='accident'?sheetSel.severity:'', warning:sheetSel.kind==='accident'?(sheetSel.warning||''):'', range:BRISTOL.find(b=>b.n===sheetSel.type).range };
+    if(sheetSel.kind==='none')value={kind:'none',entryMode:'event'};
+    else {
+      if (sheetSel.type === undefined) return;
+      if(!sheetSel.kind)return entryError('Please choose Normal or Accident.');
+      if(sheetSel.kind==='accident'&&!sheetSel.severity)return entryError('Please choose Small or Big.');
+      if(sheetSel.kind==='accident'&&!sheetSel.warning)return entryError('Please choose With warning or No warning.');
+      value = { entryMode:'event', type: sheetSel.type, kind:sheetSel.kind, severity:sheetSel.kind==='accident'?sheetSel.severity:'', warning:sheetSel.kind==='accident'?(sheetSel.warning||''):'', range:BRISTOL.find(b=>b.n===sheetSel.type).range };
+    }
   } else if (inp.type==='hydration') {
     if (!sheetSel.tag) return;
     value = sheetSel.tag;
@@ -1444,20 +1480,22 @@ async function saveEntry() {
     value = sheetSel.multi;
   }
   const t = stamp();
-  const taken=readingTime(t);if(taken===null)return entryError('Please choose the time you took this reading.');
+  const taken=value?.kind==='none'?{}:readingTime(t);if(taken===null)return entryError('Please choose the time you took this reading.');
   const automaticTime=!document.getElementById('taken-earlier')?.checked;
-  if (['glucose','truefasting','pulse','bp'].includes(inp.id) && !taken.takenAt) {
+  if (REPEATABLE_IDS.includes(inp.id) && !taken.takenAt) {
     const d=new Date(t.iso);
     taken.takenAt=t.iso; taken.takenAtLocal=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   }
-  const day = loadDay();
+  if(inp.id==='bowel')activeSession=sessionForEntry({iso:taken.takenAt||t.iso});
+  const bowelKey=inp.id==='bowel'?'fh_'+localDayStr(new Date(taken.takenAt||t.iso)):null;
+  const day = bowelKey?JSON.parse(localStorage.getItem(bowelKey)||'{}'):loadDay();
   day[activeSession] = day[activeSession] || {};
   const beforeCoffee=sheetSel.beforeCoffee||'';
   const entry = { disp: displayVal(inp, value), when: stampFull(), iso: t.iso, value, beforeCoffee, takenAtAuto:automaticTime, ...taken };
   // double-tap guard: an identical reading within 2 minutes of the last one is a duplicate
   const priorList = (day[activeSession][inp.id] || []);
   const prior = priorList[priorList.length - 1];
-  if (prior && JSON.stringify(prior.value) === JSON.stringify(entry.value) && ((automaticTime&&(prior.takenAtAuto||prior.takenAt===prior.iso))||(prior.takenAt||'')===(entry.takenAt||'')) && (prior.beforeCoffee||'')===beforeCoffee && prior.iso && (new Date(t.iso) - new Date(prior.iso)) < 2 * 60 * 1000) {
+  if (inp.id!=='bowel' && prior && JSON.stringify(prior.value) === JSON.stringify(entry.value) && ((automaticTime&&(prior.takenAtAuto||prior.takenAt===prior.iso))||(prior.takenAt||'')===(entry.takenAt||'')) && (prior.beforeCoffee||'')===beforeCoffee && prior.iso && (new Date(t.iso) - new Date(prior.iso)) < 2 * 60 * 1000) {
     const flash=document.getElementById('saved-flash');flash.dataset.readingId=prior.readingId||prior.iso;
     readingSaveStatus(flash.dataset.readingId,readingOutbox().some(x=>x.id===flash.dataset.readingId));
     await flushReadingOutbox();
@@ -1475,6 +1513,7 @@ async function saveEntry() {
   try {
     storeReadingOutbox(readingOutbox().concat(requests.map(payload=>({key:entry.readingId+':'+payload.field,id:entry.readingId,payload}))));
   } catch(e) {return entryError('Your phone could not keep this reading. Please free some space and try Save again.');}
+  if(inp.id==='bowel')sheetReadingId=entry.readingId;
   if (REPEATABLE_IDS.indexOf(inp.id) > -1 || inp.id==='truefasting') {
     day[activeSession][inp.id] = day[activeSession][inp.id] || [];
     day[activeSession][inp.id].push(entry);
@@ -1489,7 +1528,7 @@ async function saveEntry() {
     day.morning.truefasting=day.morning.truefasting||[];
     day.morning.truefasting.push({...entry});
   }
-  saveDay(day);
+  if(bowelKey)localStorage.setItem(bowelKey,JSON.stringify(day));else saveDay(day);
   renderSessions();
   if(typeof renderFocusCard==='function')renderFocusCard();
   document.getElementById('saved-flash').dataset.readingId=entry.readingId;
@@ -2038,15 +2077,15 @@ async function hydrateFromSheet() {
     let changed = false;
     (r.logs || []).forEach(function(row){
       if(readingOutbox().some(x=>x.payload.action==='delete_entry' && (x.id===readingIdOf(row) || x.payload.timestamp===row.timestamp)))return;
-      const d = new Date(row.timestamp);
+      const taken=String(row.timeLocal||'').match(/\[takenAt:([^;]+);local:([^\]]+)\]/);
+      const d = new Date(row.field==='bowel'?(row.takenAt||(taken&&taken[1])||row.timestamp):row.timestamp);
       if (isNaN(d) || localDayStr(d) !== todayStr) return;
       const inp = INPUTS.find(i => i.id === row.field);
       if (!inp) return;
-      const sid = sessionFromRow(row) || sessionForEntry({ iso: row.timestamp });
+      const sid = row.field==='bowel'?sessionForEntry({iso:d.toISOString()}):sessionFromRow(row) || sessionForEntry({ iso: row.timestamp });
       day[sid] = day[sid] || {};
       const arr = day[sid][inp.id] = day[sid][inp.id] || [];
       if (arr.some(function(e){ return readingIdOf(row)?e.readingId===readingIdOf(row):e.iso===row.timestamp; })) return;
-      const taken=String(row.timeLocal||'').match(/\[takenAt:([^;]+);local:([^\]]+)\]/);
       arr.push({ disp: displayVal(inp, row.value), when: cleanTimeLocal(row.timeLocal), iso: row.timestamp,
         value:row.value, readingId:readingIdOf(row)||row.timestamp, beforeCoffee:row.beforeCoffee||'',
         ...(taken?{takenAt:taken[1],takenAtLocal:taken[2]}:{}) });
