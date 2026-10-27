@@ -1819,7 +1819,7 @@ const MAG_PAUSE_WHY = 'This is nothing to do with your gut. It is your blood pre
 // kept offering them. 200mg is the dose. There is nothing above it to tap.
 // Her dose is 200mg every SECOND night. The tile never said so and never looked
 // at last night, so it ran four nights straight into the 18 Aug gut ache.
-const MAG_DAILY_FROM = '2026-11-02';
+const MAG_DAILY_FROM = '2026-10-27';
 function magDaily(day=localDayStr()){ return day >= MAG_DAILY_FROM; }
 function magSkipTonight(){ return MAG_PAUSED || (!magDaily() && magTookLastNight()); }
 function magTookLastNight(){

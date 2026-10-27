@@ -792,7 +792,7 @@
       "Collagen-Biotin",
       "Psyllium"
     ],
-    "reviewedOn": "2026-10-25",
+    "reviewedOn": "2026-10-27",
     "restored": [
       {
         "name": "Magnesium glycinate",
@@ -841,7 +841,7 @@
     "detail": {
       "Alpha lipoic acid": {
         "say": "Alpha Lipoic Acid",
-        "dose": "600mg once a day, 30 minutes before breakfast",
+        "dose": "600mg every day, 30 minutes before breakfast. Every day, no gaps",
         "doses": [
           "600mg",
           "100mg"
@@ -900,7 +900,7 @@
         "appSwitch": "MAG_PAUSED",
         "changes": [
           {
-            "on": "2026-11-02",
+            "on": "2026-10-27",
             "dose": "200mg every night"
           }
         ]
@@ -1043,7 +1043,7 @@
         "why": "Not part of your plan. Your sleep was the same on gummy nights and other nights. If pain keeps you awake, one gummy at most, and sit on the edge of the bed for a moment before you stand."
       }
     ],
-    "labsRequest": "A1c, creatinine with eGFR, cystatin C (she takes creatine), B12, ferritin, CRP, albumin, lipids."
+    "labsRequest": "Fasting insulin, C-peptide, fructosamine, A1c, serum C4, cystatin C, creatinine, serum magnesium, electrolytes, lipids, vitamin D, fecal elastase. Ask for a heart rate nerve test, a stomach emptying scan and a home sleep test. Never mention peptides."
   },
   "labs": {
     "status": "NONE IN THE RECORD. 177 days on protocol and not one blood test in this file.",
