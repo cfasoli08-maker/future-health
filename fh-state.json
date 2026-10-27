@@ -180,12 +180,12 @@
     },
     {
       "id": "magnesium-nightly-2026-11-02",
-      "opened": "2026-11-02",
-      "start": "2026-11-02",
-      "readout": "2026-11-16",
-      "status": "running, starts 2026-11-02",
+      "opened": "2026-10-27",
+      "start": "2026-10-27",
+      "readout": "2026-11-10",
+      "status": "running, started 2026-10-27",
       "variable": "magnesiumMg",
-      "change": "200mg magnesium glycinate every night from 2 November",
+      "change": "200mg magnesium glycinate every night from 27 October (moved up from 2 November on 27 Oct: diastolic back near 75)",
       "success": "Morning bottom over 60, top at or over 105, gut no worse over 14 days.",
       "readoutSpec": {
         "days": 14,
