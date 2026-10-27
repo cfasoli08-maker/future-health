@@ -1005,9 +1005,10 @@ function bowelToday(day){
 }
 function bowelTodayTile(day){
   const entries=bowelToday(day), movements=entries.filter(r=>r.value?.kind!=='none');
-  const text=movements.length?'Logged today: '+movements.length:entries.length?'No movement today':'';
+  const times=movements.map(r=>new Date(r.takenAt||r.iso).toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}));
+  const text=movements.length?movements.length+' logged today: '+times.join(', '):entries.length?'No movement today':'';
   return `<div class="tile" id="bowel-today"><div class="tile-label">Bowel today</div>${text
-    ? '<p>'+text+'</p>'
+    ? '<p>'+text+'</p><button class="opt-btn" onclick="openBowel()">Log another movement</button>'
     : '<p>Did you have a movement today?</p><div class="opt-col"><button class="opt-btn" onclick="logNoBowelToday()">No movement today</button><button class="opt-btn" onclick="openBowel()">I forgot to log one</button></div>'}</div>`;
 }
 function openBowel(){ openEntry('bowel',sessionForEntry({iso:new Date().toISOString()})); }
@@ -1429,10 +1430,9 @@ async function saveEntry() {
   if (!inp) return;
   // One Save per bowel sheet. Reopening Home's button always starts a new event,
   // even when its values and clock match the last movement.
-  if(inp.id==='bowel' && sheetReadingId){
-    readingSaveStatus(sheetReadingId,readingOutbox().some(x=>x.id===sheetReadingId));
-    await flushReadingOutbox();return;
-  }
+  // A second Save on the same sheet closes it, so the next movement always
+  // starts on a fresh sheet instead of being swallowed.
+  if(inp.id==='bowel' && sheetReadingId){ closeSheet(); return; }
   let value = null;
   if (inp.type==='number') {
     const v = Number(document.getElementById('entry-val').value || NaN);
@@ -1533,6 +1533,9 @@ async function saveEntry() {
   if(typeof renderFocusCard==='function')renderFocusCard();
   document.getElementById('saved-flash').dataset.readingId=entry.readingId;
   readingSaveStatus(entry.readingId,true);
+  // A bowel save never holds the sheet open while the sheet is slow. The
+  // outbox keeps retrying and Home shows the saving line.
+  if(inp.id==='bowel')setTimeout(()=>{if(activeInput===inp)closeSheet();},700);
   await flushReadingOutbox();
 }
 
