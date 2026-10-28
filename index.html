@@ -56,13 +56,12 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .days-number { font-family:'Oswald',sans-serif; font-size:3.4rem; font-weight:600; color:var(--sage); line-height:1; }
 .days-label { font-size:1.05rem; color:var(--muted); font-weight:500; margin-top:0.3rem; }
 .days-sub { font-size:0.9rem; color:var(--muted); font-weight:300; margin-top:0.4rem; }
-.focus-card { background:linear-gradient(160deg,var(--gold) 0%,#B8912F 100%); color:#fff; border-radius:var(--radius); padding:1.5rem 1.4rem; margin-bottom:0.9rem; box-shadow:0 2px 10px rgba(0,0,0,0.08); }
-.focus-eyebrow { font-size:0.78rem; letter-spacing:0.25em; text-transform:uppercase; opacity:0.85; margin-bottom:0.5rem; }
+.focus-card { background:var(--gold-soft); color:#3B2D16; border-radius:var(--radius); padding:1.5rem 1.4rem; margin-bottom:0.9rem; box-shadow:0 2px 10px rgba(0,0,0,0.08); }
+.focus-eyebrow { font-size:0.78rem; letter-spacing:0.25em; text-transform:uppercase; margin-bottom:0.5rem; }
 .focus-goal { font-family:'Cormorant Garamond',serif; font-size:1.75rem; font-weight:600; line-height:1.15; }
-.focus-sub { font-size:0.98rem; opacity:0.92; margin:0.5rem 0 1.1rem; line-height:1.5; }
-.focus-item { display:flex; gap:0.85rem; align-items:flex-start; padding:0.7rem 0; border-top:1px solid rgba(255,255,255,0.28); font-size:0.98rem; line-height:1.5; }
-.focus-num { flex-shrink:0; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.22); display:flex; align-items:center; justify-content:center; font-family:'Oswald',sans-serif; font-weight:600; }
-.focus-item span { opacity:0.92; }
+.focus-sub { font-size:0.98rem; margin:0.5rem 0 1.1rem; line-height:1.5; }
+.focus-item { display:flex; gap:0.85rem; align-items:flex-start; padding:0.7rem 0; border-top:1px solid rgba(59,45,22,0.2); font-size:0.98rem; line-height:1.5; }
+.focus-num { flex-shrink:0; width:28px; height:28px; border-radius:50%; background:rgba(59,45,22,0.08); display:flex; align-items:center; justify-content:center; font-family:'Oswald',sans-serif; font-weight:600; }
 .when-stamp { font-size:0.78rem; color:var(--muted); text-align:right; margin:-0.5rem 0 0.9rem; font-style:italic; }
 /* Her button. Big, because she is 75 and reads this on a phone. */
 .ask-card { background:var(--surface); border-radius:var(--radius); padding:1.1rem; margin-bottom:0.9rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
@@ -76,6 +75,9 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 
 /* ── INPUT TILES ── */
 .tile { border-radius:var(--radius); padding:1.5rem 1.4rem; margin-bottom:0.9rem; min-height:112px; display:flex; align-items:center; gap:1.1rem; cursor:pointer; border:3px solid var(--green); background:var(--green-soft); transition:transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease; box-shadow:0 2px 8px rgba(0,0,0,0.04); will-change:transform; }
+#bowel-today { display:block; cursor:default; }
+#bowel-today p { margin:0.7rem 0; line-height:1.5; }
+#bowel-today .opt-btn { width:100%; min-width:0; white-space:normal; overflow-wrap:anywhere; }
 .tile:active { transform:scale(0.98); }
 .tile.done { border-color:var(--luff1); background:var(--luff-soft); }
 .tile-icon { font-size:2.4rem; line-height:1; flex-shrink:0; }
@@ -440,21 +442,23 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
       <div class="days-sub">Since March 7, 2026</div>
     </div>
 
-    <button type="button" class="ask-btn" id="bowel-button" onclick="openBowel()">Bowel</button>
-    <p>Tap whenever you go, any time of day. You do not have to go every day.</p>
+    <div class="bowel-action">
+      <button type="button" class="ask-btn" id="bowel-button" onclick="openBowel()">Bowel</button>
+      <p class="food-hint">Log each movement when it happens, any time of day. You do not have to go every day.</p>
+    </div>
 
     <div class="focus-card" id="focus-card" aria-live="polite">
       <div class="focus-eyebrow">This week's focus</div>
       <p>Reading your recent mornings, evening sugar and pressure.</p>
     </div>
-    <div class="food-entry-card" id="yesterday-food-home"></div>
+
 
     <!-- ══ HER BUTTON ══
          She waited for her son to be at a computer. Now she does not. This
          reads everything she has ever logged and tells her how she is doing,
          right now, and it tells Christopher she asked. It can never post an
          Update tile, because a tile cannot be deleted and that stays his. ══ -->
-    <div class="ask-card">
+    <div class="ask-card" hidden>
       <button class="ask-btn" id="ask-btn" onclick="askHowAmIDoing()">How am I doing right now?</button>
       <div class="ask-note" id="ask-note">It reads your whole record. It takes about a minute.</div>
     </div>
@@ -470,42 +474,35 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     <div class="section-label">Tap each one as you take it today</div>
     <div id="supp-ticks"></div>
 
-    <div class="section-label">Have a question about a supplement?</div>
-    <div class="search-wrap" style="margin-bottom:0.7rem;">
-      <span class="search-icon">💊</span>
-      <input class="search-input" id="supp-question" placeholder="Type its name, like collagen or fish oil">
-    </div>
-    <button class="food-save" style="width:100%;" onclick="askSupp()">Send to Christopher ✓</button>
-    <div class="food-hint" id="supp-question-hint" style="margin-top:0.6rem;"></div>
-
-    <button class="tier-btn tier-amber" style="margin-top:1rem;" onclick="toggleTier('supp-review-list',this)">
-      <div class="tier-dot"></div>
-      <div><div class="tier-btn-title">Sent to Christopher</div><div class="tier-btn-sub">Your questions waiting for his next review</div></div>
-      <div class="tier-arrow">›</div>
-    </button>
-    <div class="tier-list" id="supp-review-list"></div>
+    <div id="ask-slot-supps"><section id="ask-box" class="food-entry-card">
+      <div class="section-label">Ask</div><p>Ask about food or supplements. Your answer appears here after tomorrow morning's review.</p>
+      <textarea class="food-textarea" id="ask-input" placeholder="What would you like to know?"></textarea>
+      <button class="food-save" onclick="sendAsk()">Send question</button>
+      <p id="ask-hint" role="status"></p><div id="ask-answers"></div>
+    </section></div>
 
     <div class="section-label">Full supplement guide</div>
     <button class="tier-btn tier-green" onclick="toggleTier('supp-green',this)">
       <div class="tier-dot"></div>
-      <div><div class="tier-btn-title">Green · Allowed</div><div class="tier-btn-sub">In the protocol, take as directed</div></div>
+      <div><div class="tier-btn-title">Green · Allowed</div><div class="tier-btn-sub">On your list. Take these as written.</div></div>
       <div class="tier-arrow">›</div>
     </button>
     <div class="tier-list" id="supp-green"></div>
 
     <button class="tier-btn tier-amber" onclick="toggleTier('supp-yellow',this)">
       <div class="tier-dot"></div>
-      <div><div class="tier-btn-title">Yellow · Under review</div><div class="tier-btn-sub">Not ruled in or out yet, do not start on your own</div></div>
+      <div><div class="tier-btn-title">Under review</div><div class="tier-btn-sub">Things we are testing now, with the date we will know</div></div>
       <div class="tier-arrow">›</div>
     </button>
     <div class="tier-list" id="supp-yellow"></div>
 
     <button class="tier-btn tier-red" onclick="toggleTier('supp-red',this)">
       <div class="tier-dot"></div>
-      <div><div class="tier-btn-title">Red · Do not use</div><div class="tier-btn-sub">Out of the protocol completely</div></div>
+      <div><div class="tier-btn-title">Not for you</div><div class="tier-btn-sub">Leave these out.</div></div>
       <div class="tier-arrow">›</div>
     </button>
     <div class="tier-list" id="supp-red"></div>
+    <button class="tier-btn tier-amber" onclick="toggleTier('supp-logging',this)"><div class="tier-dot"></div><div><div class="tier-btn-title">Logging only</div><div class="tier-btn-sub">Only log it if you take it. Not part of your plan.</div></div><div class="tier-arrow">›</div></button><div class="tier-list" id="supp-logging"></div>
   </div>
 
   <!-- ══ FOOD ══ -->
@@ -522,13 +519,11 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
       <button class="food-save" style="width:100%;padding:1.3rem;font-size:1.4rem;" onclick="mealTap()">I just ate ✓</button>
       <div class="food-hint" style="margin-top:0.6rem;">One tap saves the meal time. Add what you ate below, or use a familiar meal above.</div>
       <div class="sheet-field-label">Ate earlier and forgot? Type when:</div>
-      <input class="sheet-text" id="meal-when" placeholder="For example: 8:30 this morning">
+      <input class="sheet-text" id="meal-when" placeholder="e.g. 8:30 am">
       <div class="sheet-field-label">What did you eat? (optional)</div>
-      <textarea class="food-textarea" id="food-input" style="min-height:90px;" placeholder="Type it or tap the microphone on your keyboard and just say it. Example: Scrambled eggs with butter at home."></textarea>
+      <textarea class="food-textarea" id="food-input" style="min-height:90px;" placeholder="e.g. Eggs with butter"></textarea>
       <div class="food-btn-row">
         <button class="food-save" onclick="saveFood()">Save meal details ✓</button>
-        <label class="food-photo" for="food-cam">📷</label>
-        <input type="file" id="food-cam" accept="image/*" capture="environment" style="display:none" onchange="foodPhoto(this)">
       </div>
       <div class="food-hint" id="food-hint">Your entries stay below so you can see everything you logged today.</div>
     </div>
@@ -543,21 +538,7 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     </button>
     <div class="tier-list" id="food-history-list"></div>
 
-    <div class="section-label">Have a question about a food?</div>
-    <div class="search-wrap" style="margin-bottom:0.7rem;">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" id="food-search" placeholder="Type a food, like cheese or apple" oninput="searchFood(this.value)">
-    </div>
-    <div id="food-search-results"></div>
-    <button class="food-save" style="width:100%;" onclick="askFood()">Send to Christopher ✓</button>
-    <div class="food-hint" id="food-question-hint" style="margin-top:0.6rem;"></div>
-
-    <button class="tier-btn tier-amber" style="margin-top:1rem;" onclick="toggleTier('food-review-list',this)">
-      <div class="tier-dot"></div>
-      <div><div class="tier-btn-title">Waiting for review</div><div class="tier-btn-sub">Foods you asked about, on Christopher's desk</div></div>
-      <div class="tier-arrow">›</div>
-    </button>
-    <div class="tier-list" id="food-review-list"></div>
+    <div id="ask-slot-food"></div>
 
     <div class="section-label">Your food guide</div>
     <button class="tier-btn tier-green" onclick="toggleTier('food-green',this)">
@@ -1710,6 +1691,7 @@ async function fetchWhooshesToday() {
 
 /* ── UPDATES TAB ── dated tiles, newest expanded on top, tap any tile to expand ── */
 function fmtUpdateBody(raw) {
+  raw=humanDates(String(raw||'').replace(/<!-- fh-ask:[\s\S]*? -->/g,''));
   return (raw||'').replace(/</g,'&lt;').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
 }
 
@@ -1728,7 +1710,7 @@ async function loadQuestionsClient() {
     section.style.display = 'block';
     wrap.innerHTML = open.map(function(q, i){
       return `<div class="upd-tile open" style="border-left:5px solid var(--gold);">
-        <div class="upd-tile-head"><div><div class="upd-tile-title">${String(q.question||'').replace(/</g,'&lt;')}</div><div class="upd-tile-date">${String(q.timeLocal||'').replace(/</g,'&lt;')}</div></div></div>
+        <div class="upd-tile-head"><div><div class="upd-tile-title">${String(q.question||'').replace(/</g,'&lt;')}</div><div class="upd-tile-date">${escapeHtml(humanDates(String(q.timestamp||q.timeLocal||'').slice(0,10)))}</div></div></div>
         <div class="upd-tile-body">
           <textarea class="sheet-text" id="quest-answer-${i}" style="min-height:80px;margin-top:0.4rem;" placeholder="Type your answer, or tap the microphone and say it"></textarea>
           <button class="food-save" style="width:100%;margin-top:0.6rem;" onclick="answerQuestion('${String(q.timestamp).replace(/'/g,'')}',${i})">Send answer ✓</button>
@@ -1762,7 +1744,7 @@ function sendUpdateComment() {
 async function loadUpdatesClient() {
   const r=await sheetCall({action:'get_updates',clientId:currentClientId});
   window.__focusUpdates=r&&r.success ? r.updates||[] : [];
-  renderFocusCard();
+  renderFocusCard();renderYesterdayFood();
 }
 
 /* ── SUPPLEMENTS ── */
@@ -1823,7 +1805,11 @@ const MAG_PAUSE_WHY = 'This is nothing to do with your gut. It is your blood pre
 // Her dose is 200mg every SECOND night. The tile never said so and never looked
 // at last night, so it ran four nights straight into the 18 Aug gut ache.
 const MAG_DAILY_FROM = '2026-10-27';
-function magDaily(day=localDayStr()){ return day >= MAG_DAILY_FROM; }
+function magDaily(day=localDayStr()){
+ const d=window.__focusState?.protocol?.detail?.['Magnesium glycinate'];
+ const c=(d?.changes||[]).filter(c=>c.on<=day).sort((a,b)=>a.on.localeCompare(b.on)).at(-1);
+ return c?/every night/.test(c.dose):day>=MAG_DAILY_FROM;
+}
 function magSkipTonight(){ return MAG_PAUSED || (!magDaily() && magTookLastNight()); }
 function magTookLastNight(){
   if(window.__magLastNight!==undefined&&window.__magLastNight!==null)return window.__magLastNight;
@@ -1837,36 +1823,9 @@ function magTookLastNight(){
 const TYL = { name:'Tylenol 650', pill:650, max:4, sub:'Tap the box that matches your TOTAL pills so far today' };
 const GUM = { name:'Indica gummy 2.5mg', max:1, sub:"Not part of your plan. Your sleep was the same on gummy nights and other nights. If pain keeps you awake, one gummy at most, and sit on the edge of the bed for a moment before you stand." };
 
-const SUPP_GREEN = [
-  ...PENS.map(p=>({name:p.name,note:p.purpose})),
-  { name:'Alpha Lipoic Acid', note:"600 mg: all six capsules together, 30 minutes before breakfast, with a full glass of water. It feeds the nerves in your feet and your gut. If it upsets your stomach, take it with breakfast instead." },
-  { name:'Florastor (Saccharomyces boulardii)', note:'1 capsule with breakfast daily.' },
-  { name:'Magnesium Glycinate', note:magDaily() ? "Magnesium glycinate 200 mg: take tonight, at bedtime. Every night now. It helps you sleep deeper and wake less. Never take more than one 200 mg dose in a night." : '200mg at bedtime every second night. Take tonight or Not tonight is shown above. From Monday 2 November, 200mg every night.' },
-  { name:'Vitamin D3', note:'4000 IU in the morning. Four 1000 IU capsules.' },
-  { name:'Vitamin K2 as MK-7', note:'One 100mcg capsule in the morning with your D3. You told me on August 21 that you take one, not two, and the app was still saying two. That is corrected. It directs calcium into your bones and away from your arteries, and it needs a little fat in the meal to be absorbed.' },
-  { name:'Vitamin C', note:'500mg chewable, morning and evening.' },
-  { name:'Sauerkraut', note:'Cleared, both ways, on September 8. It is not causing your episodes and it is not raising your morning number. The nine day reintroduction answered both. Keep having your tablespoon in the morning and keep ticking the tile.' },
-  { name:'Creatine', note:"Creatine: 4 scoops (20 g) with food, every day. 2 scoops with breakfast and 2 scoops with supper, each stirred into a full glass of water, milk or your shake. Drink 2 extra glasses of water during the day. It holds the muscle in your arms and legs. If your stool gets loose, take 1 scoop with each meal instead." },
-  { name:'Whey Protein Isolate (Diesel)', note:'Cleared. The label question is settled: zero sugar, zero carbs per scoop, sweetened with stevia. One condition only, drink it before 4pm. Both high bedtime readings followed a late-day drink. Your last one was August 18. This is the easiest way to hold the muscle on your arms and legs, and you told me you enjoyed it, so it is worth starting again.' }
-];
-const SUPP_YELLOW = [
-  { name:'Magnesium — the amount above 200mg', note:'Closed Aug 14, and the answer is no. Two separate 400mg nights, two sore guts the next day. 200mg is your number. Nothing above it goes back in without a reason.' },
-  { name:'Melatonin', note:'Not currently in use. Situational only if reintroduced, 0.5mg to a maximum of 1mg.' },
-  { name:'Indica gummy 2.5mg', note:"Not part of your plan. Your sleep was the same on gummy nights and other nights. If pain keeps you awake, one gummy at most, and sit on the edge of the bed for a moment before you stand." },
-  { name:'Enterogermina — NO, not while Florastor is working', note:'Answered. You already take Florastor, and you told me yourself that your night episodes stopped after you started it. Adding a second gut bug on top would muddy the one thing you have credited with working. It is not a no forever. It is a no while Florastor is doing the job.' },
-  { name:'Ashwagandha — NO, there is nothing for it to treat', note:'Answered. It is for stress, and you told me you do not get wound up and worried, and your record agrees: stress is logged on 6 of your last 30 days, never above 5 out of 10, and mostly marked Other. There is no problem here for it to solve, so it would only be one more pill.' },
-  { name:'Marine Collagen', note:'Not yet added. Queued in sequence.' },
-  { name:'BPC-157 Oral', note:'Dosing not yet discussed. Pending review.' }
-];
-const SUPP_RED = [
-  { name:'Ibuprofen (Advil, Motrin, Robax Platinum)', note:'Stop. This is the one that matters most. Ibuprofen strips the protective lining of the gut, and your three roughest gut days this summer all followed a dose. Robax Platinum contains ibuprofen even though the box does not say it loudly. Tylenol 650 is a different drug, it does not do this, and it stays fine to use.' },
-  { name:'All other NSAIDs (Aleve, naproxen, Aspirin, Voltaren pills)', note:'Same family as ibuprofen, same effect on the gut lining. Ask before taking anything new for pain.' },
-  { name:'Psyllium Husk', note:'Answered, and the answer is no. It is normally the right idea for loose stools, but not for your stomach. Yours already empties too slowly, which is why you feel full after a few bites and why your belly swells by evening. Psyllium slows it further and would make both worse. It also binds the fat your Vitamin D3 and K2 need. Do not use it.' },
-  { name:'Digestive Enzyme Formula', note:'Still a no for now, and now you know why. This was on your do-not-use list with no reason written down anywhere, which I have fixed. The reason to hold it: you told me on September 24 that your stool is always greasy, which is worth taking seriously, but there is no test result to aim an enzyme at and no bloodwork since March. Adding it now would also land in the middle of your magnesium week. This is the first thing to raise with your doctor.' },
-  { name:'Sublingual Vitamin B12', note:'Stop immediately. Check the label for biotin before discarding.' },
-  { name:'5-HTP', note:'Do not use.' },
-  { name:'Collagen-Biotin Beauty Formula', note:'Do not use.' }
-];
+const SUPP_GREEN = []; // The guide is rendered from fh-state.json protocol.
+const SUPP_YELLOW = []; // The guide is rendered from fh-state.json protocol.
+const SUPP_RED = []; // The guide is rendered from fh-state.json protocol.
 
 
 function penDate(d,weekday) { const date=new Date(d+'T12:00:00'); return (weekday?date.toLocaleDateString('en-CA',{weekday:'long'})+' ':'')+date.getDate()+' '+date.toLocaleDateString('en-CA',{month:'long'}); }
@@ -1964,9 +1923,7 @@ function renderSupps() {
   html += '<div class="section-label">Only if you took one</div><p>'+GUM.sub+'</p>';
   html += counterTile(GUM.name, '', day.gumCount || 0, day.gumTime || '', GUM.max, 'setGum', 'Log one gummy only if you took it.');
   document.getElementById('supp-ticks').innerHTML = html;
-  document.getElementById('supp-green').innerHTML  = SUPP_GREEN.map(x=>x.name==='Magnesium Glycinate'?{...x,note:magDaily()?"Magnesium glycinate 200 mg: take tonight, at bedtime. Every night now. It helps you sleep deeper and wake less. Never take more than one 200 mg dose in a night.":'200mg at bedtime every second night. From Monday 2 November, 200mg every night.'}:x).map(tierItem).join('');
-  document.getElementById('supp-yellow').innerHTML = SUPP_YELLOW.map(tierItem).join('');
-  document.getElementById('supp-red').innerHTML    = SUPP_RED.map(tierItem).join('');
+  renderProtocolGuide();
 }
 
 const _suppTimers = {};
@@ -2016,7 +1973,7 @@ function setGum(n, ev) {
 }
 
 function tierItem(x) {
-  return `<div class="tier-item"><div class="tier-item-name">${x.name}</div><div class="tier-item-note">${x.note}</div></div>`;
+  return `<div class="tier-item"><div class="tier-item-name">${escapeHtml(humanDates(x.name))}</div><div class="tier-item-note">${escapeHtml(humanDates(x.note))}</div></div>`;
 }
 
 function renderCreatine(day) {
@@ -2198,22 +2155,54 @@ function dedupeQueries(rows) {
 }
 async function loadReviewLists() {
   try {
-    const r = await sheetCall({ action:'get_food_searches', clientId: currentClientId });
-    if (!r || !r.success) return;
-    const rows = r.searches || [];
-    const suppQ = [], foodQ = [];
-    // foods already on her lists are answered, not waiting
-    const answered = function(q){ const ql = q.toLowerCase(); return FOOD_GREEN.concat(FOOD_YELLOW, FOOD_RED).some(function(f){ return f.toLowerCase().includes(ql); }); };
-    dedupeQueries(rows).forEach(function(item){
-      if (/^SUPPLEMENT:/i.test(item.q)) suppQ.push({ q: item.q.replace(/^SUPPLEMENT:\s*/i, ''), when: item.when });
-      else if (!answered(item.q)) foodQ.push(item);
-    });
-    const li = function(item){ return `<div class="tier-item"><div class="tier-item-name">${String(item.q).replace(/</g,'&lt;')}</div><div class="tier-item-note">${String(item.when).replace(/</g,'&lt;')}</div></div>`; };
-    const suppEl = document.getElementById('supp-review-list');
-    if (suppEl) suppEl.innerHTML = suppQ.length ? suppQ.slice(-12).reverse().map(li).join('') : '<div class="tier-item"><div class="tier-item-note">Nothing waiting. Ask about any supplement above.</div></div>';
-    const foodEl = document.getElementById('food-review-list');
-    if (foodEl) foodEl.innerHTML = foodQ.length ? foodQ.slice(-12).reverse().map(li).join('') : '<div class="tier-item"><div class="tier-item-note">Nothing waiting. Search any food above.</div></div>';
-  } catch(e) { console.error('Future Health review lists error', e); }
+    const [r,u]=await Promise.all([sheetCall({action:'get_food_searches',clientId:currentClientId}),sheetCall({action:'get_updates',clientId:currentClientId})]);
+    if(!r?.success||!u?.success)throw Error('Questions could not be read');
+    window.__askRows=r.searches||[];window.__askUpdates=u.updates||[];renderAsk();
+  }catch(e){const el=document.getElementById('ask-hint');if(el)el.textContent='Your questions could not be loaded. Please try again.';}
+}
+// BEGIN ASK CONTRACT
+function askKey(row){return encodeURIComponent(String(row.timestamp||row.when||row.timeLocal||'')+'|'+String(row.query||row.q||'').trim());}
+function realQuestions(rows){
+ const text=r=>String(r.query||r.q||'').trim();
+ // Version 17 returns timestamp, timeLocal and query, with no matched column.
+ // Only later, longer typing supersedes a legacy prefix. Explicit asks always stay.
+ const subject=q=>q.replace(/^(?:can(?:no(?:t)?)?|could|should|may|do|is|are)\b\s*/i,'').replace(/^I\b\s*/i,'').replace(/^(?:have|take|eat|use|drink)\b\s*/i,'').replace(/^(?:a|an|the|some)\b\s*/i,'').replace(/[?!.\s]/g,'');
+ const real=rows.filter((r,i)=>{const q=text(r);return /^ASK:/i.test(q)||q.length>=4&&subject(q).length>0&&!rows.some((other,j)=>j>i&&text(other).length>q.length&&text(other).toLowerCase().startsWith(q.toLowerCase()));});
+ const seen=new Set(),out=[];
+ for(const r of real){const key=askKey(r);if(seen.has(key))continue;seen.add(key);
+  const q=String(r.query||r.q||'').trim();
+  if(/^ASK:/i.test(q)){out.push(r);continue;}
+  out.push(r);
+ }
+ return out.sort((a,b)=>String(a.timestamp||a.when||a.timeLocal||'').localeCompare(String(b.timestamp||b.when||b.timeLocal||''))||rows.indexOf(a)-rows.indexOf(b));
+}
+function askMarker(row){return '<!-- fh-ask:'+askKey(row)+' -->';}
+function visibleAnswer(body){return String(body||'').replace(/<!-- fh-ask:[\s\S]*? -->/g,'').trim();}
+// END ASK CONTRACT
+function renderAsk(){
+  const el=document.getElementById('ask-answers');if(!el)return;
+  el.innerHTML=realQuestions(window.__askRows||[]).slice().reverse().map(q=>{
+    const answer=(window.__askUpdates||[]).find(u=>String(u.body||'').includes(askMarker(q)));
+    return '<article class="tier-item"><b>'+escapeHtml(humanDates(String(q.query||q.q).replace(/^(ASK|SUPPLEMENT):\s*/i,'')))+'</b><p>'+escapeHtml(humanDates(answer?visibleAnswer(answer.body):'Answer coming tomorrow morning'))+'</p></article>';
+  }).join('');
+}
+async function sendAsk(){
+ const input=document.getElementById('ask-input'),hint=document.getElementById('ask-hint'),q=input.value.trim();if(!q)return;
+ const button=document.querySelector('#ask-box button');button.disabled=true;hint.textContent='Sending...';
+ try{const t=stamp(),r=await sheetCall({action:'log_food_search',clientId:currentClientId,query:'ASK: '+q,matched:false,timestamp:t.iso,timeLocal:t.local});
+ if(!r?.success)throw Error('not saved');input.value='';hint.textContent='Sent. Answer coming tomorrow morning.';await loadReviewLists();
+ }catch(e){hint.textContent='Your question did not save. Your words are still here. Please try again.';}finally{button.disabled=false;}
+}
+function renderProtocolGuide(){
+ const s=window.__focusState||{},P=s.protocol;if(!P){document.getElementById('supp-green').textContent='Your current list is loading.';return;}
+ const detail=P.detail||{},today=localDayStr();
+ const entry=(name,why,dose)=>({name,note:[dose,why||detail[name]?.why||'Follow your current plan.'].filter(Boolean).join('. ')});
+ const current=name=>{const d=detail[name]||{},change=(d.changes||[]).filter(c=>c.on<=today).sort((a,b)=>a.on.localeCompare(b.on)).at(-1);return entry(name,d.why,change?.dose||d.dose);};
+ document.getElementById('supp-green').innerHTML=[...(P.on||[]).map(current),...(P.dated||[]).filter(x=>today>=x.starts&&today<=x.ends).map(x=>entry(x.name,detail[x.name]?.why,x.dose)),...(P.foodAllowed||[]).map(x=>entry(x.name,x.why))].map(tierItem).join('');
+ document.getElementById('supp-red').innerHTML=[...(P.red||[]).map(n=>entry(n)),...(P.held||[]).map(x=>entry(x.name,x.why)),...(P.notForYou||[]).map(x=>entry(x.name,x.why))].map(tierItem).join('');
+ document.getElementById('supp-logging').innerHTML=(P.loggingOnly||[]).map(x=>entry(x.name,x.why)).map(tierItem).join('');
+ const tests=(s.tests||[]).filter(t=>/^running/.test(t.status)&&/^\d{4}-\d{2}-\d{2}$/.test(t.readout)&&t.readout>=today&&t.variable);
+ document.getElementById('supp-yellow').innerHTML=tests.map(t=>t.variable==='magnesiumMg'?entry('Magnesium glycinate',detail['Magnesium glycinate'].why+' We check this on '+humanDates(t.readout),current('Magnesium glycinate').note.split('. ')[0]):entry(t.change||t.id,'We check this on '+humanDates(t.readout))).map(tierItem).join('')||'<p>No supplement is under review today.</p>';
 }
 
 function renderFoodHistory() {
@@ -2227,6 +2216,9 @@ function renderFoodHistory() {
 
 // The focus and food summaries use the same saved rows as the rest of the app.
 // Counts run on the phone; food feedback comes from the brain's saved card.
+function humanDates(text) {
+  return String(text==null?'':text).replace(/\b\d{4}-\d{2}-\d{2}\b/g,day=>new Date(day+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}));
+}
 function escapeHtml(s) {
   return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -2265,7 +2257,7 @@ function focusModel(rows,state,today) {
     test:running[0]||null,otherTests:running.slice(1)};
 }
 function focusNews(updates,news,today) {
-  const list=(updates||[]).map(u=>({date:u.timestamp||u.date,title:u.title,body:u.body}));
+  const list=(updates||[]).filter(u=>!/^You asked about /i.test(u.title||'')).map(u=>({date:u.timestamp||u.date,title:u.title,body:visibleAnswer(u.body)}));
   const saved=Array.isArray(news)?news:news&&Array.isArray(news.items)?news.items:[];
   saved.filter(n=>n.told||n.toldAt).forEach(n=>list.push({date:n.toldAt||n.at||n.date,title:n.title||'From your review',body:n.text||n.body||''}));
   const seen=new Set();
@@ -2283,15 +2275,15 @@ function renderFocusCard() {
     ['Last night',m.lastNight===null?'No sugar reading was saved for last night.':'Your last night reading was '+m.lastNight+' mmol/L. The healthy range is 4 to 7.'],
     ['Your pressure this week',m.pressure?'Your '+m.pressure.n+' pressure reading'+(m.pressure.n===1?' was ':'s average ')+m.pressure.sys+'/'+m.pressure.dia+'. Healthy pressure is under 130/80.':'No pressure readings are saved for the past seven days yet.'],
     ['The test running',m.test?(m.test.ask||m.test.exposure||m.test.id)+(m.test.readout?' We will look at the result on '+m.test.readout+'.':''):'There is no test running today. Keep your usual routine and your daily log.']];
-  const food=((window.__focusCard||{}).items||[]).find(i=>i.head==="Yesterday's food");
-  if(food&&typeof food.body==='string')items.push([food.head,food.body]);
-  let html='<div class="focus-eyebrow">This week\'s focus · '+escapeHtml(today)+'</div><div class="focus-goal">Your week, from your own readings.</div>';
-  items.forEach(([head,body],i)=>{html+='<div class="focus-item"><span class="focus-num">'+(i+1)+'</span><div><b>'+escapeHtml(head)+'</b><p>'+escapeHtml(body)+'</p>'+
-    (i===0?'<p>Morning shows how your body handled the night. Night shows how it handled the day\'s food.</p>':'')+'</div></div>';});
-  if(m.otherTests.length)html+='<p>Also being followed: '+m.otherTests.map(t=>escapeHtml(t.exposure||t.id)).join('; ')+'.</p>';
+  const runCard=window.__focusCard;
+  const shown=runCard?.items?.length?runCard.items.map(i=>[i.head,i.body]):items;
+  let html='<div class="focus-goal">'+escapeHtml(humanDates(runCard?.goal||'Your week, from your own readings.'))+'</div>';
+  shown.slice(0,2).forEach(([head,body])=>{html+='<div class="focus-item"><div><b>'+escapeHtml(humanDates(head))+'</b><p>'+escapeHtml(humanDates(body))+'</p></div></div>';});
+  if(shown.length>2)html+='<details><summary style="padding:14px;cursor:pointer">More from your review</summary>'+shown.slice(2).map(([head,body])=>'<div class="focus-item"><div><b>'+escapeHtml(humanDates(head))+'</b><p>'+escapeHtml(humanDates(body))+'</p></div></div>').join('')+'</details>';
   const news=focusNews(window.__focusUpdates,window.__focusNews,today);
-  html+='<h3>What\'s new</h3><p>News from your reviews lives here, with the day it was shared.</p>';
-  html+=news.length?news.map(n=>'<div class="focus-item"><div><small>'+escapeHtml(String(n.date).slice(0,10))+'</small><p><b>'+escapeHtml(n.title)+'</b></p><p>'+escapeHtml(n.body)+'</p></div></div>').join(''):'<p>No new review news in the past two weeks.</p>';
+  html+='<h3>What\'s new</h3>';
+  html+=news.length?news.slice(0,2).map(n=>'<div class="focus-item"><div><small>'+escapeHtml(humanDates(String(n.date).slice(0,10)))+'</small><p><b>'+escapeHtml(humanDates(n.title))+'</b></p><p>'+escapeHtml(humanDates(n.body))+'</p></div></div>').join(''):'<p>No new review news in the past two weeks.</p>';
+  if(news.length>2)html+='<details><summary style="padding:14px;cursor:pointer">More review news</summary>'+news.slice(2).map(n=>'<p><small>'+escapeHtml(humanDates(String(n.date).slice(0,10)))+'</small><br><b>'+escapeHtml(humanDates(n.title))+'</b><br>'+escapeHtml(humanDates(n.body))+'</p>').join('')+'</details>';
   el.innerHTML=html;
 }
 
@@ -2321,32 +2313,11 @@ function renderFoodQuick() {
   const meals=usualMeals(allFoodRows());
   el.innerHTML=meals.length?meals.map(m=>'<button type="button" class="same-btn" data-food="'+escapeHtml(m.name)+'" onclick="quickFood(this.dataset.food)">'+escapeHtml(m.name)+'</button>').join(''):'<p>Your familiar meals will appear here as you log them.</p>';
 }
-function yesterdayNightSugar(date) {
-  const local=JSON.parse(localStorage.getItem('fh_'+date)||'{}');
-  const rows=((window.__clientLogs||{}).logs||[]).filter(r=>r.field==='glucose'&&(r.session||sessionFromRow(r))==='night'&&readingDay(r)===date);
-  const readings=rows.map(r=>({value:r.value,iso:r.takenAt||r.timestamp})).concat(((local.night||{}).glucose||[]));
-  const last=readings.sort((a,b)=>Date.parse(a.iso)-Date.parse(b.iso)).at(-1),n=last&&Number(last.value);
-  return '<p>'+((!last||!Number.isFinite(n))?'Night sugar: no reading saved.':'Night sugar: '+n.toFixed(1)+'; range 4 to 7. '+(n>=4&&n<=7?'In range.':'Outside range.'))+'</p>';
-}
 function renderYesterdayFood() {
-  const yesterday=calendarDay(localDayStr(),-1),rows=allFoodRows().filter(f=>f.timestamp&&localDayStr(new Date(f.timestamp))===yesterday);
-  const slots=new Map();
-  for(const r of rows){
-    const match=String(r.food||'').match(/^(Breakfast|Lunch|Supper|Dinner|Snack):/i);
-    const slot=match?(/dinner/i.test(match[1])?'Supper':match[1][0].toUpperCase()+match[1].slice(1).toLowerCase()):mealKindAt(new Date(r.timestamp).getHours());
-    const foods=slots.get(slot)||new Map(),name=mealName(r.food).replace(/^Dinner:\s*/i,'');
-    for(const food of name.split(/[,;\n]+/).map(f=>f.trim()).filter(Boolean))foods.set(food.toLowerCase(),food);
-    slots.set(slot,foods);
-  }
-  const html='<h3>Yesterday\'s food</h3><p>Your meals from yesterday, checked against your food guide.</p>'+
-    (rows.length?['Breakfast','Lunch','Supper','Snack'].filter(s=>slots.get(s)?.size).map(s=>{
-      const foods=[...slots.get(s).values()],names=foods.slice(0,3).join(', ')+(foods.length>3?' and '+(foods.length-3)+' more':'');
-      const hits=foodMatches(foods.join(', ')),hit=['red','yellow','green'].map(tier=>hits.find(h=>h.tier===tier)).find(Boolean);
-      const feedback=hit?(hit.tier==='green'?'Good: ':'Watch: ')+hit.why[0].toLowerCase()+hit.why.slice(1):'Add the foods next time so your food guide can check this meal.';
-      return '<div class="tier-item"><div class="meal-foods">'+escapeHtml(s+': '+names)+'</div><p class="meal-feedback">'+escapeHtml(feedback)+'</p></div>';
-    }).join(''):'<p>No meals were saved yesterday.</p>')+
-    yesterdayNightSugar(yesterday);
-  for(const id of ['yesterday-food','yesterday-food-home']){const el=document.getElementById(id);if(el){el.innerHTML=html;el.hidden=new Date().getHours()>=12;}}
+  const el=document.getElementById('yesterday-food');if(!el)return;
+  const saved=(window.__focusCard?.items||[]).find(i=>i.head==="Yesterday's food");
+  el.innerHTML="<h3>Yesterday's food</h3><p>"+escapeHtml(humanDates(saved?saved.body:'Your food review will appear here after your morning review.'))+"</p>";
+  el.hidden=false;
 }
 async function quickFood(text) {
   if(foodTier(text)==='red')return;
@@ -2360,515 +2331,642 @@ const FOOD_RULES = {
   "green": [
     {
       "food": "Beef",
-      "why": "Protein for muscle, no sugar."
+      "why": "Protein for muscle, no sugar.",
+      "macro": "protein"
     },
     {
       "food": "Lamb",
-      "why": "Protein for muscle, no sugar."
+      "why": "Protein for muscle, no sugar.",
+      "macro": "protein"
     },
     {
       "food": "Pork",
-      "why": "Protein for muscle, no sugar."
+      "why": "Protein for muscle, no sugar.",
+      "macro": "protein"
     },
     {
       "food": "Chicken skin-on",
-      "why": "Protein and fat, no sugar; the skin keeps calories up."
+      "why": "Protein and fat, no sugar; the skin keeps calories up.",
+      "macro": "protein"
     },
     {
       "food": "Turkey",
-      "why": "Lean protein, no sugar."
+      "why": "Lean protein, no sugar.",
+      "macro": "protein"
     },
     {
       "food": "Organ meats",
-      "why": "Iron, B12 and vitamin A in a small portion; once or twice a week."
+      "why": "Iron, B12 and vitamin A in a small portion; once or twice a week.",
+      "macro": "protein"
     },
     {
       "food": "Eggs any style",
-      "why": "Protein and fat, no sugar; easy on a slow stomach."
+      "why": "Protein and fat, no sugar; easy on a slow stomach.",
+      "macro": "protein"
     },
     {
       "food": "Salmon",
-      "why": "Omega-3 fat and protein, no sugar."
+      "why": "Omega-3 fat and protein, no sugar.",
+      "macro": "protein"
     },
     {
       "food": "Mackerel",
-      "why": "Omega-3 fat and protein, no sugar."
+      "why": "Omega-3 fat and protein, no sugar.",
+      "macro": "protein"
     },
     {
       "food": "Sardines",
-      "why": "Omega-3, protein and calcium from the soft bones."
+      "why": "Omega-3, protein and calcium from the soft bones.",
+      "macro": "protein"
     },
     {
       "food": "Herring",
-      "why": "Omega-3 fat and protein, no sugar."
+      "why": "Omega-3 fat and protein, no sugar.",
+      "macro": "protein"
     },
     {
       "food": "White fish",
-      "why": "Lean protein, soft and easy to digest."
+      "why": "Lean protein, soft and easy to digest.",
+      "macro": "protein"
     },
     {
       "food": "Shellfish",
-      "why": "Protein and zinc, no sugar."
+      "why": "Protein and zinc, no sugar.",
+      "macro": "protein"
     },
     {
       "food": "Butter",
-      "why": "Fat with no sugar; keeps her calories up."
+      "why": "Fat with no sugar; keeps her calories up.",
+      "macro": "mixed"
     },
     {
       "food": "Ghee",
-      "why": "Fat with no sugar, good for cooking."
+      "why": "Fat with no sugar, good for cooking.",
+      "macro": "mixed"
     },
     {
       "food": "Tallow",
-      "why": "Stable cooking fat, no sugar."
+      "why": "Stable cooking fat, no sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Duck fat",
-      "why": "Stable cooking fat, no sugar."
+      "why": "Stable cooking fat, no sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Olive oil",
-      "why": "The best studied fat for the heart; no sugar."
+      "why": "The best studied fat for the heart; no sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Avocado oil",
-      "why": "Stable cooking oil, no sugar."
+      "why": "Stable cooking oil, no sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Coconut oil",
-      "why": "Cooking fat, no sugar."
+      "why": "Cooking fat, no sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Heavy cream",
-      "why": "No sugar to speak of; tested on her gut 1 Sep and cleared."
+      "why": "No sugar to speak of; tested on her gut 1 Sep and cleared.",
+      "macro": "mixed"
     },
     {
       "food": "Parmesan",
-      "why": "Protein and calcium, almost no milk sugar."
+      "why": "Protein and calcium, almost no milk sugar.",
+      "macro": "protein"
     },
     {
       "food": "Aged cheddar",
-      "why": "Protein and calcium, almost no milk sugar."
+      "why": "Protein and calcium, almost no milk sugar.",
+      "macro": "protein"
     },
     {
       "food": "Gruyere",
-      "why": "Protein and calcium, almost no milk sugar."
+      "why": "Protein and calcium, almost no milk sugar.",
+      "macro": "protein"
     },
     {
       "food": "Gouda",
-      "why": "Protein and calcium, almost no milk sugar."
+      "why": "Protein and calcium, almost no milk sugar.",
+      "macro": "protein"
     },
     {
       "food": "Manchego",
-      "why": "Protein and calcium, almost no milk sugar."
+      "why": "Protein and calcium, almost no milk sugar.",
+      "macro": "protein"
     },
     {
       "food": "Havarti",
-      "why": "Low milk sugar; moved up from yellow, soft dairy cleared 29 Aug."
+      "why": "Low milk sugar; moved up from yellow, soft dairy cleared 29 Aug.",
+      "macro": "protein"
     },
     {
       "food": "Mozzarella",
-      "why": "Protein, little sugar; soft dairy cleared by her washout 29 Aug."
+      "why": "Protein, little sugar; soft dairy cleared by her washout 29 Aug.",
+      "macro": "protein"
     },
     {
       "food": "Burrata",
-      "why": "Protein and fat, little sugar; soft dairy cleared 29 Aug."
+      "why": "Protein and fat, little sugar; soft dairy cleared 29 Aug.",
+      "macro": "protein"
     },
     {
       "food": "Ricotta",
-      "why": "Protein for muscle, little sugar; soft dairy cleared 29 Aug."
+      "why": "Protein for muscle, little sugar; soft dairy cleared 29 Aug.",
+      "macro": "protein"
     },
     {
       "food": "Cottage cheese",
-      "why": "High protein for muscle with creatine; soft dairy cleared 29 Aug."
+      "why": "High protein for muscle with creatine; soft dairy cleared 29 Aug.",
+      "macro": "protein"
     },
     {
       "food": "Cream cheese",
-      "why": "Fat with little sugar; soft dairy cleared 29 Aug."
+      "why": "Fat with little sugar; soft dairy cleared 29 Aug.",
+      "macro": "mixed"
     },
     {
       "food": "Spinach",
-      "why": "Cooked soft, almost no sugar; magnesium and folate."
+      "why": "Cooked soft, almost no sugar; magnesium and folate.",
+      "macro": "mixed"
     },
     {
       "food": "Zucchini",
-      "why": "Cooked soft, almost no sugar."
+      "why": "Cooked soft, almost no sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Green beans",
-      "why": "Cooked soft, low sugar."
+      "why": "Cooked soft, low sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Carrots",
-      "why": "Cooked, a side portion; low sugar load."
+      "why": "Cooked, a side portion; low sugar load.",
+      "macro": "mixed"
     },
     {
       "food": "Squash",
-      "why": "Cooked soft, a side portion; gentle on a slow stomach."
+      "why": "Cooked soft, a side portion; gentle on a slow stomach.",
+      "macro": "mixed"
     },
     {
       "food": "Peppers",
-      "why": "Low sugar, vitamin C."
+      "why": "Low sugar, vitamin C.",
+      "macro": "mixed"
     },
     {
       "food": "Asparagus",
-      "why": "Cooked soft, almost no sugar."
+      "why": "Cooked soft, almost no sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Tomato",
-      "why": "Low sugar, soft; she eats it often."
+      "why": "Low sugar, soft; she eats it often.",
+      "macro": "mixed"
     },
     {
       "food": "Cucumber",
-      "why": "Almost no sugar, mostly water."
+      "why": "Almost no sugar, mostly water.",
+      "macro": "mixed"
     },
     {
       "food": "Avocado",
-      "why": "Fat and potassium, almost no sugar."
+      "why": "Fat and potassium, almost no sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Macadamia",
-      "why": "Fat with almost no sugar; a small handful, chewed well."
+      "why": "Fat with almost no sugar; a small handful, chewed well.",
+      "macro": "mixed"
     },
     {
       "food": "Pecans",
-      "why": "Fat with almost no sugar; a small handful, chewed well."
+      "why": "Fat with almost no sugar; a small handful, chewed well.",
+      "macro": "mixed"
     },
     {
       "food": "Walnuts",
-      "why": "Omega-3 fat, low sugar; a small handful, chewed well."
+      "why": "Omega-3 fat, low sugar; a small handful, chewed well.",
+      "macro": "mixed"
     },
     {
       "food": "Almonds",
-      "why": "Low sugar, magnesium; moved up from yellow; a small handful, chewed well."
+      "why": "Low sugar, magnesium; moved up from yellow; a small handful, chewed well.",
+      "macro": "mixed"
     },
     {
       "food": "Hazelnuts",
-      "why": "Low sugar; moved up from yellow; a small handful, chewed well."
+      "why": "Low sugar; moved up from yellow; a small handful, chewed well.",
+      "macro": "mixed"
     },
     {
       "food": "Pistachios",
-      "why": "Low sugar, protein; moved up from yellow; a small handful."
+      "why": "Low sugar, protein; moved up from yellow; a small handful.",
+      "macro": "mixed"
     },
     {
       "food": "Raspberries",
-      "why": "The lowest sugar fruit; a small bowl."
+      "why": "The lowest sugar fruit; a small bowl.",
+      "macro": "mixed"
     },
     {
       "food": "Strawberries",
-      "why": "Low sugar fruit; a small bowl, with cream is perfect."
+      "why": "Low sugar fruit; a small bowl, with cream is perfect.",
+      "macro": "mixed"
     },
     {
       "food": "Blueberries",
-      "why": "Low sugar fruit; a small bowl."
+      "why": "Low sugar fruit; a small bowl.",
+      "macro": "mixed"
     },
     {
       "food": "Sauerkraut",
-      "why": "Cleared 8 Sep: her morning number went down on it, not up."
+      "why": "Cleared 8 Sep: her morning number went down on it, not up.",
+      "macro": "mixed"
     },
     {
       "food": "Coffee with heavy cream",
-      "why": "Fine, but after the morning finger poke, not before."
+      "why": "Fine, but after the morning finger poke, not before.",
+      "macro": "mixed"
     },
     {
       "food": "Green tea",
-      "why": "No sugar."
+      "why": "No sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Black tea",
-      "why": "No sugar."
+      "why": "No sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Ginger tea",
-      "why": "No sugar; ginger helps a slow stomach empty."
+      "why": "No sugar; ginger helps a slow stomach empty.",
+      "macro": "mixed"
     },
     {
       "food": "Herbs and spices",
-      "why": "Flavour with no sugar or salt."
+      "why": "Flavour with no sugar or salt.",
+      "macro": "mixed"
     },
     {
       "food": "Plain vinegars",
-      "why": "Vinegar with a meal blunts the sugar rise after it."
+      "why": "Vinegar with a meal blunts the sugar rise after it.",
+      "macro": "mixed"
     },
     {
       "food": "Mustard",
-      "why": "Flavour with no sugar."
+      "why": "Flavour with no sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Olive oil and vinegar dressing",
-      "why": "Good fat plus vinegar, which blunts the sugar rise."
+      "why": "Good fat plus vinegar, which blunts the sugar rise.",
+      "macro": "mixed"
     },
     {
       "food": "Stevia (pure leaf, a small amount)",
-      "why": "Sweet with no sugar rise."
+      "why": "Sweet with no sugar rise.",
+      "macro": "mixed"
     },
     {
       "food": "Protein shake, no added sugar",
-      "why": "Easy protein for muscle; a good place to stir in creatine."
+      "why": "Easy protein for muscle; a good place to stir in creatine.",
+      "macro": "protein"
     }
   ],
   "yellow": [
     {
       "food": "Bacon",
-      "why": "Fine a few times a week; very salty, and her pressure is high."
+      "why": "Fine a few times a week; very salty, and her pressure is high.",
+      "macro": "protein"
     },
     {
       "food": "Ham",
-      "why": "Fine a few times a week; very salty, and her pressure is high."
+      "why": "Fine a few times a week; very salty, and her pressure is high.",
+      "macro": "protein"
     },
     {
       "food": "Cured meats (mortadella, salami, prosciutto, cold cuts)",
-      "why": "Salty; a few slices, not a plateful, while her pressure is over 130."
+      "why": "Salty; a few slices, not a plateful, while her pressure is over 130.",
+      "macro": "protein"
     },
     {
       "food": "Old Dutch bacon puffs (lard)",
-      "why": "No sugar, but salty; a small bowl."
+      "why": "No sugar, but salty; a small bowl.",
+      "macro": "mixed"
     },
     {
       "food": "Pork puffs (check bag for seed oils)",
-      "why": "No sugar, but salty; check the oil on the bag."
+      "why": "No sugar, but salty; check the oil on the bag.",
+      "macro": "mixed"
     },
     {
       "food": "Redmond salt",
-      "why": "Salt food lightly; her top number is over 130 most days."
+      "why": "Salt food lightly; her top number is over 130 most days.",
+      "macro": "mixed"
     },
     {
       "food": "Water with Redmond salt",
-      "why": "Only on a low day (top under 115), a hot day, or if she feels light-headed."
+      "why": "Only on a low day (top under 115), a hot day, or if she feels light-headed.",
+      "macro": "mixed"
     },
     {
       "food": "MCT oil",
-      "why": "One teaspoon at most; more loosens stools."
+      "why": "One teaspoon at most; more loosens stools.",
+      "macro": "mixed"
     },
     {
       "food": "Fresh orange",
-      "why": "Fruit sugar; one small orange, with a meal."
+      "why": "Fruit sugar; one small orange, with a meal.",
+      "macro": "carb"
     },
     {
       "food": "Half a banana",
-      "why": "Ripe banana is sugary; half, with cream or nuts."
+      "why": "Ripe banana is sugary; half, with cream or nuts.",
+      "macro": "carb"
     },
     {
       "food": "Fluid milk",
-      "why": "About 12 g of milk sugar per cup; a splash or half a cup."
+      "why": "About 12 g of milk sugar per cup; a splash or half a cup.",
+      "macro": "mixed"
     },
     {
       "food": "Raw vegetables and salads",
-      "why": "Raw fibre sits long in a slow stomach; a side, not a big bowl."
+      "why": "Raw fibre sits long in a slow stomach; a side, not a big bowl.",
+      "macro": "mixed"
     },
     {
       "food": "Onion and garlic in quantity",
-      "why": "Gas in a slow gut; flavour amounts are fine."
+      "why": "Gas in a slow gut; flavour amounts are fine.",
+      "macro": "mixed"
     },
     {
       "food": "Large cruciferous loads",
-      "why": "Broccoli and cabbage in big amounts cause gas and fullness; a side portion."
+      "why": "Broccoli and cabbage in big amounts cause gas and fullness; a side portion.",
+      "macro": "mixed"
     },
     {
       "food": "Cashews",
-      "why": "More starch than other nuts; about 10."
+      "why": "More starch than other nuts; about 10.",
+      "macro": "mixed"
     },
     {
       "food": "Peanuts",
-      "why": "Low sugar, good fat and protein; moved from red; a small handful."
+      "why": "Low sugar, good fat and protein; moved from red; a small handful.",
+      "macro": "mixed"
     },
     {
       "food": "Natural peanut butter (peanuts and salt only)",
-      "why": "Low sugar, helps her eat enough; moved from red; no added oils or sugar."
+      "why": "Low sugar, helps her eat enough; moved from red; no added oils or sugar.",
+      "macro": "mixed"
     },
     {
       "food": "Chia",
-      "why": "Forms a gel that slows the stomach further; a teaspoon only."
+      "why": "Forms a gel that slows the stomach further; a teaspoon only.",
+      "macro": "mixed"
     },
     {
       "food": "Ground flax",
-      "why": "Fibre that slows the stomach; a teaspoon only."
+      "why": "Fibre that slows the stomach; a teaspoon only.",
+      "macro": "mixed"
     },
     {
       "food": "Sourdough",
-      "why": "Raises sugar less than plain bread; one slice, with protein."
+      "why": "Raises sugar less than plain bread; one slice, with protein.",
+      "macro": "carb"
     },
     {
       "food": "Rye, flax or multigrain bread",
-      "why": "Still starch; one slice, with eggs, cheese or meat on it."
+      "why": "Still starch; one slice, with eggs, cheese or meat on it.",
+      "macro": "carb"
     },
     {
       "food": "Oats",
-      "why": "Starch; a small bowl, made with cream or eggs on the side."
+      "why": "Starch; a small bowl, made with cream or eggs on the side.",
+      "macro": "carb"
     },
     {
       "food": "White rice small portions",
-      "why": "Fast starch; a few spoonfuls next to protein."
+      "why": "Fast starch; a few spoonfuls next to protein.",
+      "macro": "carb"
     },
     {
       "food": "Potato cooked then cooled",
-      "why": "Cooling makes some starch resist digestion; a small portion."
+      "why": "Cooling makes some starch resist digestion; a small portion.",
+      "macro": "carb"
     },
     {
       "food": "Mashed or baked potato",
-      "why": "Fast starch; three of her nights over 10 came after it; a few spoonfuls with butter."
+      "why": "Fast starch; three of her nights over 10 came after it; a few spoonfuls with butter.",
+      "macro": "carb"
     },
     {
       "food": "Pasta, small side portion",
-      "why": "Starch; a small side with meat or fish, never the whole plate."
+      "why": "Starch; a small side with meat or fish, never the whole plate.",
+      "macro": "carb"
     },
     {
       "food": "Beets small portions",
-      "why": "Sweet root; a few slices."
+      "why": "Sweet root; a few slices.",
+      "macro": "carb"
     },
     {
       "food": "Beet chips (check bag for seed oils)",
-      "why": "Sweet and often fried in seed oils; check the bag."
+      "why": "Sweet and often fried in seed oils; check the bag.",
+      "macro": "carb"
     },
     {
       "food": "Dark chocolate 85% or more",
-      "why": "Little sugar; one or two squares."
+      "why": "Little sugar; one or two squares.",
+      "macro": "mixed"
     },
     {
       "food": "One beer occasionally",
-      "why": "Starch and alcohol; one, with food, not every night."
+      "why": "Starch and alcohol; one, with food, not every night.",
+      "macro": "carb"
     },
     {
       "food": "Dry wine",
-      "why": "One glass with food; more raises her pressure."
+      "why": "One glass with food; more raises her pressure.",
+      "macro": "mixed"
     },
     {
       "food": "Spirits",
-      "why": "One, with water or soda, never a sweet mixer."
+      "why": "One, with water or soda, never a sweet mixer.",
+      "macro": "mixed"
     }
   ],
   "red": [
     {
       "food": "Canola oil",
-      "why": "Industrial seed oil; we cook with butter, olive and avocado oil instead."
+      "why": "Industrial seed oil; we cook with butter, olive and avocado oil instead.",
+      "macro": "mixed"
     },
     {
       "food": "Soybean oil",
-      "why": "Industrial seed oil, mostly in fried and packaged food."
+      "why": "Industrial seed oil, mostly in fried and packaged food.",
+      "macro": "mixed"
     },
     {
       "food": "Corn oil",
-      "why": "Industrial seed oil, mostly in fried and packaged food."
+      "why": "Industrial seed oil, mostly in fried and packaged food.",
+      "macro": "mixed"
     },
     {
       "food": "Sunflower oil",
-      "why": "Industrial seed oil, mostly in chips and packaged food."
+      "why": "Industrial seed oil, mostly in chips and packaged food.",
+      "macro": "mixed"
     },
     {
       "food": "Safflower oil",
-      "why": "Industrial seed oil, mostly in packaged food."
+      "why": "Industrial seed oil, mostly in packaged food.",
+      "macro": "mixed"
     },
     {
       "food": "Grapeseed oil",
-      "why": "Industrial seed oil; use olive or avocado oil."
+      "why": "Industrial seed oil; use olive or avocado oil.",
+      "macro": "mixed"
     },
     {
       "food": "Sweet baked goods (muffins, croissants, banana loaf, cookies, ginger snaps, biscotti, cake, cheesecake, pastries, Tim Bits)",
-      "why": "Sugar plus white flour; her log is full of these and they come before her high nights."
+      "why": "Sugar plus white flour; her log is full of these and they come before her high nights.",
+      "macro": "carb"
     },
     {
       "food": "Added sugar",
-      "why": "Goes straight into her blood sugar."
+      "why": "Goes straight into her blood sugar.",
+      "macro": "carb"
     },
     {
       "food": "Refined flour with no ferment",
-      "why": "White flour turns to sugar fast."
+      "why": "White flour turns to sugar fast.",
+      "macro": "carb"
     },
     {
       "food": "Rice crackers and rice cakes",
-      "why": "Puffed rice raises sugar about as fast as table sugar; swap for pork rinds or cheese."
+      "why": "Puffed rice raises sugar about as fast as table sugar; swap for pork rinds or cheese.",
+      "macro": "carb"
     },
     {
       "food": "Perogies",
-      "why": "White flour wrapped around potato; one of her highest nights (13.8, 27 Sep)."
+      "why": "White flour wrapped around potato; one of her highest nights (13.8, 27 Sep).",
+      "macro": "carb"
     },
     {
       "food": "Ice cream",
-      "why": "Sugar plus cream; a half bowl is about 20 g of sugar."
+      "why": "Sugar plus cream; a half bowl is about 20 g of sugar.",
+      "macro": "carb"
     },
     {
       "food": "Jam and jelly",
-      "why": "Almost pure sugar; mashed berries with cream instead."
+      "why": "Almost pure sugar; mashed berries with cream instead.",
+      "macro": "carb"
     },
     {
       "food": "Honey",
-      "why": "Sugar."
+      "why": "Sugar.",
+      "macro": "carb"
     },
     {
       "food": "Concentrated balsamic glaze",
-      "why": "Boiled-down sugar; plain vinegar is fine."
+      "why": "Boiled-down sugar; plain vinegar is fine.",
+      "macro": "carb"
     },
     {
       "food": "Sweet drinks (chai latte, cider, sweet iced tea, juice, liqueurs like Amaretto)",
-      "why": "Liquid sugar hits the blood fastest of all."
+      "why": "Liquid sugar hits the blood fastest of all.",
+      "macro": "carb"
     },
     {
       "food": "Apple",
-      "why": "About 19 g of sugar each, mostly fructose and sorbitol, which ferment in a slow gut."
+      "why": "About 19 g of sugar each, mostly fructose and sorbitol, which ferment in a slow gut.",
+      "macro": "carb"
     },
     {
       "food": "Pear",
-      "why": "High fructose and sorbitol; sugar plus gut gas."
+      "why": "High fructose and sorbitol; sugar plus gut gas.",
+      "macro": "carb"
     },
     {
       "food": "Mango",
-      "why": "Very sugary fruit."
+      "why": "Very sugary fruit.",
+      "macro": "carb"
     },
     {
       "food": "Grapes",
-      "why": "Very sugary fruit, easy to eat a lot of."
+      "why": "Very sugary fruit, easy to eat a lot of.",
+      "macro": "carb"
     },
     {
       "food": "Watermelon",
-      "why": "Raises sugar fast, high in fructose."
+      "why": "Raises sugar fast, high in fructose.",
+      "macro": "carb"
     },
     {
       "food": "Cherries",
-      "why": "Sugary, high in sorbitol."
+      "why": "Sugary, high in sorbitol.",
+      "macro": "carb"
     },
     {
       "food": "Dried fruit",
-      "why": "Sugar packed tight; a small handful is a lot of sugar."
+      "why": "Sugar packed tight; a small handful is a lot of sugar.",
+      "macro": "carb"
     },
     {
       "food": "Legumes",
-      "why": "Mostly starch, and gas and bulk in a slow stomach."
+      "why": "Mostly starch, and gas and bulk in a slow stomach.",
+      "macro": "carb"
     },
     {
       "food": "Bean soup any source",
-      "why": "Starch and gas in a slow stomach."
+      "why": "Starch and gas in a slow stomach.",
+      "macro": "carb"
     },
     {
       "food": "Corn on the cob",
-      "why": "Starch; her 12.3 on 3 Aug came with corn."
+      "why": "Starch; her 12.3 on 3 Aug came with corn.",
+      "macro": "carb"
     },
     {
       "food": "Corn and cornmeal",
-      "why": "Fast starch."
+      "why": "Fast starch.",
+      "macro": "carb"
     },
     {
       "food": "Restaurant and delivery pizza (here, not in Italy)",
-      "why": "White flour plus fat keeps her sugar high late into the night."
+      "why": "White flour plus fat keeps her sugar high late into the night.",
+      "macro": "carb"
     },
     {
       "food": "Several drinks in one evening (beer, wine, cider)",
-      "why": "Raises pressure the next day; after 3 wine nights her top hit 178 on 23 Oct."
+      "why": "Raises pressure the next day; after 3 wine nights her top hit 178 on 23 Oct.",
+      "macro": "mixed"
     },
     {
       "food": "Diet pop",
-      "why": "Sweeteners keep the sweet craving going and upset some guts."
+      "why": "Sweeteners keep the sweet craving going and upset some guts.",
+      "macro": "mixed"
     },
     {
       "food": "Artificial sweeteners",
-      "why": "Can worsen the sugar response in some people; stevia is the one allowed."
+      "why": "Can worsen the sugar response in some people; stevia is the one allowed.",
+      "macro": "mixed"
     },
     {
       "food": "Splenda and sucralose",
-      "why": "Same as artificial sweeteners; stevia instead."
+      "why": "Leave Splenda and sucralose out; they can worsen the sugar response in some people.",
+      "macro": "mixed"
     },
     {
       "food": "Sugar alcohols",
-      "why": "Sorbitol, xylitol and similar cause gas and loose stools."
+      "why": "Sorbitol, xylitol and similar cause gas and loose stools.",
+      "macro": "mixed"
     }
   ]
 };
@@ -2876,8 +2974,8 @@ const FOOD_GREEN=FOOD_RULES.green.map(x=>x.food), FOOD_YELLOW=FOOD_RULES.yellow.
 const FOOD_TERMS = {
   'Beef':['beef','steak'],
   'Chicken skin-on':['chicken'], 'Eggs any style':['egg','eggs'], 'White fish':['cod','halibut','white fish'],
-  'Organ meats':['liver','organ meat'], 'Aged cheddar':['cheddar'], 'Coffee with heavy cream':['coffee'],
-  'Protein shake, no added sugar':['protein shake','protein drink','diesel'],
+  'Organ meats':['liver','organ meat'], 'Aged cheddar':['cheddar','cheese'], 'Coffee with heavy cream':['coffee'],
+  'Protein shake, no added sugar':['protein shake','protein drink','diesel','whey'],
   'Sweet baked goods (muffins, croissants, banana loaf, cookies, ginger snaps, biscotti, cake, cheesecake, pastries, Tim Bits)':['muffin','croissant','banana loaf','cookie','ginger snap','biscotti','cake','cheesecake','pastry','pastries','tim bit','timbit','lemon meringue'],
   'Sweet drinks (chai latte, cider, sweet iced tea, juice, liqueurs like Amaretto)':['chai latte','cider','sweet iced tea','juice','liqueur','amaretto'],
   'Rice crackers and rice cakes':['rice cracker','rice cake'], 'Jam and jelly':['jam','jelly'],
@@ -2897,11 +2995,12 @@ const FOOD_TERMS = {
   'Mango':['mango','mangoes'], 'Legumes':['legume','lentil','beans'], 'Added sugar':['sugar']
 };
 function foodMatches(text) {
-  const q=String(text||'').toLowerCase().normalize('NFKD').replace(/\b(?:no|without|free of)\s+(?:added\s+)?sugar\b/g,'').replace(/\bpeanut[- ]free\b/g,'');
+  const q=String(text||'').toLowerCase().normalize('NFKD').replace(/\bsugar[- ]free\b/g,'').replace(/\b(?:no|without|free of)\s+(?:added\s+)?sugar\b/g,'').replace(/\bpeanut[- ]free\b/g,'');
   const matches=[];
   for(const tier of ['red','yellow','green'])for(const item of FOOD_RULES[tier]){
     const terms=FOOD_TERMS[item.food]||[item.food.replace(/\([^)]*\)/g,'').trim()];
-    if(terms.some(term=>new RegExp('(^|[^a-z])'+term.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'s?(?=$|[^a-z])','i').test(q)))matches.push({...item,tier});
+    const matchedTerm=terms.find(term=>new RegExp('(^|[^a-z])'+term.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'s?(?=$|[^a-z])','i').test(q));
+    if(matchedTerm)matches.push({...item,tier,matchedTerm});
   }
   // Green beans are a vegetable, not the legumes entry.
   return matches.filter(x=>!(x.food==='Legumes'&&/green beans/.test(q)&&!/(?:lentils|legumes|kidney beans|black beans)/.test(q)));
@@ -2915,6 +3014,11 @@ function foodFeedback(text) {
   return (tier==='green'?'Keep enjoying your full meals. ':'')+why+(tier==='red'?' Swap for eggs, cheese, meat or green vegetables and keep a full meal.':'');
 }
 
+function mealScore(text){
+ const hits=foodMatches(text),protein=hits.some(x=>x.macro==='protein'),carb=hits.some(x=>x.macro==='carb');
+ return protein?(carb?'mixed':'protein-led'):carb?'carb-led':'mixed';
+}
+function proteinLine(text){return mealScore(text)==='protein-led'?'Protein first. Good.':foodMatches(text).some(x=>x.macro==='carb')?'Keep a full meal. Swap the bread or sweet for eggs, cheese, meat or green vegetables.':'Add eggs, cheese or meat to make it a full meal.';}
 // END FOOD GUIDE
 
 function renderFoodLists() {
@@ -2952,33 +3056,6 @@ function logFoodSearchQuery(rawQ, matched) {
   return sheetCall({ action:'log_food_search', clientId: currentClientId, query: rawQ, matched: matched, timestamp: t.iso, timeLocal: t.local });
 }
 
-async function askFood() {
-  const input = document.getElementById('food-search');
-  const q = input.value.trim();
-  if (!q) return;
-  const hint = document.getElementById('food-question-hint');
-  hint.textContent = 'Sending…';
-  await logFoodSearchQuery(q, false);
-  input.value = '';
-  document.getElementById('food-search-results').innerHTML = '';
-  hint.textContent = `Sent to Christopher 🌿 "${q.replace(/</g,'&lt;')}" will be on your food lists after his next review.`;
-  setTimeout(() => { if (hint.textContent.indexOf('Sent') === 0) hint.textContent = ''; }, 8000);
-  loadReviewLists();
-}
-
-async function askSupp() {
-  const input = document.getElementById('supp-question');
-  const q = input.value.trim();
-  if (!q) return;
-  const hint = document.getElementById('supp-question-hint');
-  hint.textContent = 'Sending…';
-  const t = stamp();
-  await sheetCall({ action:'log_food_search', clientId: currentClientId, query: 'SUPPLEMENT: ' + q, matched: false, timestamp: t.iso, timeLocal: t.local });
-  input.value = '';
-  hint.textContent = 'Sent to Christopher 🌿 He will have an answer for you in your next update.';
-  setTimeout(() => { if (hint.textContent.indexOf('Sent') === 0) hint.textContent = ''; }, 8000);
-  loadReviewLists();
-}
 
 function renderFoodToday() {
   const day = loadDay();
@@ -2991,7 +3068,7 @@ function renderFoodToday() {
     <div class="food-logged">
       <div class="food-logged-body">
         <div class="food-logged-text">${f.text.replace(/</g,'&lt;')}</div>
-        <div class="food-logged-time">${readingOutbox().some(x=>x.id===f.mealId)?'Saving... We will retry.':'Sent to Christopher ✓'} · ${f.time}</div>
+        <div class="food-logged-time">${readingOutbox().some(x=>x.id===f.mealId)?'Saving... We will retry.':'Saved ✓'} · ${f.time}</div>
       </div>
     </div>`).join('');
 }
@@ -3032,7 +3109,7 @@ async function logMeal(text) {
   window.__foodHistory.push(p);
   await flushReadingOutbox();mealSaveStatus(p.mealId);
   const confirmed=!readingOutbox().some(x=>x.id===p.mealId);
-  if(confirmed)clearMealWhen();
+  if(confirmed){clearMealWhen();hint.textContent='Saved. '+proteinLine(text);}
   renderFoodToday();renderFoodHistory();renderFoodQuick();renderYesterdayFood();
   return confirmed;
 }
@@ -3057,20 +3134,6 @@ function editFood(i) {
   renderFoodToday();
   document.getElementById('food-input').focus();
   document.getElementById('food-hint').textContent = 'Edit your entry and tap Save again.';
-}
-
-function foodPhoto(input) {
-  const file = input.files && input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function() {
-    const t = stamp();
-    document.getElementById('food-hint').textContent = 'Photo saved 🌿 ' + t.local;
-    sheetCall({ action:'food_photo', clientId: currentClientId, image: reader.result, timestamp: t.iso, timeLocal: t.local });
-    setTimeout(()=>{ document.getElementById('food-hint').textContent = 'Photo button: snap your plate and it saves automatically.'; }, 4000);
-  };
-  reader.readAsDataURL(file);
-  input.value = '';
 }
 
 /* ── VERSES ── */
@@ -3725,13 +3788,16 @@ function stampInto(id, iso) {
 // The agent writes this every run. Until today the code threw it away and the
 // page showed whatever was last typed into the HTML by hand.
 async function initFocusCard() {
-  try { const r=await fetch('fh-state.json',{cache:'no-store'}); if(r.ok)window.__focusState=await r.json(); } catch(e) {}
+  try { const r=await fetch('fh-state.json',{cache:'no-store'}); if(r.ok){window.__focusState=await r.json();renderProtocolGuide();} } catch(e) {}
   try { const r=await sheetCall({action:'get_card',clientId:currentClientId});
-    if(r&&r.success){const card=typeof r.card==='string'?JSON.parse(r.card):r.card;window.__focusCard=card&&Array.isArray(card.items)?card:null;}
+    if(r&&r.success){const card=typeof r.card==='string'?JSON.parse(r.card):r.card;window.__focusCard=card&&Array.isArray(card.items)?card:null;
+      const plan=card?.plan,local=window.__focusState?.protocol;
+      if(plan?.protocol&&(!local||(plan.protocol.revision||0)>(local.revision||0)||String(plan.protocol.reviewedOn||'')>String(local.reviewedOn||''))){window.__focusState={...(window.__focusState||{}),protocol:plan.protocol,tests:plan.tests||window.__focusState?.tests||[]};renderSupps();}
+}
   } catch(e) {}
   // claude/news.json is private. The brain sends that queue as checked update
   // tiles; loadUpdatesClient reads those same rows into What's new here.
-  renderFocusCard();
+  renderFocusCard();renderYesterdayFood();
 }
 
 // A WIN THAT WAS RIGHT WHEN IT WAS WRITTEN AND IS WRONG NOW. 4 Oct 2026.
@@ -4203,7 +4269,7 @@ async function loadCoachUpdates() {
   if (!r.success || !r.updates || !r.updates.length) { el.innerHTML = '<div class="coach-empty">No updates published yet.</div>'; return; }
   el.innerHTML = r.updates.map(u =>
     `<div class="upd-tile" onclick="this.classList.toggle('open')">`
-    + `<div class="upd-tile-head"><div><div class="upd-tile-title">${(u.title||'Update').replace(/</g,'&lt;')}</div><div class="upd-tile-date">${(u.timeLocal||'').toString().replace(/</g,'&lt;')}</div></div><div class="upd-tile-chev">▾</div></div>`
+    + `<div class="upd-tile-head"><div><div class="upd-tile-title">${(u.title||'Update').replace(/</g,'&lt;')}</div><div class="upd-tile-date">${escapeHtml(humanDates(String(u.timestamp||u.timeLocal||'').slice(0,10)))}</div></div><div class="upd-tile-chev">▾</div></div>`
     + `<div class="upd-tile-body">${fmtUpdateBody(u.body)}</div></div>`
   ).join('');
 }
@@ -4455,6 +4521,8 @@ function initCoachMode() {
 
 /* ── NAV ── */
 function showPage(id, btn) {
+  if(id==='food'||id==='supps'){const slot=document.getElementById('ask-slot-'+id),box=document.getElementById('ask-box');if(slot&&box)slot.appendChild(box);}
+
   if (!document.getElementById('page-'+id)) return;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
@@ -5101,6 +5169,10 @@ document.addEventListener('DOMContentLoaded', function() {
   safeRun('foodtoday', renderFoodToday);
   safeRun('wins', initWins);
   safeRun('focuscard', initFocusCard);
+  const refreshReview=()=>{if(document.visibilityState==='hidden')return;safeRun('focuscard refresh',initFocusCard);safeRun('review news refresh',loadUpdatesClient);safeRun('question answers refresh',loadReviewLists);};
+  document.addEventListener('visibilitychange',refreshReview);
+  setInterval(refreshReview,5*60*1000);
+
   if (coachMode) { safeRun('coachmode', initCoachMode); safeRun('coachupdates', loadCoachUpdates); safeRun('coachnotes', loadCoachNotes);
     if (__pendingNav) { const p = __pendingNav; __pendingNav = null; safeRun('pendingnav', function(){ showPage(p.id, p.btn); }); }
     return; }

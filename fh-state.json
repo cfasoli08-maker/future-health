@@ -134,7 +134,8 @@
       "evidenceStrength": "WEAK. Small n, overlapping groups, gradient only. Nothing has been asked of her on the strength of it.",
       "success": "Her answer to the question asked Aug 25: how long after eating does an episode arrive. If it follows meals, the fix is the SAME food split smaller and more often, which costs her no intake.",
       "doNot": "NEVER ask her to eat less. Eating more is the only thing that has moved her blood sugar and she would read a reduction as failure.",
-      "status": "running, waiting on her"
+      "status": "closed 2026-10-28: stale question retired; no food reduction",
+      "closedOn": "2026-10-28"
     },
     {
       "id": "salt-volume",
@@ -229,7 +230,11 @@
             "minDays": 7,
             "minPriorDays": 3
           }
-        ]
+        ],
+        "onFail": {
+          "schedule": "200mg every second night",
+          "why": "Your gut safety check needs a gentler magnesium schedule."
+        }
       }
     },
     {
@@ -254,6 +259,17 @@
             "value": 7
           }
         ]
+      }
+    },
+    {
+      "id": "fortnight-review",
+      "ask": "Your sugar and pressure review. We use the readings you already log.",
+      "opened": "2026-10-28",
+      "readout": "2026-11-10",
+      "status": "running",
+      "readoutSpec": {
+        "responder": true,
+        "checks": []
       }
     }
   ],
@@ -841,18 +857,20 @@
     "detail": {
       "Alpha lipoic acid": {
         "say": "Alpha Lipoic Acid",
-        "dose": "600mg every day, 30 minutes before breakfast. Every day, no gaps",
+        "dose": "600mg every day, 30 minutes before breakfast",
         "doses": [
           "600mg",
           "100mg"
         ],
         "aliases": [
           "alpha lipoic"
-        ]
+        ],
+        "why": "Supports the nerves in your feet and your gut."
       },
       "Florastor": {
         "say": "Florastor",
-        "dose": "1 capsule with breakfast"
+        "dose": "1 capsule with breakfast",
+        "why": "Your daily gut support."
       },
       "Vitamin D3": {
         "say": "Vitamin D3",
@@ -863,29 +881,36 @@
         ],
         "aliases": [
           "d3"
-        ]
+        ],
+        "why": "Supports your bones."
       },
       "Vitamin K2": {
         "say": "Vitamin K2 MK-7",
-        "dose": "one 100mcg capsule in the morning (one, not two)",
+        "dose": "one 100mcg capsule with your morning meal",
         "doses": [
           "100mcg"
         ],
         "aliases": [
           "k2"
-        ]
+        ],
+        "why": "Helps your body use calcium for your bones."
       },
       "Vitamin C": {
         "say": "Vitamin C",
         "dose": "500mg chewable, morning and evening",
         "doses": [
           "500mg"
-        ]
+        ],
+        "why": "Supports healing."
       },
       "Sauerkraut": {
         "say": "Sauerkraut",
         "dose": "one tablespoon in the morning",
-        "since": "2026-08-28"
+        "since": "2026-08-28",
+        "why": "Your usual fermented food.",
+        "aliases": [
+          "saurkraut"
+        ]
       },
       "Magnesium glycinate": {
         "say": "Magnesium Glycinate",
@@ -903,7 +928,8 @@
             "on": "2026-10-27",
             "dose": "200mg every night"
           }
-        ]
+        ],
+        "why": "Supports sleep and your pressure plan."
       },
       "Creatine": {
         "say": "Creatine",
@@ -917,19 +943,24 @@
           "creatine"
         ],
         "since": "2026-10-05",
-        "changed": "2026-10-25 to 20g"
+        "changed": "2026-10-25 to 20g",
+        "why": "Helps hold the muscle in your arms and legs."
       },
       "Ibuprofen": {
-        "say": "Ibuprofen"
+        "say": "Ibuprofen",
+        "why": "Can harm the gut lining. It stays off your list; your listed pain relief is separate."
       },
       "Advil": {
-        "say": "Advil"
+        "say": "Advil",
+        "why": "This pain-relief family stays off your plan because it can irritate the gut lining."
       },
       "Motrin": {
-        "say": "Motrin"
+        "say": "Motrin",
+        "why": "This pain-relief family stays off your plan because it can irritate the gut lining."
       },
       "Robax": {
-        "say": "Robax Platinum"
+        "say": "Robax Platinum",
+        "why": "This pain-relief family stays off your plan because it can irritate the gut lining."
       },
       "NSAID": {
         "say": "all other NSAIDs",
@@ -939,29 +970,35 @@
           "naproxen",
           "aspirin",
           "voltaren"
-        ]
+        ],
+        "why": "This pain-relief family stays off your plan because it can irritate the gut lining."
       },
       "Digestive Enzyme": {
         "say": "digestive enzyme formula",
         "aliases": [
           "enzyme formula",
           "digestive enzymes"
-        ]
+        ],
+        "why": "Not part of your plan. There is no test result to guide an enzyme yet; your blood and stool tests will help us check this."
       },
       "Sublingual B12": {
         "say": "sublingual B12",
         "aliases": [
           "b12"
-        ]
+        ],
+        "why": "Stop immediately. Check the label for biotin before discarding."
       },
       "5-HTP": {
-        "say": "5-HTP"
+        "say": "5-HTP",
+        "why": "Do not use."
       },
       "Collagen-Biotin": {
-        "say": "collagen-biotin"
+        "say": "collagen-biotin",
+        "why": "Do not use."
       },
       "Psyllium": {
-        "say": "psyllium husk"
+        "say": "psyllium husk",
+        "why": "Can slow your already slow stomach and leave you feeling fuller."
       },
       "BPC-157 + TB-500": {
         "say": "BPC-157 + TB-500",
@@ -974,7 +1011,8 @@
           "bpc",
           "bpc-157",
           "tb-500"
-        ]
+        ],
+        "why": "For your back, left knee and gut lining."
       },
       "ARA-290": {
         "say": "ARA-290",
@@ -985,7 +1023,8 @@
         ],
         "aliases": [
           "ara 290"
-        ]
+        ],
+        "why": "For the nerves behind your slow gut."
       },
       "MOTS-c": {
         "say": "MOTS-c",
@@ -995,7 +1034,8 @@
         ],
         "aliases": [
           "mots c"
-        ]
+        ],
+        "why": "For muscle and blood sugar."
       },
       "Thymosin Alpha-1": {
         "say": "Thymosin Alpha-1",
@@ -1006,7 +1046,8 @@
         "aliases": [
           "thymosin",
           "ta1"
-        ]
+        ],
+        "why": "To build up your immune system."
       },
       "Semax": {
         "say": "Semax",
@@ -1021,7 +1062,8 @@
         ],
         "aliases": [
           "semax nasal"
-        ]
+        ],
+        "why": "For brain fog and nerve repair."
       },
       "Indica gummy": {
         "say": "Indica gummy",
@@ -1033,17 +1075,99 @@
         "doses": [
           "2.5mg"
         ],
-        "dayField": "gummy"
+        "dayField": "gummy",
+        "why": "Only if pain keeps you awake: one gummy at most. Sit on the edge of the bed before you stand."
+      },
+      "Tylenol 650": {
+        "say": "Tylenol 650",
+        "aliases": [
+          "tylenol"
+        ],
+        "dose": "650mg per pill",
+        "why": "Your as-needed pain relief. Log it in the Tylenol boxes when you take it."
       }
     },
     "loggingOnly": [
       {
         "name": "Indica gummy",
         "since": "2026-10-25",
-        "why": "Not part of your plan. Your sleep was the same on gummy nights and other nights. If pain keeps you awake, one gummy at most, and sit on the edge of the bed for a moment before you stand."
+        "why": "Only if pain keeps you awake: one gummy at most. Sit on the edge of the bed before you stand."
+      },
+      {
+        "name": "Tylenol 650",
+        "why": "Your as-needed pain relief. Log it in the Tylenol boxes when you take it."
       }
     ],
-    "labsRequest": "Fasting insulin, C-peptide, fructosamine, A1c, serum C4, cystatin C, creatinine, serum magnesium, electrolytes, lipids, vitamin D, fecal elastase. Ask for a heart rate nerve test, a stomach emptying scan and a home sleep test. Never mention peptides."
+    "labsRequest": "Fasting insulin, C-peptide, fructosamine, A1c, serum C4, cystatin C, creatinine, serum magnesium, electrolytes, lipids, vitamin D, fecal elastase. Ask for a heart rate nerve test, a stomach emptying scan and a home sleep test. Never mention peptides.",
+    "meals": {
+      "rule": "Protein first with low carbohydrate. Keep full meals. Swap foods, never eat less. Eating too little raised her morning sugar in August.",
+      "evidence": "underfeeding-fasting",
+      "reviewEveryDays": 14
+    },
+    "foodAllowed": [
+      {
+        "name": "Whey Protein Isolate (Diesel)",
+        "why": "No sugar or carbs per scoop. Enjoy it before four in the afternoon as part of a full meal."
+      }
+    ],
+    "notForYou": [
+      {
+        "name": "Magnesium above 200mg",
+        "why": "Your two 400mg nights were followed by a sore gut. 200mg is your ceiling."
+      },
+      {
+        "name": "Enterogermina",
+        "why": "Not while Florastor is working. Adding a second gut product would blur what is helping."
+      },
+      {
+        "name": "Ashwagandha",
+        "why": "There is no current stress problem in your record for this to treat."
+      }
+    ],
+    "reviewRule": {
+      "first": "2026-11-10",
+      "everyDays": 14,
+      "noExtraReadings": true,
+      "sugar": {
+        "morningAverageAbove": 7,
+        "ladder": [
+          "Check magnesium, ALA and sweet-swap adherence; fix gaps.",
+          "Use meal scores paired with next mornings to choose one full-meal swap.",
+          "A ten-minute walk after supper.",
+          "A next lever from labs needs Christopher's decision."
+        ]
+      },
+      "pressure": {
+        "topAbove": 130,
+        "daysOfSeven": 5,
+        "ladder": [
+          "Check magnesium adherence using the current schedule.",
+          "After a more-salt day, the next day includes avocado, spinach or squash.",
+          "A ten-minute daily walk.",
+          "Sleep test result needs Christopher's decision.",
+          "Pain-dose review needs Christopher's decision."
+        ]
+      },
+      "outcomes": [
+        "change",
+        "hold",
+        "stop"
+      ],
+      "redRule": "Every red sugar or pressure finding needs a change or a written reason; otherwise the run fails.",
+      "gutStopHold": "A recent gut-stop magnesium change takes this review step. Hold other new steps until its fourteen-day check and say why. Missing readings also need a plain reason.",
+      "oneChangeTotal": true,
+      "minimumDays": 4,
+      "adherenceDays": 6,
+      "mealPairs": "Count distinct food-day and next-morning pairs. Every swap, including step 0, needs at least three pairs per group and the non-protein next-morning average strictly higher than protein-led. If insufficient at two reviews, move to the walk after supper. Name an actually logged carb in a swap.",
+      "safetyStop": "Only an active step can stop. Step 0 is the approved base plan: magnesium, ALA and the sweet swap as written; no low reading (pressure or sugar) ever undoes it; a low gives a hold naming the reading. A pressure-ladder step of 1 or higher stops on two or more distinct readings with bottom 55 or lower, or any top under 105, saved since that step began. One low reading gives a hold naming it. Sugar under 4 after a step of 1 or higher stops that step. Baseline observed reading IDs before a step; check unseen readingId (or timestamp plus field) even if dated earlier, once only. Restore the previous saved plan and ladder step on a stop. Save decision and announcement together."
+    },
+    "gutSafety": {
+      "movementsAtLeast": 4,
+      "consecutiveDays": 2,
+      "anyAccident": true,
+      "action": "Magnesium glycinate 200mg every second night, recorded as a dated change and delivered as a tile.",
+      "recheckDays": 14
+    }
   },
   "labs": {
     "status": "NONE IN THE RECORD. 177 days on protocol and not one blood test in this file.",
@@ -1089,5 +1213,13 @@
     "scale": "891 comparisons on 1 Sep. 1,673 on 2 Sep. 2,948 earlier on 8 Sep. 9,482 now.",
     "next": "Nothing outstanding.",
     "autoOutcomes": "Every numeric column gets outcomes at her own 20th and 80th centile, written to claude/auto-outcomes.json so the suspect register rebuilds the identical test. Thresholds are FROZEN at registration: if her distribution shifts, a suspect keeps being tested against the line it was registered on, not one that slid underneath it."
+  },
+  "responder": {
+    "firstReview": "2026-11-10",
+    "nextReview": "2026-11-10",
+    "everyDays": 14,
+    "sugarStep": 0,
+    "pressureStep": 0,
+    "history": []
   }
 }
