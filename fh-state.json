@@ -1220,6 +1220,138 @@
     "everyDays": 14,
     "sugarStep": 0,
     "pressureStep": 0,
-    "history": []
+    "history": [],
+    "gutSeen": [
+      "[\"2026-10-28\",0,null,1]",
+      "[\"2026-10-29\",null,null,null]"
+    ],
+    "gutCheckedThrough": "2026-10-28",
+    "outbox": [
+      {
+        "id": "ask:2026-07-20T17%3A58%3A57.609Z%7CBeet%20chips",
+        "title": "You asked about Beets small portions and Beet chips",
+        "body": "Yes, with the portion shown here. From your food guide: Sweet root; a few slices; Sweet and often fried in seed oils; check the bag. Keep a full meal.\n<!-- fh-ask:2026-07-20T17%3A58%3A57.609Z%7CBeet%20chips -->"
+      },
+      {
+        "id": "ask:2026-07-21T03%3A43%3A14.650Z%7CSauerkraut",
+        "title": "You asked about Sauerkraut",
+        "body": "Yes, keep taking it. The dose from your plan is one tablespoon in the morning. Your usual fermented food.\n<!-- fh-ask:2026-07-21T03%3A43%3A14.650Z%7CSauerkraut -->\n<!-- fh-ask:2026-07-21T04%3A33%3A56.122Z%7Csaurkraut -->\n<!-- fh-ask:2026-07-21T04%3A33%3A57.049Z%7Csaurkraut -->\n<!-- fh-ask:2026-07-21T04%3A34%3A02.807Z%7Csauerkraut -->\n<!-- fh-ask:2026-07-21T13%3A55%3A42.836Z%7CSUPPLEMENT%3A%20sauerkraut -->\n<!-- fh-ask:2026-08-01T18%3A07%3A38.490Z%7CSUPPLEMENT%3A%20Where%20do%20I%20put%20Saurkraut%3F%20%20Or%20perhaps%20I%20don't%20need%20to%20log%3F -->"
+      },
+      {
+        "id": "ask:2026-07-23T02%3A21%3A52.337Z%7CSUPPLEMENT%3A%20Took%20ALA%20%26%20Florastor%20later%20as%20I%20did%20not%20take%20it%20with%20me%20to%20eat%20at%20lunchtime",
+        "title": "You asked about Florastor",
+        "body": "Thank you, that is logged.\n<!-- fh-ask:2026-07-23T02%3A21%3A52.337Z%7CSUPPLEMENT%3A%20Took%20ALA%20%26%20Florastor%20later%20as%20I%20did%20not%20take%20it%20with%20me%20to%20eat%20at%20lunchtime -->"
+      },
+      {
+        "id": "ask:2026-08-01T05%3A48%3A34.483Z%7CSUPPLEMENT%3A%20Saurkraut%20at%20noon.%20TBSP",
+        "title": "You asked about Sauerkraut",
+        "body": "Thank you, that is logged.\n<!-- fh-ask:2026-08-01T05%3A48%3A34.483Z%7CSUPPLEMENT%3A%20Saurkraut%20at%20noon.%20TBSP -->"
+      },
+      {
+        "id": "ask:2026-08-03T20%3A27%3A07.869Z%7CFresh%20Corn%20on%20the%20Cob",
+        "title": "You asked about Corn on the cob and Corn and cornmeal",
+        "body": "No, choose eggs, cheese, meat or green vegetables instead. From your food guide: Starch; Fast starch. Keep a full meal.\n<!-- fh-ask:2026-08-03T20%3A27%3A07.869Z%7CFresh%20Corn%20on%20the%20Cob -->"
+      },
+      {
+        "id": "ask:2026-08-04T02%3A40%3A03.046Z%7CStevia%3B%20Splenda%3F%20%20Just%20a%20bit%20to%20sweeten",
+        "title": "You asked about Splenda and sucralose and Stevia",
+        "body": "No, leave Splenda and sucralose out. They can worsen the sugar response in some people. Yes, Stevia (pure leaf, a small amount) fits your food guide. Sweet with no sugar rise.\n<!-- fh-ask:2026-08-04T02%3A40%3A03.046Z%7CStevia%3B%20Splenda%3F%20%20Just%20a%20bit%20to%20sweeten -->"
+      },
+      {
+        "id": "ask:2026-08-07T15%3A09%3A31.571Z%7CSUPPLEMENT%3A%20Back%20ache%20in%20the%20middle%20of%20the%20night%20so%20bad%20took%20a%20Robax%20Platinum%20(%20inbuprofen)Helped%20to%20sleep",
+        "title": "You asked about Robax Platinum",
+        "body": "Thank you, that is logged.\n<!-- fh-ask:2026-08-07T15%3A09%3A31.571Z%7CSUPPLEMENT%3A%20Back%20ache%20in%20the%20middle%20of%20the%20night%20so%20bad%20took%20a%20Robax%20Platinum%20(%20inbuprofen)Helped%20to%20sleep -->"
+      },
+      {
+        "id": "ask:2026-08-08T14%3A55%3A12.086Z%7CSUPPLEMENT%3A%202%20Ibuprofen%20this%20morning%20for%20a%20sore%20lower%20back",
+        "title": "You asked about Ibuprofen",
+        "body": "No, leave it out. Can harm the gut lining. It stays off your list; your listed pain relief is separate.\n<!-- fh-ask:2026-08-08T14%3A55%3A12.086Z%7CSUPPLEMENT%3A%202%20Ibuprofen%20this%20morning%20for%20a%20sore%20lower%20back -->"
+      },
+      {
+        "id": "ask:2026-08-09T22%3A21%3A10.498Z%7CStomach%20a%20bit%20unsettled%20due%20to%20beer%20and%20pizza%20last%20night",
+        "title": "You asked about Restaurant and delivery pizza and One beer",
+        "body": "Thank you, that is logged.\n<!-- fh-ask:2026-08-09T22%3A21%3A10.498Z%7CStomach%20a%20bit%20unsettled%20due%20to%20beer%20and%20pizza%20last%20night -->"
+      },
+      {
+        "id": "ask:2026-08-21T16%3A15%3A14.699Z%7CSUPPLEMENT%3A%20I%20only%20take%20ONE%20K2%20each%20day%20in%20the%20morning.%20Not%202%20as%20listed",
+        "title": "You asked about Vitamin K2 MK-7",
+        "body": "Yes, keep taking it. The dose from your plan is one 100mcg capsule with your morning meal. Helps your body use calcium for your bones.\n<!-- fh-ask:2026-08-21T16%3A15%3A14.699Z%7CSUPPLEMENT%3A%20I%20only%20take%20ONE%20K2%20each%20day%20in%20the%20morning.%20Not%202%20as%20listed -->"
+      },
+      {
+        "id": "ask:2026-08-21T20%3A43%3A42.065Z%7CSunflower%20seeds",
+        "title": "You asked about Sunflower seeds",
+        "body": "Not yet. There is no decision for this item in your current list. We will check your list and food guide again at your next review on Tuesday, November 10. If this is a product, type its ingredient label in Ask so we can check that too. Keep your current plan until then.\n<!-- fh-ask:2026-08-21T20%3A43%3A42.065Z%7CSunflower%20seeds -->",
+        "followUp": {
+          "question": {
+            "timestamp": "2026-08-21T20:43:42.065Z",
+            "timeLocal": "Fri, Aug 21 at 3:43 PM",
+            "query": "Sunflower seeds"
+          },
+          "questions": [
+            {
+              "timestamp": "2026-08-21T20:43:42.065Z",
+              "timeLocal": "Fri, Aug 21 at 3:43 PM",
+              "query": "Sunflower seeds"
+            }
+          ],
+          "on": "2026-11-10"
+        }
+      },
+      {
+        "id": "ask:2026-08-30T03%3A30%3A51.773Z%7CJoy%20burst%20Electrolyte%2F%20vitamin%2F%20lion's%20mane%20beverage.",
+        "title": "You asked about Joy burst Electrolyte/",
+        "body": "Not yet. There is no decision for this item in your current list. We will check your list and food guide again at your next review on Tuesday, November 10. If this is a product, type its ingredient label in Ask so we can check that too. Keep your current plan until then.\n<!-- fh-ask:2026-08-30T03%3A30%3A51.773Z%7CJoy%20burst%20Electrolyte%2F%20vitamin%2F%20lion's%20mane%20beverage. -->",
+        "followUp": {
+          "question": {
+            "timestamp": "2026-08-30T03:30:51.773Z",
+            "timeLocal": "Sat, Aug 29 at 10:30 PM",
+            "query": "Joy burst Electrolyte/ vitamin/ lion's mane beverage."
+          },
+          "questions": [
+            {
+              "timestamp": "2026-08-30T03:30:51.773Z",
+              "timeLocal": "Sat, Aug 29 at 10:30 PM",
+              "query": "Joy burst Electrolyte/ vitamin/ lion's mane beverage."
+            }
+          ],
+          "on": "2026-11-10"
+        }
+      },
+      {
+        "id": "ask:2026-08-30T15%3A49%3A08.849Z%7CSUPPLEMENT%3A%20Took%20the%20Tylenol%20at%206%3A00%20am%20when%20I%20got%20up%20to%20see%20Matthew%20off.%20%20Very%20sore%20back",
+        "title": "You asked about Tylenol 650",
+        "body": "Thank you, that is logged.\n<!-- fh-ask:2026-08-30T15%3A49%3A08.849Z%7CSUPPLEMENT%3A%20Took%20the%20Tylenol%20at%206%3A00%20am%20when%20I%20got%20up%20to%20see%20Matthew%20off.%20%20Very%20sore%20back -->"
+      },
+      {
+        "id": "ask:2026-09-25T02%3A14%3A39.694Z%7CSUPPLEMENT%3A%20Wild%20Berry%20Blast%20-%20Hybrid%20THC%26%20CBD2.5",
+        "title": "You asked about Wild Berry Blast",
+        "body": "Not yet. There is no decision for this item in your current list. We will check your list and food guide again at your next review on Tuesday, November 10. If this is a product, type its ingredient label in Ask so we can check that too. Keep your current plan until then.\n<!-- fh-ask:2026-09-25T02%3A14%3A39.694Z%7CSUPPLEMENT%3A%20Wild%20Berry%20Blast%20-%20Hybrid%20THC%26%20CBD2.5 -->",
+        "followUp": {
+          "question": {
+            "timestamp": "2026-09-25T02:14:39.694Z",
+            "timeLocal": "Thu, Sep 24 at 9:14 PM",
+            "query": "SUPPLEMENT: Wild Berry Blast - Hybrid THC& CBD2.5"
+          },
+          "questions": [
+            {
+              "timestamp": "2026-09-25T02:14:39.694Z",
+              "timeLocal": "Thu, Sep 24 at 9:14 PM",
+              "query": "SUPPLEMENT: Wild Berry Blast - Hybrid THC& CBD2.5"
+            }
+          ],
+          "on": "2026-11-10"
+        }
+      },
+      {
+        "id": "ask:2026-10-07T01%3A58%3A32.096Z%7CSUPPLEMENT%3A%20I%20took%201%3F5%20mg%20scoop%20of%20Creatine%20in%20my%20protein%20drink%20I%20have%20not%20done%20this%20for%20months!",
+        "title": "You asked about Creatine",
+        "body": "Yes, keep taking creatine. Take four scoops (20g) a day: two with breakfast and two with supper, each in a full glass of water, milk or your shake. It helps hold the muscle in your arms and legs.\n<!-- fh-ask:2026-10-07T01%3A58%3A32.096Z%7CSUPPLEMENT%3A%20I%20took%201%3F5%20mg%20scoop%20of%20Creatine%20in%20my%20protein%20drink%20I%20have%20not%20done%20this%20for%20months! -->"
+      },
+      {
+        "id": "ask:2026-10-29T04%3A44%3A15.300Z%7CASK%3A%20I%20can%20not%20log%20more%20bowel%20movements%20than%0AOne%20per%20day.%20%20It%20says%20I%20can%20but%20will%20not%20let%20me%20enter%20more%20than%20one.%20Yesterday%20I%20had%204%20and%20today%202!",
+        "title": "You asked about I can not",
+        "body": "Thank you, that is logged.\n<!-- fh-ask:2026-10-29T04%3A44%3A15.300Z%7CASK%3A%20I%20can%20not%20log%20more%20bowel%20movements%20than%0AOne%20per%20day.%20%20It%20says%20I%20can%20but%20will%20not%20let%20me%20enter%20more%20than%20one.%20Yesterday%20I%20had%204%20and%20today%202! -->"
+      }
+    ]
   }
 }
