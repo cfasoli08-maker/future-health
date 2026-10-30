@@ -1223,9 +1223,11 @@
     "history": [],
     "gutSeen": [
       "[\"2026-10-28\",0,null,1]",
-      "[\"2026-10-29\",null,null,null]"
+      "[\"2026-10-29\",null,null,null]",
+      "[\"2026-10-29\",0,null,0]",
+      "[\"2026-10-30\",null,null,null]"
     ],
-    "gutCheckedThrough": "2026-10-28",
+    "gutCheckedThrough": "2026-10-29",
     "outbox": [
       {
         "id": "ask:2026-07-20T17%3A58%3A57.609Z%7CBeet%20chips",
