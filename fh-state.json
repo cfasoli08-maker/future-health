@@ -184,7 +184,7 @@
       "opened": "2026-10-27",
       "start": "2026-10-27",
       "readout": "2026-11-10",
-      "status": "running, started 2026-10-27",
+      "status": "closed 2026-11-02: STOP gut safety",
       "variable": "magnesiumMg",
       "change": "200mg magnesium glycinate every night from 27 October (moved up from 2 November on 27 Oct: diastolic back near 75)",
       "success": "Morning bottom over 60, top at or over 105, gut no worse over 14 days.",
@@ -235,6 +235,11 @@
           "schedule": "200mg every second night",
           "why": "Your gut safety check needs a gentler magnesium schedule."
         }
+      },
+      "closedOn": "2026-11-02",
+      "result": {
+        "verdict": "STOP",
+        "consequence": "An accident was logged."
       }
     },
     {
@@ -270,6 +275,18 @@
       "readoutSpec": {
         "responder": true,
         "checks": []
+      }
+    },
+    {
+      "id": "magnesium-gut-review:2026-11-02",
+      "opened": "2026-11-02",
+      "start": "2026-11-02",
+      "status": "running",
+      "variable": "magnesiumMg",
+      "change": "Magnesium glycinate, gentler schedule",
+      "readout": "2026-11-16",
+      "readoutSpec": {
+        "responder": true
       }
     }
   ],
@@ -808,7 +825,7 @@
       "Collagen-Biotin",
       "Psyllium"
     ],
-    "reviewedOn": "2026-10-27",
+    "reviewedOn": "2026-11-02",
     "restored": [
       {
         "name": "Magnesium glycinate",
@@ -927,6 +944,11 @@
           {
             "on": "2026-10-27",
             "dose": "200mg every night"
+          },
+          {
+            "on": "2026-11-02",
+            "dose": "200mg every second night",
+            "why": "An accident was logged."
           }
         ],
         "why": "Supports sleep and your pressure plan."
@@ -1167,7 +1189,8 @@
       "anyAccident": true,
       "action": "Magnesium glycinate 200mg every second night, recorded as a dated change and delivered as a tile.",
       "recheckDays": 14
-    }
+    },
+    "revision": 1
   },
   "labs": {
     "status": "NONE IN THE RECORD. 177 days on protocol and not one blood test in this file.",
@@ -1229,9 +1252,11 @@
       "[\"2026-10-30\",0,null,0]",
       "[\"2026-10-31\",null,null,null]",
       "[\"2026-10-31\",0,null,1]",
-      "[\"2026-11-01\",null,null,null]"
+      "[\"2026-11-01\",null,null,null]",
+      "[\"2026-11-01\",1,null,1]",
+      "[\"2026-11-02\",0,null,1]"
     ],
-    "gutCheckedThrough": "2026-10-31",
+    "gutCheckedThrough": "2026-11-01",
     "outbox": [
       {
         "id": "ask:2026-07-20T17%3A58%3A57.609Z%7CBeet%20chips",
@@ -1355,9 +1380,19 @@
       },
       {
         "id": "ask:2026-10-29T04%3A44%3A15.300Z%7CASK%3A%20I%20can%20not%20log%20more%20bowel%20movements%20than%0AOne%20per%20day.%20%20It%20says%20I%20can%20but%20will%20not%20let%20me%20enter%20more%20than%20one.%20Yesterday%20I%20had%204%20and%20today%202!",
-        "title": "You asked about I can not",
-        "body": "Thank you, that is logged.\n<!-- fh-ask:2026-10-29T04%3A44%3A15.300Z%7CASK%3A%20I%20can%20not%20log%20more%20bowel%20movements%20than%0AOne%20per%20day.%20%20It%20says%20I%20can%20but%20will%20not%20let%20me%20enter%20more%20than%20one.%20Yesterday%20I%20had%204%20and%20today%202! -->"
+        "title": "You asked about your bowel screen",
+        "body": "You were right. The bowel screen was hard to use and lost some of your entries. It is now one tap: Normal or Whoosh. Each tap saves with the time, as many times a day as you need.\n<!-- fh-ask:2026-10-29T04%3A44%3A15.300Z%7CASK%3A%20I%20can%20not%20log%20more%20bowel%20movements%20than%0AOne%20per%20day.%20%20It%20says%20I%20can%20but%20will%20not%20let%20me%20enter%20more%20than%20one.%20Yesterday%20I%20had%204%20and%20today%202! -->"
+      },
+      {
+        "id": "gut:2026-11-02",
+        "title": "A gentler magnesium schedule",
+        "body": "An accident was logged. Magnesium glycinate is now 200mg every second night. Please keep logging every movement. We check your magnesium again on Monday, November 16."
       }
-    ]
+    ],
+    "gutReview": {
+      "on": "2026-11-02",
+      "nextReview": "2026-11-16",
+      "status": "running"
+    }
   }
 }
