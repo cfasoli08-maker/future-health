@@ -73,6 +73,30 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .ask-item { border-top:1px solid rgba(0,0,0,0.08); padding:0.75rem 0; font-size:1rem; line-height:1.55; }
 .ask-item b { display:block; margin-bottom:0.2rem; }
 
+.sheet { position:relative; }
+.sheet-close { align-self:flex-end; position:sticky; top:0; z-index:5; min-width:52px; min-height:52px; background:var(--surface); border:2px solid var(--green); border-radius:12px; color:var(--text); font-size:2rem; cursor:pointer; }
+.bowel-save { min-height:76px; width:100%; font-size:1.5rem; }
+#sheet:has(.bowel-content) { min-height:calc(100dvh - 60px); max-height:calc(100dvh - 24px); padding:18px; }
+.bowel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; position:sticky; top:0; background:var(--surface); z-index:5; }
+.bowel-header .sheet-title { margin:0; font-size:32px; }
+.bowel-header .sheet-close { position:static; border-radius:50%; color:var(--sage); flex-shrink:0; }
+.bowel-content .sheet-help { margin:0 0 18px; font-size:18px; line-height:1.4; color:var(--ink); text-align:left; }
+.bowel-content .opt-col { margin:0; gap:14px; }
+.bowel-content .bowel-save { border:0; border-radius:18px; min-height:98px; padding:20px 18px; text-align:left; background:var(--sage); color:white; font:700 24px 'DM Sans',sans-serif; }
+.bowel-content .bowel-save small { display:block; margin-top:4px; color:inherit; font-size:16px; font-weight:400; }
+.bowel-content .bowel-whoosh { background:#C6523B; }
+.bowel-earlier { display:block; border:0; background:none; color:var(--sage); text-decoration:underline; font:inherit; font-size:18px; text-align:left; min-height:44px; margin:8px 0 4px; cursor:pointer; }
+.bowel-content .today-readings { margin:0; padding:16px; background:var(--bg); }
+.bowel-content .today-readings-label { margin-bottom:6px; color:var(--ink); font-size:20px; font-weight:700; }
+.bowel-times { display:block; }
+.bowel-time { display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:44px; font-size:18px; }
+.bowel-details { flex-shrink:0; border:0; background:none; color:var(--sage); text-decoration:underline; font:inherit; font-size:14px; min-height:44px; cursor:pointer; }
+#log-order-choice .opt-btn { width:100%; min-height:78px; margin-top:10px; text-align:left; }
+#log-order-choice:has(.opt-btn) { background:var(--surface); padding:16px; border-radius:20px; margin-bottom:16px; }
+#reading-sync-status { position:fixed; bottom:96px; left:16px; right:16px; z-index:2000; padding:14px; border:1px solid var(--sage); border-radius:12px; background:var(--sage-soft); color:var(--sage); text-align:center; font-size:1.1rem; box-shadow:0 4px 14px rgba(0,0,0,.12); }
+#entry-error { color:var(--red); margin:0.5rem 0; }
+#entry-error:empty { display:none; }
+#log-order-choice:empty { display:none; }
 /* ── INPUT TILES ── */
 .tile { border-radius:var(--radius); padding:1.5rem 1.4rem; margin-bottom:0.9rem; min-height:112px; display:flex; align-items:center; gap:1.1rem; cursor:pointer; border:3px solid var(--green); background:var(--green-soft); transition:transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease; box-shadow:0 2px 8px rgba(0,0,0,0.04); will-change:transform; }
 #bowel-today { display:block; cursor:default; }
@@ -420,12 +444,15 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     </div>
   </div>
 
+  <div id="reading-sync-status" role="status" hidden></div>
   <!-- ══ HOME / LOG ══ -->
   <div class="page active" id="page-home">
     <div class="hero">
       <div class="hero-time" id="hero-time"></div>
       <div class="hero-name">Valerie.</div>
     </div>
+
+    <div id="log-order-choice" class="ask-box"></div>
 
     <div class="verse-card">
       <div class="verse-eyebrow">✦ Verse of the day</div>
@@ -465,6 +492,7 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     <div id="ask-answer"></div>
 
     <div class="section-label">Today's log · tap a time of day to open it</div>
+    <div id="log-order-current"></div>
     <div id="sessions"></div>
   </div>
 
@@ -691,7 +719,6 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
   </div>
 
   <!-- ══ ENTRY SHEET ══ -->
-  <div id="reading-sync-status" role="status" hidden style="position:fixed;bottom:86px;left:5%;width:90%;z-index:90;background:var(--cream,#fff);color:var(--ink,#222);padding:12px;border:1px solid currentColor;border-radius:12px;text-align:center;"></div>
   <div class="overlay" id="overlay" onclick="if(event.target===this)closeSheet()">
     <div class="sheet" id="sheet"></div>
   </div>
@@ -710,9 +737,9 @@ async function sheetCall(payload, timeoutMs) {
     const controller=timeoutMs?new AbortController():null;
     if(controller)timer=setTimeout(()=>controller.abort(),timeoutMs);
     const res = await fetch(SHEET_URL, { method:"POST", body: JSON.stringify(payload), signal:controller?controller.signal:undefined });
-    if(!res.ok)return {success:false,error:'HTTP '+res.status};
+    if(!res.ok)return {success:false,error:'HTTP '+res.status,uncertain:true};
     return await res.json();
-  } catch(e) { return { success:false, error:e.toString() }; }
+  } catch(e) { return { success:false, error:e.toString(), uncertain:true }; }
   finally {if(timer)clearTimeout(timer);}
 }
 
@@ -814,7 +841,29 @@ const INPUTS = [
 // Old INPUTS stay readable for history. Only these lists can ask for a new entry.
 const MORNING_METRICS = ['sleephours','weight','glucose','pulse','bp','mood','kneepain','backpain','fibropain'];
 const EVENING_METRICS = ['glucose','pulse','bp','activity','stress','hydration','salt','headache'];
+const LOG_ORDER_KEY='fh_log_order_v1';
+// From 7852406^: INPUTS order for morning; repeatables then daily IDs at night.
+const OLD_MORNING=['glucose','pulse','bp','weight','sleephours','mood','kneepain','backpain','fibropain'];
+const OLD_EVENING=['glucose','pulse','bp','activity','stress','hydration','salt','headache','stairs'];
+function renderLogOrder(force=false){
+  const el=document.getElementById('log-order-choice');if(!el)return;
+  const chosen=localStorage.getItem(LOG_ORDER_KEY);
+  const current=document.getElementById('log-order-current');
+  if(current)current.innerHTML=chosen?'<p>Daily log: '+(chosen==='old'?'The order I had before':'The new order')+'</p><button class="cancel-btn" onclick="renderLogOrder(true);document.getElementById(\'log-order-choice\').scrollIntoView({block:\'start\'})">Change order</button>':'';
+  el.innerHTML=chosen&&!force?'':
+    '<p>Which order do you like for your daily log?</p><button class="opt-btn" onclick="chooseLogOrder(&quot;old&quot;)">The order I had before<small>Sugar, pulse, pressure first</small></button><button class="opt-btn" onclick="chooseLogOrder(&quot;new&quot;)">The new order<small>Sleep, weight, sugar first</small></button>';
+}
+function chooseLogOrder(order){
+  if(!['old','new'].includes(order))return;
+  localStorage.setItem(LOG_ORDER_KEY,order);
+  queueAppRecord('logorder',order);renderLogOrder();renderSessions();
+}
 function sessionMetrics(s) {
+  const list=s.metrics.concat(s.id==='night' && new Date(localDayStr()+'T12:00:00').getDay()===0 ? ['stairs'] : []);
+  if(localStorage.getItem(LOG_ORDER_KEY)==='old'){
+    const order=s.id==='morning'?OLD_MORNING:OLD_EVENING;
+    return order.filter(id=>list.includes(id)).concat(list.filter(id=>!order.includes(id)));
+  }
   return s.metrics.concat(s.id==='night' && new Date(localDayStr()+'T12:00:00').getDay()===0 ? ['stairs'] : []);
 }
 
@@ -1028,7 +1077,7 @@ function displayVal(inp, v) {
   if (inp.type==='bp') return v.sys + '/' + v.dia;
   if (inp.type==='activity') return '✓';
   if (inp.type==='stress') return v.intensity;
-  if (inp.type==='bristol') { if(v.kind==='none')return 'No movement today'; const b=BRISTOL.find(b=>b.range.includes(Number(v.type))); return (v.kind==='accident'?'Accident, '+v.severity:'Normal')+', '+(b?b.label:'Type '+v.type); }
+  if (inp.type==='bristol') { if(v.kind==='none')return 'No movement today'; const b=BRISTOL.find(b=>b.range.includes(Number(v.type))); return (v.kind==='accident'?'Whoosh'+(v.severity?', '+v.severity:''):'Normal')+(b?', '+b.label:''); }
   if (inp.type==='hydration') return v.charAt(0).toUpperCase()+v.slice(1);
   if (inp.type==='choice') { const o = inp.opts.find(o => o.v === v); return o ? o.label : v; }
   if (inp.type==='multi') {
@@ -1094,17 +1143,9 @@ function openEntry(id, session, kind) {
               <button class="opt-btn" onclick="pickOpt(this,'source','Other')">Other</button>
             </div>`;
   } else if (inp.type==='bristol') {
-    body = kind==='none'?'<p>No movement today.</p>':`<div class="sheet-field-label">This movement</div><div class="opt-col">
-      <button class="opt-btn" onclick="pickBowel(this,'normal')">Normal<small>No accident</small></button>
-      <button class="opt-btn" onclick="pickBowel(this,'accident')">Accident (whoosh)</button></div>
-      <div id="bowel-accident" hidden><div class="sheet-field-label">How big was the whoosh?</div><div class="opt-col">
-        <button class="opt-btn" onclick="pickOpt(this,'severity','Small')">Small</button>
-        <button class="opt-btn" onclick="pickOpt(this,'severity','Big')">Big</button></div>
-        <div class="sheet-field-label">Did you have warning?</div><div class="opt-col">
-        <button class="opt-btn" onclick="pickOpt(this,'warning','With warning')">With warning</button>
-        <button class="opt-btn" onclick="pickOpt(this,'warning','No warning')">No warning</button></div></div>
-      <div class="sheet-field-label">Stool type</div><div class="opt-col">` + BRISTOL.map(b=>
-        `<button class="opt-btn" onclick="pickOpt(this,'type',${b.n})">${b.label}<small>${b.d}</small></button>`).join('')+`</div>`;
+    body = kind==='none'?'<p>No movement today.</p>':
+      readingTimeControls().replace('Taken earlier?','It happened earlier? Set the time')+
+      '<div class="opt-col"><button class="opt-btn bowel-save" onclick="sheetSel.kind=&quot;normal&quot;;saveEntry()">Normal<small>No accident</small></button><button class="opt-btn bowel-save" onclick="sheetSel.kind=&quot;accident&quot;;saveEntry()">Whoosh<small>An accident</small></button></div>';
 
   } else if (inp.type==='choice') {
     body = `<div class="opt-col">` + inp.opts.map(o =>
@@ -1129,25 +1170,38 @@ function openEntry(id, session, kind) {
   const sessLog = inp.id==='bowel'?bowelToday(loadDay()):sessionReadings(loadDay(), activeSession, inp.id);
   const sessName = inp.id==='bowel'?'Today':activeSession.charAt(0).toUpperCase()+activeSession.slice(1);
   const sessColor = activeSession === 'morning' ? 'var(--green)' : (activeSession === 'noon' ? 'var(--gold)' : 'var(--luff1)');
+  if(inp.id==='bowel'){
+    const movements=sessLog.filter(r=>r.value?.kind!=='none');
+    document.getElementById('sheet').innerHTML=`<div class="entry-content bowel-content" oninput="entryError('')">
+      <div class="bowel-header"><div class="sheet-title">Bowel</div><button class="sheet-close" aria-label="Close bowel screen" onclick="closeSheet()">×</button></div>
+      <div class="sheet-help">Tap one. It saves right away with the time.</div>
+      <div id="entry-error" role="alert"></div>
+      ${kind==='none'?body:'<div class="opt-col"><button class="opt-btn bowel-save" onclick="sheetSel.kind=&quot;normal&quot;;saveEntry()">Normal<small>No accident</small></button><button class="opt-btn bowel-save bowel-whoosh" onclick="sheetSel.kind=&quot;accident&quot;;saveEntry()">Whoosh<small>An accident</small></button></div>'+readingTimeControls(true)}
+      <div class="today-readings"><div class="today-readings-label">Today: ${movements.length}</div><div class="bowel-times">${movements.map(r=>`<div class="bowel-time"><span class="bowel-time-text">${bowelDisplayTime(r)} ${r.value.kind==='accident'?'Whoosh':'Normal'}</span><button class="bowel-details" onclick="openBowelDetails('${r.readingId||r.iso}')">Add details</button></div>`).join('')}</div></div>
+      ${kind==='none'?'<button class="save-btn" onclick="saveEntry()">Save ✓</button>':''}<div class="saved-flash" id="saved-flash"></div></div>`;
+    showOverlay();return;
+  }
   if (sessLog.length) {
-    priorReadings = `<div class="today-readings"><div class="today-readings-label">${sessName} so far${repeatable?'. A new entry adds to this list, it does not replace it.':''}</div>` +
-      sessLog.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${r.when || r.t || ''}</span></div>`).join('') + `</div>`;
+    priorReadings = `<div class="today-readings"><div class="today-readings-label">${inp.id==='bowel'?'Today: '+sessLog.filter(r=>r.value?.kind!=='none').length:sessName+' so far'}${repeatable?'. A new entry adds to this list, it does not replace it.':''}</div>` +
+      sessLog.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${readingDisplayTime(r)}</span>${inp.id==='bowel'&&r.value?.kind!=='none'?'<button class="cancel-btn" onclick="openBowelDetails(\''+r.readingId+'\')">Add details</button>':''}</div>`).join('') + `</div>`;
   } else if (repeatable) {
     priorReadings = inp.id==='bowel'?'<div class="today-readings-hint">Each movement gets its own time. You can log another whenever you need.</div>':`<div class="today-readings-hint">Save your reading for this ${activeSession==='night'?'evening':activeSession}. If you need to correct a number later, its time stays on your record.</div>`;
   }
   document.getElementById('sheet').innerHTML = `
+    <button class="sheet-close" aria-label="Close bowel screen" onclick="closeSheet()">×</button>
     <div class="entry-content" oninput="entryError('')">
     <div class="sheet-icon">${inp.icon}</div>
     <div class="sheet-title">${inp.label}${inp.id==='bowel'?'':` <span style="color:${sessColor};">· ${sessName}</span>`}</div>
     <div class="sheet-help">${helpText}</div>
-    ${priorReadings}
+    <div id="entry-error" role="alert" style="color:var(--red);margin:0.5rem 0;"></div>
     ${sameAs}
     ${body}
-    ${REPEATABLE_IDS.includes(inp.id)&&kind!=='none'?readingTimeControls():''}
-    <div id="entry-error" role="alert" style="color:var(--red);margin:1rem 0;"></div>
+    ${priorReadings}
+    ${REPEATABLE_IDS.includes(inp.id)&&inp.id!=='bowel'&&kind!=='none'?readingTimeControls():''}
+
     </div>
     <div class="entry-actions">
-    <button class="save-btn" onclick="saveEntry()">Save ✓</button>
+    ${inp.id==='bowel'&&kind!=='none'?'':'<button class="save-btn" onclick="saveEntry()">Save ✓</button>'}
     <button class="cancel-btn" onclick="closeSheet()">Cancel</button>
     <div class="saved-flash" id="saved-flash">Saved 🌿</div>
     </div>`;
@@ -1220,6 +1274,48 @@ function pickScale(el, n) {
   sheetSel.scale = n;
 }
 
+let sheetDetailsOriginal={},sheetDetailsTouched=new Set();
+function entryDayKeys(){const today=new Date(),prior=new Date(today);prior.setDate(today.getDate()-1);return [localDayStr(today),localDayStr(prior)];}
+function openBowelDetails(id){
+  let row,day;
+  for(const key of entryDayKeys()){
+    const cached=JSON.parse(localStorage.getItem('fh_'+key)||'{}');
+    row=SESSION_ORDER.flatMap(sid=>(cached[sid]||{}).bowel||[]).find(r=>(r.readingId||r.iso)===id);
+    if(row){day=key;break;}
+  }
+  if(!row)return entryError('This movement was removed. Please close this screen.');
+  activeInput={id:'boweldetails',type:'details',day};sheetSel={...(row.value||{}),readingId:id};
+  sheetDetailsOriginal={...sheetSel};sheetDetailsTouched=new Set();
+  document.getElementById('sheet').innerHTML='<button class="sheet-close" aria-label="Close details" onclick="closeSheet()">×</button><div class="entry-content"><h2>Add details</h2><div id="entry-error" role="alert"></div><p>Only add what you know. Each choice is optional.</p><div class="opt-col">'+BRISTOL.map(b=>'<button class="opt-btn" onclick="pickOpt(this,&quot;type&quot;,'+b.n+')">'+b.label+'</button>').join('')+'</div>'+(row.value.kind==='accident'?'<p>Size</p><div class="opt-col"><button class="opt-btn" onclick="pickOpt(this,&quot;severity&quot;,&quot;Small&quot;)">Small</button><button class="opt-btn" onclick="pickOpt(this,&quot;severity&quot;,&quot;Big&quot;)">Big</button></div><p>Warning</p><div class="opt-col"><button class="opt-btn" onclick="pickOpt(this,&quot;warning&quot;,&quot;With warning&quot;)">With warning</button><button class="opt-btn" onclick="pickOpt(this,&quot;warning&quot;,&quot;No warning&quot;)">No warning</button></div>':'')+'</div><button class="save-btn" onclick="saveBowelDetails()">Save details</button>';
+  showOverlay();
+}
+function saveBowelDetails(){
+  if(activeInput?.id!=='boweldetails')return;
+  const key='fh_'+activeInput.day,day=JSON.parse(localStorage.getItem(key)||'{}');
+  const row=SESSION_ORDER.flatMap(sid=>(day[sid]||{}).bowel||[]).find(r=>(r.readingId||r.iso)===sheetSel.readingId);
+  if(!row||readingIsCancelled({...row,field:'bowel'}))return entryError('This movement was removed. Please close this screen.');
+  // Only her changed choices replace a newer correction received while open.
+  const value={readingId:sheetSel.readingId};
+  for(const k of ['type','severity','warning']){
+    if((sheetDetailsTouched.has(k)||sheetSel[k]!==sheetDetailsOriginal[k])&&sheetSel[k]!=null)value[k]=sheetSel[k];
+  }
+  if(Object.keys(value).length===1){showSavedReceipt();return;}
+  const saved=nextRecordStamp(row.detailsSavedAt);
+  try{queueAppRecord('boweldetails',value,saved);}catch(e){return entryError('Your phone could not keep these details. Please try Save again.');}
+  row.detailsVersions=row.detailsVersions||Object.fromEntries(['type','severity','warning'].filter(k=>row.value?.[k]!=null).map(k=>[k,row.detailsSavedAt||row.iso]));
+  for(const k of ['type','severity','warning'])if(value[k]!=null)row.detailsVersions[k]=saved.iso;
+  Object.assign(row.value,value);row.detailsSavedAt=saved.iso;row.disp=displayVal(INPUTS.find(i=>i.id==='bowel'),row.value);
+  localStorage.setItem(key,JSON.stringify(day));closeSheet();renderSessions();showSavedReceipt();
+}
+function showSavedReceipt(){
+  // Close first. The fixed receipt stays above the tabs for two seconds;
+  // opening any sheet clears it before the sheet appears.
+  closeSheet();
+  const el=document.getElementById('reading-sync-status');if(!el)return;
+  clearTimeout(savedReceiptTimer);el.hidden=false;el.textContent='Saved';
+  el.scrollIntoView?.({block:'nearest',behavior:'instant'});
+  savedReceiptTimer=setTimeout(()=>{savedReceiptTimer=null;readingSaveStatus('',false);},2000);
+}
 function pickBowel(el, kind) {
   pickOpt(el,'kind',kind);
   document.getElementById('bowel-accident').hidden=kind!=='accident';
@@ -1229,6 +1325,7 @@ function pickOpt(el, key, val) {
   el.parentElement.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
   sheetSel[key] = val;
+  if(activeInput?.id==='boweldetails')sheetDetailsTouched.add(key);
 }
 
 // Tap all that fit. None of these clears the others, and any other clears None.
@@ -1243,6 +1340,9 @@ function pickMulti(el) {
 }
 
 function showOverlay() {
+  clearTimeout(sheetCloseTimer);sheetCloseTimer=null;
+  clearTimeout(savedReceiptTimer);savedReceiptTimer=null;
+  const status=document.getElementById('reading-sync-status');if(status)status.hidden=true;
   const ov = document.getElementById('overlay');
   ov.style.display = 'flex';
   requestAnimationFrame(()=>ov.classList.add('open'));
@@ -1253,24 +1353,36 @@ function closeSheet() {
   const ov = document.getElementById('overlay');
   ov.classList.remove('open');
   document.body.style.overflow = '';
-  setTimeout(()=>{ if (!ov.classList.contains('open')) ov.style.display = 'none'; }, 220);
+  clearTimeout(sheetCloseTimer);
+  sheetCloseTimer=setTimeout(()=>{sheetCloseTimer=null;if (!ov.classList.contains('open')) ov.style.display = 'none'; }, 220);
   activeInput = null;
 }
 
 // These entry limits cannot be overridden by confirming a warning.
 const SANE = { glucose:[2,30], truefasting:[2,30], pulse:[30,200], weight:[90,220], sleephours:[0,16] };
+let savedReceiptTimer=null;
+let sheetCloseTimer=null;
 const READING_OUTBOX = 'fh_reading_outbox_v1';
 const READING_CANCELLED = 'fh_reading_cancelled_v1';
 const READING_RETENTION = 2*24*60*60*1000;
 let readingFlush = null;
+let readingFlushAgain = false;
+const readingSending = new Set();
+const READING_SEND_TIMEOUT = 30000;
+let firstOutboxStart = true;
+const READING_CLEANUP = 'fh_reading_cleanup_v1:';
+function scheduleReadingCleanup(clientId) {
+  localStorage.setItem(READING_CLEANUP+clientId,String(Date.now()+READING_SEND_TIMEOUT));
+}
 function readingIdOf(row) {
   const marker=String(row.timeLocal||'').match(/\[readingId:([^\]]+)\]/);
   return row.readingId || (marker && marker[1]) || '';
 }
 function dedupeReadings(rows) {
+  const remote=(rows||[]).filter(r=>r.field==='readingcancelled'&&(r.value?.readingId||r.value?.timestamp));
   const seen=new Set();
   return rows.filter(row=>{
-    if(readingIsCancelled(row))return false;
+    if(readingIsCancelled(row)||remote.some(r=>(r.clientId||currentClientId)===(row.clientId||currentClientId)&&cancellationMatches(row,r.value)))return false;
     const id=readingIdOf(row),key=JSON.stringify([row.clientId||'',row.field,id]);
     if(!id)return true; // Old rows keep their old meaning.
     if(seen.has(key))return false;
@@ -1286,27 +1398,103 @@ function cancelledReadings() {
   return saved;
 }
 function readingIsCancelled(row) {
-  return !!cancelledReadings()[readingIdOf(row)||row.timestamp||row.iso];
+  if(row.clientId&&row.clientId!==currentClientId)return false;
+  const saved=cancelledReadings(),id=readingIdOf(row),timestamp=row.__utc||row.timestamp||row.iso;
+  return !!(id&&id!==timestamp?saved[id]:saved['legacy:'+timestamp+':'+row.field]||(!id&&saved[timestamp]&&!Number.isFinite(Date.parse(timestamp))));
 }
-async function reconcileReadings() {
+function cancellationMatches(row,value){
+  const id=readingIdOf(row),timestamp=row.__utc||row.timestamp||row.iso;
+  if(value.readingId&&value.readingId!==value.timestamp)return id===value.readingId;
+  return (!id||id===timestamp)&&timestamp===value.timestamp&&(value.fields||[]).includes(row.field);
+}
+async function reconcileReadings(result,flush=true) {
   // Version 17 cannot make append idempotent. A timed-out request may land
   // after its retry, so inspect the raw rows again even with an empty outbox.
-  const result=await sheetCall({action:'get_logs',clientId:currentClientId},20000);
+  result=result||await sheetCall({action:'get_logs',clientId:currentClientId},20000);
   if(!result || result.success!==true || !Array.isArray(result.logs))return;
-  const seen=new Set(),cutoff=Date.now()-READING_RETENTION;
+  rememberReadingCancellations(result.logs);
   for(const row of result.logs) {
-    if(row.clientId && row.clientId!==currentClientId)continue;
-    const time=Date.parse(row.timestamp),id=readingIdOf(row);
-    if(!Number.isFinite(time)||time<cutoff)continue;
-    const key=JSON.stringify([row.field,id]);
-    const remove=readingIsCancelled(row)||(id && seen.has(key));
-    if(id)seen.add(key); // Paired glucose/truefasting rows each keep one copy.
-    if(remove) {
-      // Use this copy's server identity, never the original append's stamp.
-      await sheetCall({action:'delete_entry',clientId:currentClientId,sheet:'Daily Log',timestamp:row.timestamp},20000);
+    if(row.clientId&&row.clientId!==currentClientId||row.field==='readingcancelled')continue;
+    const id=readingIdOf(row)||row.timestamp;
+    if(readingIsCancelled(row)){
+      const cancelKey=result.logs.some(r=>r.field==='readingcancelled'&&r.value&&(!r.clientId||r.clientId===currentClientId)&&cancellationMatches(row,r.value))?undefined:queueReadingCancellation(id,row.timestamp,[row.field]);
+      queueReadingUndoDelete(id,row.timestamp,cancelKey);
     }
   }
+  if(flush)await flushReadingOutbox();
 }
+function rememberReadingCancellations(rows){
+  const saved=cancelledReadings();let changed=false;
+  // Old phones kept only an ISO tombstone. Recover its field from the old
+  // delete job or the rows still present; never hide a kept collision.
+  for(const id of Object.keys(saved))if(Number.isFinite(Date.parse(id))){
+    const cached=JSON.parse(localStorage.getItem('fh_'+localDayStr(new Date(id)))||'{}');
+    const kept=new Set(SESSION_ORDER.flatMap(sid=>Object.entries(cached[sid]||{}).filter(([field,entries])=>Array.isArray(entries)&&entries.some(e=>e.iso===id)).map(([field])=>field)));
+    const queued=readingOutbox().filter(x=>x.payload.action==='delete_entry'&&x.payload.timestamp===id).map(x=>x.key.split(':').at(-1));
+    const fields=[...new Set(queued.length?queued:(rows||[]).filter(r=>r.timestamp===id&&!kept.has(r.field)&&INPUTS.some(i=>i.id===r.field)).map(r=>r.field))];
+    if(fields.length===1||fields.length===2&&fields.every(f=>['glucose','truefasting'].includes(f))){
+      for(const field of fields)saved['legacy:'+id+':'+field]=saved[id];delete saved[id];changed=true;
+    }
+  }
+  for(const row of rows||[])if(row.field==='readingcancelled'&&(row.value?.readingId||row.value?.timestamp)&&(!row.clientId||row.clientId===currentClientId)){
+    if(row.value.readingId&&row.value.readingId!==row.value.timestamp)saved[row.value.readingId]=Date.now()+READING_RETENTION;
+    else for(const field of row.value.fields||[])saved['legacy:'+row.value.timestamp+':'+field]=Date.now()+READING_RETENTION;
+    changed=true;
+  }
+  if(changed)localStorage.setItem(READING_CANCELLED+':'+currentClientId,JSON.stringify(saved));
+}
+function nextRecordStamp(after){
+  const t=stamp(),key='fh_record_clock:'+currentClientId;
+  const ms=Math.max(Date.parse(t.iso),Number(localStorage.getItem(key)||0)+1,(Date.parse(after)||0)+1);
+  t.iso=new Date(ms).toISOString();localStorage.setItem(key,String(ms));return t;
+}
+function queueReadingCancellation(id,timestamp,fields=[]){
+  const key='cancel:'+currentClientId+':'+id+(id===timestamp?':'+fields.join(','):'');
+  const pending=readingOutbox().find(x=>x.key===key);
+  if(pending){if(!pending.attempted)storeReadingOutbox(readingOutbox().map(x=>x.key===key?{...x,payload:{...x.payload,value:{...x.payload.value,fields:[...new Set([...(x.payload.value.fields||[]),...fields])]}}}:x));return key;}
+  if(localStorage.getItem('fh_sent:'+key))return key;
+  const t=nextRecordStamp(timestamp);
+  storeReadingOutbox(readingOutbox().concat({key,id:key,payload:{action:'log_entry',clientId:currentClientId,field:'readingcancelled',value:{readingId:id,timestamp,fields},timestamp:t.iso,timeLocal:t.local+' [readingId:'+key+']'}}));
+  return key;
+}
+function queueReadingUndoDelete(id,timestamp,afterKey){
+  // Markerless legacy rows cannot prove timestamp ownership. Their durable
+  // field-scoped cancellation remains the safe record for readers.
+  if(!id||id===timestamp)return;
+  const key='undo:'+currentClientId+':'+id+':'+timestamp;
+  if(readingOutbox().some(x=>x.key===key))return;
+  storeReadingOutbox(readingOutbox().concat({key,id,undoReadingId:id,afterKey,payload:{action:'delete_entry',clientId:currentClientId,sheet:'Daily Log',timestamp}}));
+}
+let openLogsPromise=null;
+let lastHydrationVersion=0;
+function readingSyncVersion(){const key='fh_sync_clock:'+currentClientId,v=Number(localStorage.getItem(key)||0)+1;localStorage.setItem(key,String(v));return v;}
+function readingSnapshotMeta(){
+  const day=loadDay(),pending=readingOutbox().filter(x=>x.payload.action==='log_entry').flatMap(x=>[x.id,x.payload.timestamp]);
+  return {__fhReadVersion:readingSyncVersion(),__fhPendingIds:pending,__fhCachedIds:SESSION_ORDER.flatMap(sid=>Object.values(day[sid]||{}).flatMap(a=>Array.isArray(a)?a.map(r=>r.readingId||r.iso):[])).filter(id=>!pending.includes(id))};
+}
+async function readReadingSnapshot(clientId=currentClientId){const meta=readingSnapshotMeta(),r=await sheetCall({action:'get_logs',clientId},20000);return r?{...r,...meta}:r;}
+function openLogs(){return openLogsPromise||(openLogsPromise=readReadingSnapshot().then(r=>{if(!r?.success)openLogsPromise=null;return r;},e=>{openLogsPromise=null;throw e;}));}
+function confirmLocalReading(item){
+  if(item.payload.field==='readingcancelled'){localStorage.setItem('fh_sent:'+item.key,'1');return;}
+  if(item.payload.action!=='log_entry'||!INPUTS.some(i=>i.id===item.payload.field))return;
+  const p=item.payload,taken=String(p.timeLocal||'').match(/\[takenAt:([^;]+)/),key='fh_'+localDayStr(new Date(p.field==='bowel'?(p.takenAt||taken?.[1]||p.timestamp):p.timestamp));
+  const raw=localStorage.getItem(key);if(!raw)return;const day=JSON.parse(raw);let changed=false;
+  for(const sid of SESSION_ORDER)for(const row of (day[sid]||{})[p.field]||[])if((row.readingId||row.iso)===item.id){row.sheetConfirmedVersion=readingSyncVersion();changed=true;}
+  if(changed)localStorage.setItem(key,JSON.stringify(day));
+}
+function queueAppRecord(field,value,t=nextRecordStamp()){
+  const id=typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():t.iso+Math.random();
+  const payload={action:'log_entry',clientId:currentClientId,field,value,timestamp:t.iso,timeLocal:t.local+' [readingId:'+id+']'};
+  storeReadingOutbox(readingOutbox().concat({id,key:id,payload}));
+  void flushReadingOutbox();return id;
+}
+function reportAppProblem(kind,field='app'){
+  // No exception message, stack, entered value, URL or health data leaves the phone.
+  const key='fh_app_problem:'+localDayStr()+':'+kind+':'+field;
+  try{if(localStorage.getItem(key))return;localStorage.setItem(key,'1');queueAppRecord('apperror',kind+': '+String(field).replace(/[^a-z0-9_-]/gi,'').slice(0,30));}catch(e){}
+}
+if(typeof window!=='undefined')window.addEventListener?.('error',()=>reportAppProblem('screen error'));
+if(typeof window!=='undefined')window.addEventListener?.('unhandledrejection',()=>reportAppProblem('screen promise error'));
 function readingOutbox() { return JSON.parse(localStorage.getItem(READING_OUTBOX) || '[]'); }
 function storeReadingOutbox(items) { localStorage.setItem(READING_OUTBOX, JSON.stringify(items)); }
 function eventIdOf(row,kind) {
@@ -1318,7 +1506,56 @@ function dedupeSavedEvents(rows,kind) {
     if(!id)return true;if(seen.has(key))return false;seen.add(key);return true;
   });
 }
-function dedupeMeals(rows) { return dedupeSavedEvents(rows,'mealId'); }
+function mealIdOf(row) {
+  return row.mealId || (String(row.timeLocal||'').match(/\[mealId:([^\]]+)\]/)||[])[1] || '';
+}
+function mealIdentity(row) {
+  const id=mealIdOf(row),timestamp=row.__utc||row.timestamp;
+  // Hydration uses the timestamp as an old meal's surrogate ID. Both forms
+  // share one identity; different old foods at the same clock stay distinct.
+  return id&&id!==timestamp?id:timestamp?'legacy:'+timestamp+'|'+String(row.food??''):'';
+}
+function dedupeMeals(rows,logs=[],defaultClientId=currentClientId) {
+  const details=new Map();
+  const corrections=[...logs.filter(r=>r.field==='mealdetails'&&r.value?.mealId),
+    ...(rows||[]).filter(r=>r.detailsSavedAt).map(r=>({clientId:r.clientId,timestamp:r.detailsSavedAt,value:{mealId:mealIdOf(r)||r.__utc||r.timestamp,food:r.food}}))]
+    .filter(r=>Number.isFinite(Date.parse(r.__utc||r.timestamp))&&typeof r.value.food==='string')
+    .sort((a,b)=>Date.parse(a.__utc||a.timestamp)-Date.parse(b.__utc||b.timestamp));
+  for(const r of corrections)details.set(JSON.stringify([r.clientId||defaultClientId,r.value.mealId]),r);
+  const updated=(rows||[]).map(row=>{
+    const detail=details.get(JSON.stringify([row.clientId||defaultClientId,mealIdOf(row)||row.__utc||row.timestamp]));
+    return detail&&Date.parse(detail.__utc||detail.timestamp)>(Date.parse(row.detailsSavedAt)||0)?{...row,food:detail.value.food,detailsSavedAt:detail.__utc||detail.timestamp}:row;
+  });
+  const seen=new Set();return updated.filter(row=>{
+    const id=mealIdentity(row),key=JSON.stringify([row.clientId||defaultClientId,id]);
+    if(!id)return true;if(seen.has(key))return false;seen.add(key);return true;
+  });
+}
+function bowelDetailsById(rows,defaultClientId='') {
+  const details=new Map();
+  const patches=(rows||[]).filter(r=>r.field==='boweldetails'&&r.value?.readingId&&Number.isFinite(Date.parse(r.__utc||r.timestamp)))
+    .slice().sort((a,b)=>Date.parse(a.__utc||a.timestamp)-Date.parse(b.__utc||b.timestamp));
+  for(const row of patches){
+    const key=JSON.stringify([row.clientId||defaultClientId,row.value.readingId]),detail=details.get(key)||{value:{},versions:{}};
+    const savedAt=row.__utc||row.timestamp;
+    for(const k of ['type','severity','warning'])if(row.value[k]!=null){detail.value[k]=row.value[k];detail.versions[k]=savedAt;}
+    detail.savedAt=savedAt;details.set(key,detail);
+  }
+  return details;
+}
+function mergeBowelDetails(rows,defaultClientId='') {
+  const details=bowelDetailsById(rows,defaultClientId);
+  return (rows||[]).map(row=>{
+    if(row.field!=='bowel')return row;
+    const detail=details.get(JSON.stringify([row.clientId||defaultClientId,readingIdOf(row)||row.__utc||row.timestamp]));
+    if(!detail)return row;
+    const value={...row.value},versions={...row.detailsVersions};
+    for(const k of ['type','severity','warning'])if(detail.value[k]!=null&&Date.parse(detail.versions[k])>(Date.parse(versions[k]||row.detailsSavedAt)||0)){
+      value[k]=detail.value[k];versions[k]=detail.versions[k];
+    }
+    return {...row,value,detailsVersions:versions,detailsSavedAt:Date.parse(detail.savedAt)>(Date.parse(row.detailsSavedAt)||0)?detail.savedAt:row.detailsSavedAt};
+  });
+}
 function dedupeSupplements(rows) { return dedupeSavedEvents(rows,'supplementId'); }
 function queueSavedEvent(payload,kind,slot) {
   const t=stamp(),id=typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():t.iso+'-'+Math.random().toString(36).slice(2);
@@ -1331,32 +1568,89 @@ function queueSavedEvent(payload,kind,slot) {
   // Coalesce only unsent counter states. An in-flight state keeps its own identity.
   const items=readingOutbox().filter(x=>!(slot&&x.slot===slot&&!x.attempted&&x.payload.clientId===payload.clientId&&
     localDayStr(new Date(x.payload.timestamp))===localDayStr(new Date(payload.timestamp))));
-  storeReadingOutbox(items.concat({id,key:id,slot,payload}));readingSaveStatus(id,true);
+  storeReadingOutbox(items.concat({id,key:id,slot,payload,queuedAt:Date.now()}));readingSaveStatus(id,true);
   return payload;
 }
 function readingSaveStatus(id, pending) {
   const flash=document.getElementById('saved-flash');
-  if(flash && flash.dataset.readingId===id) {
-    flash.textContent=pending?'Saving... Waiting for the sheet. We will retry.':'Saved';
-    flash.style.display='block';
-    if(!pending)setTimeout(()=>{if(flash===document.getElementById('saved-flash') && flash.dataset.readingId===id)closeSheet();},550);
-  }
+  if(flash && flash.dataset.readingId===id){flash.textContent='Saved';flash.style.display='block';}
+  const late=readingOutbox().filter(x=>(!x.notBefore||x.notBefore<=Date.now())&&Date.now()-Math.max(Date.parse(x.payload.timestamp)||Date.now(),x.notBefore||0,x.queuedAt||0)>=120000);
   const status=document.getElementById('reading-sync-status');
-  if(status){const waiting=readingOutbox().length>0;status.hidden=!waiting;status.textContent=waiting?'Saving... Waiting for the sheet. We will retry.':'Saved';}
+  if(status&&!savedReceiptTimer){status.hidden=document.getElementById('overlay')?.style.display==='flex'||!late.length;status.textContent=late.length?(late.length===1?'1 entry is':late.length+' entries are')+' still sending. '+(late.length===1?'It is':'They are')+' safe on your phone.':'Saved';}
+  for(const item of late)reportAppProblem('entry still sending',item.payload.field||item.payload.action);
 }
-function flushReadingOutbox() {
-  if(readingFlush)return readingFlush;
-  readingFlush=(async()=>{
-    const attempted=new Set();
+function flushReadingOutbox(useOpenSnapshot=false) {
+  // A timer/online/pageshow wake-up during a readback must survive that read
+  // failing. Sharing its promise alone would drop the only pending retry.
+  if(readingFlush){readingFlushAgain=true;return readingFlush;}
+  // Publish the promise before running any app code. Status/error reporting or
+  // a request hook can reenter this function synchronously, before the first await.
+  let finish,fail;
+  const pending=new Promise((resolve,reject)=>{finish=resolve;fail=reject;});
+  readingFlush=pending;
+  const drain=async()=>{
+    const attempted=new Set(),snapshots=new Map();
+    // Retry readbacks, hydration on open, and cleanup share one download.
+    const snapshot=clientId=>{
+      if(!snapshots.has(clientId))snapshots.set(clientId,useOpenSnapshot&&clientId===currentClientId?openLogs():readReadingSnapshot(clientId));
+      return snapshots.get(clientId);
+    };
+    let cleanupChecked=false;
+    const cleanup=async()=>{
+      const due=Number(localStorage.getItem(READING_CLEANUP+currentClientId)||0);
+      if(cleanupChecked||!due||due>Date.now())return;
+      cleanupChecked=true;
+      const result=await snapshot(currentClientId);
+      if(!result?.success||!Array.isArray(result.logs))return;
+      localStorage.removeItem(READING_CLEANUP+currentClientId);
+      await reconcileReadings(result,false); // Queue jobs only. Never reenter this worker.
+    };
     while(true) {
-      const item=readingOutbox().find(x=>!attempted.has(x.key));
-      if(!item)break;
+      const next=()=>readingOutbox().find(x=>!attempted.has(x.key)&&!readingSending.has(x.key)&&(!x.notBefore||x.notBefore<=Date.now())&&
+        (!x.afterKey||!readingOutbox().some(p=>p.key===x.afterKey)));
+      let item=next();
+      if(!item){await cleanup();item=next();if(!item)break;}
       attempted.add(item.key);
+      // Only this page's Set locks readback and append. A saved sending flag
+      // from a dead page never blocks a new worker; retryAfter bounds uncertainty.
+      readingSending.add(item.key);
       let confirmed=false;
       try {
+        storeReadingOutbox(readingOutbox().map(x=>x.key===item.key?{...x,sending:true}:x));
+        // Older builds journalled a destructive delete plus restore jobs. Retire
+        // that delete before it can touch live rows. Restore only missing IDs,
+        // using the shared readback, if its delete already landed before reload.
+        if(item.payload.action==='delete_entry'&&item.key.startsWith('cleanup:')&&readingOutbox().some(x=>x.afterKey===item.key)){
+          const seen=await snapshot(item.payload.clientId);
+          if(!seen?.success||!Array.isArray(seen.logs))continue;
+          storeReadingOutbox(readingOutbox().filter(x=>x.key!==item.key).map(x=>x.afterKey===item.key?{...x,afterKey:null,attempted:true,retryAfter:0}:x));
+          continue;
+        }
+        if(item.payload.action==='delete_entry'&&item.payload.sheet==='Daily Log'){
+          if(item.undoReadingId&&item.undoReadingId===item.id&&item.id!==item.payload.timestamp){
+            // Version 17 deletes ALL rows at this timestamp. Check raw rows
+            // immediately before every attempt, including after reload or a
+            // lost reply. Hydrated/deduped opening data is not ownership proof.
+            const seen=await sheetCall({action:'get_logs',clientId:item.payload.clientId},20000);
+            if(!seen?.success||!Array.isArray(seen.logs))continue;
+            const rows=seen.logs.filter(r=>r.timestamp===item.payload.timestamp);
+            if(rows.some(r=>(r.clientId&&r.clientId!==item.payload.clientId)||readingIdOf(r)!==item.undoReadingId)){
+              storeReadingOutbox(readingOutbox().filter(x=>x.key!==item.key));continue;
+            }
+            confirmed=!rows.length;
+          }else{
+          // Version 17 deletes every row at a timestamp, with no conditional
+          // delete. Retire old jobs to durable, reader-visible cancellations.
+          const seen=await snapshot(item.payload.clientId);
+          if(!seen?.success||!Array.isArray(seen.logs))continue;
+          if(!item.key.startsWith('cleanup:'))queueReadingCancellation(item.id,item.payload.timestamp,[item.key.split(':').at(-1)]);
+          else for(const row of seen.logs)if(row.timestamp===item.payload.timestamp&&readingIsCancelled(row))queueReadingCancellation(readingIdOf(row)||row.timestamp,row.timestamp,[row.field]);
+          storeReadingOutbox(readingOutbox().filter(x=>x.key!==item.key));continue;
+          }
+        }
         // A failed read is unknown, never proof that an append is absent.
         if(item.attempted && ['log_entry','log_food','log_supplement'].includes(item.payload.action)) {
-          const seen=await sheetCall({action:'get_logs',clientId:item.payload.clientId},20000);
+          const seen=await snapshot(item.payload.clientId);
           if(!seen || seen.success!==true || !Array.isArray(seen.logs))continue;
           const action=item.payload.action;
           if(action==='log_entry')confirmed=seen.logs.some(r=>r.field===item.payload.field &&
@@ -1368,34 +1662,68 @@ function flushReadingOutbox() {
             confirmed=rows.some(r=>(!r.clientId||r.clientId===item.payload.clientId)&&eventIdOf(r,kind)===item.id);
           }
         }
+        if(item.attempted && item.payload.action==='delete_entry'&&item.payload.sheet!=='Daily Log'){
+          const seen=await sheetCall({action:'get_logs',clientId:item.payload.clientId},20000);
+          if(!seen?.success||!Array.isArray(seen.logs))continue;
+          confirmed=!seen.logs.some(r=>r.timestamp===item.payload.timestamp);
+        }
         // Undo may remove this append while readback is in flight.
-        if(!confirmed && readingOutbox().some(x=>x.key===item.key) &&
+        if(!confirmed && (!item.retryAfter||Date.now()>=item.retryAfter) && readingOutbox().some(x=>x.key===item.key) &&
             (item.payload.action!=='log_entry'||!readingIsCancelled(item.payload))) {
-          storeReadingOutbox(readingOutbox().map(x=>x.key===item.key?{...x,attempted:true}:x));
+          storeReadingOutbox(readingOutbox().map(x=>x.key===item.key?{...x,attempted:true,retryAfter:Date.now()+READING_SEND_TIMEOUT}:x));
           const response=await sheetCall(item.payload,20000);
           confirmed=!!(response && response.success===true);
+          // A definite refusal has a reply. Transport errors/null replies remain
+          // uncertain until the deadline, even when an absence read is fast.
+          if(response?.success===false&&!response.uncertain&&!/timed?\s*out|reply lost|network|abort|fetch|HTTP|disconnect/i.test(response.error||''))
+            storeReadingOutbox(readingOutbox().map(x=>x.key===item.key?{...x,retryAfter:0}:x));
+          else if(!confirmed||item.retryAfter) scheduleReadingCleanup(item.payload.clientId);
         }
-      } catch(e) { /* Keep the request until the sheet confirms it. */ }
-      if(confirmed)storeReadingOutbox(readingOutbox().filter(x=>x.key!==item.key));
+      } catch(e) { scheduleReadingCleanup(item.payload.clientId); /* Keep uncertain requests. */ }
+      finally {
+        try{storeReadingOutbox(readingOutbox().map(x=>x.key===item.key?{...x,sending:false}:x));}
+        finally{readingSending.delete(item.key);}
+      }
+      if(confirmed){confirmLocalReading(item);storeReadingOutbox(readingOutbox().filter(x=>x.key!==item.key));}
       readingSaveStatus(item.id,readingOutbox().some(x=>x.id===item.id));
       if(item.payload.action==='log_food')mealSaveStatus(item.id);
     }
-    try { await reconcileReadings(); } catch(e) { /* Next open or sync retries cleanup. */ }
-  })().finally(()=>{readingFlush=null;});
-  return readingFlush;
+
+  };
+  (async()=>{
+    try {
+      do {
+        readingFlushAgain=false;
+        await drain();
+        // The opening snapshot may have failed or become stale. A retained
+        // wake-up gets fresh readbacks, within the same published flush promise.
+        useOpenSnapshot=false;
+      } while(readingFlushAgain);
+      // Release ownership in this same turn. A later .then would leave a
+      // microtask gap where another wake-up could join an already-ended drain.
+      readingFlush=null;finish();
+    } catch(error) {readingFlush=null;fail(error);}
+  })();
+  return pending;
 }
 function startReadingOutbox() {
   const pending=readingOutbox();
   if(pending.length)readingSaveStatus(pending[0].id,true);
-  return flushReadingOutbox();
+  const opening=firstOutboxStart;firstOutboxStart=false;
+  return flushReadingOutbox(opening);
 }
 
 
-function readingTimeControls() {
+function readingTimeControls(bowel=false) {
   const n=new Date(),value=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  if(bowel)return `<button class="bowel-earlier" type="button" aria-expanded="false" aria-controls="taken-time-wrap" onclick="const input=document.getElementById('taken-earlier');input.checked=!input.checked;document.getElementById('taken-time-wrap').hidden=!input.checked;this.setAttribute('aria-expanded',String(input.checked))">It happened earlier? Set the time</button><input id="taken-earlier" type="checkbox" hidden><div id="taken-time-wrap" hidden><label for="taken-time">Time taken</label><input id="taken-time" class="big-input" type="time" value="${value}"></div>`;
   return `<label class="opt-btn" style="display:block;min-height:44px;"><input id="taken-earlier" type="checkbox" onchange="document.getElementById('taken-time-wrap').hidden=!this.checked"> Taken earlier?</label><div id="taken-time-wrap" hidden><label for="taken-time">Time taken</label><input id="taken-time" class="big-input" type="time" value="${value}"></div>`;
 }
-function entryError(text) {document.getElementById('entry-error').textContent=text;return false;}
+function entryError(text,nudge=false) {
+  const el=document.getElementById('entry-error');if(el){el.textContent=text;if(text){el.scrollIntoView?.({block:'start'});}}
+  // Her typing warnings are not phone problems. Real faults report where they happen.
+  return false;
+}
 function readingTime(t) {
   const earlier=document.getElementById('taken-earlier'),input=document.getElementById('taken-time');
   if(!earlier||!earlier.checked)return {};
@@ -1408,7 +1736,7 @@ function readingTime(t) {
 }
 async function saveEntry() {
   const inp = activeInput;
-  if (!inp) return;
+  if (!inp) return entryError('Please open the reading you want to save.');
   // One Save per bowel sheet. Reopening Home's button always starts a new event,
   // even when its values and clock match the last movement.
   // A second Save on the same sheet closes it, so the next movement always
@@ -1417,7 +1745,7 @@ async function saveEntry() {
   let value = null;
   if (inp.type==='number') {
     const v = Number(document.getElementById('entry-val').value || NaN);
-    if (isNaN(v)) return;
+    if (isNaN(v)) return entryError('Please enter a number before Save.',true);
     const R = SANE[inp.id];
     if (R && (v < R[0] || v > R[1])) {
       return entryError(inp.id==='pulse'?'That looks like a sugar number. Pulse is usually 50 to 100. Please check it.':
@@ -1427,41 +1755,41 @@ async function saveEntry() {
   } else if (inp.type==='bp') {
     const sys = Number(document.getElementById('entry-sys').value || NaN);
     const dia = Number(document.getElementById('entry-dia').value || NaN);
-    if (isNaN(sys) || isNaN(dia)) return;
+    if (isNaN(sys) || isNaN(dia)) return entryError('Please enter both pressure numbers.',true);
     if(sys<70||sys>250||dia<40||dia>150||sys<=dia||!Number.isInteger(sys)||!Number.isInteger(dia))
       return entryError('Please check both pressure numbers. Top: 70 to 250. Bottom: 40 to 150. The top is the bigger number.');
     value = { sys, dia };
   } else if (inp.type==='scale' || inp.type==='count') {
-    if (sheetSel.scale === undefined) return;
+    if (sheetSel.scale === undefined) return entryError('Please choose a number before Save.',true);
     value = sheetSel.scale;
   } else if (inp.type==='activity') {
     const atype = document.getElementById('entry-atype').value.trim();
-    if (!atype) return;
+    if (!atype) return entryError('Please type what you did before Save.',true);
     value = { type: atype, intensity: sheetSel.intensity || '', time: document.getElementById('entry-atime').value.trim() };
   } else if (inp.type==='stress') {
-    if (sheetSel.scale === undefined) return;
+    if (sheetSel.scale === undefined) return entryError('Please choose a number before Save.',true);
     value = { intensity: sheetSel.scale, source: sheetSel.source || '' };
   } else if (inp.type==='bristol') {
     if(sheetSel.kind==='none')value={kind:'none',entryMode:'event'};
     else {
-      if (sheetSel.type === undefined) return;
-      if(!sheetSel.kind)return entryError('Please choose Normal or Accident.');
-      if(sheetSel.kind==='accident'&&!sheetSel.severity)return entryError('Please choose Small or Big.');
-      if(sheetSel.kind==='accident'&&!sheetSel.warning)return entryError('Please choose With warning or No warning.');
-      value = { entryMode:'event', type: sheetSel.type, kind:sheetSel.kind, severity:sheetSel.kind==='accident'?sheetSel.severity:'', warning:sheetSel.kind==='accident'?(sheetSel.warning||''):'', range:BRISTOL.find(b=>b.n===sheetSel.type).range };
+      if(!sheetSel.kind)return entryError('Please choose Normal or Whoosh.',true);
+      value={entryMode:'event',kind:sheetSel.kind};
+      for(const key of ['type','severity','warning'])if(sheetSel[key]!=null)value[key]=sheetSel[key];
+      if(sheetSel.type!=null)value.range=BRISTOL.find(b=>b.n===sheetSel.type)?.range;
+
     }
   } else if (inp.type==='hydration') {
-    if (!sheetSel.tag) return;
+    if (!sheetSel.tag) return entryError('Please choose an answer before Save.',true);
     value = sheetSel.tag;
   } else if (inp.type==='choice') {
-    if (!sheetSel.choice) return;
+    if (!sheetSel.choice) return entryError('Please choose an answer before Save.',true);
     value = sheetSel.choice;
   } else if (inp.type==='multi') {
-    if (!sheetSel.multi) return;
+    if (!sheetSel.multi) return entryError('Please choose an answer before Save.',true);
     value = sheetSel.multi;
   }
   const t = stamp();
-  const taken=value?.kind==='none'?{}:readingTime(t);if(taken===null)return entryError('Please choose the time you took this reading.');
+  const taken=value?.kind==='none'?{}:readingTime(t);if(taken===null)return entryError('Please choose the time you took this reading.',true);
   const automaticTime=!document.getElementById('taken-earlier')?.checked;
   if (REPEATABLE_IDS.includes(inp.id) && !taken.takenAt) {
     const d=new Date(t.iso);
@@ -1479,6 +1807,8 @@ async function saveEntry() {
   if (inp.id!=='bowel' && prior && JSON.stringify(prior.value) === JSON.stringify(entry.value) && ((automaticTime&&(prior.takenAtAuto||prior.takenAt===prior.iso))||(prior.takenAt||'')===(entry.takenAt||'')) && (prior.beforeCoffee||'')===beforeCoffee && prior.iso && (new Date(t.iso) - new Date(prior.iso)) < 2 * 60 * 1000) {
     const flash=document.getElementById('saved-flash');flash.dataset.readingId=prior.readingId||prior.iso;
     readingSaveStatus(flash.dataset.readingId,readingOutbox().some(x=>x.id===flash.dataset.readingId));
+    // A repeat Save is still a Save: close the sheet the same way.
+    if(typeof showSavedReceipt==='function')showSavedReceipt();
     await flushReadingOutbox();
     return;
   }
@@ -1493,7 +1823,7 @@ async function saveEntry() {
   if(paired)requests.push({...requests[0],field:'truefasting'});
   try {
     storeReadingOutbox(readingOutbox().concat(requests.map(payload=>({key:entry.readingId+':'+payload.field,id:entry.readingId,payload}))));
-  } catch(e) {return entryError('Your phone could not keep this reading. Please free some space and try Save again.');}
+  } catch(e) {reportAppProblem('save refused',inp.id);return entryError('Your phone could not keep this reading. Please free some space and try Save again.');}
   if(inp.id==='bowel')sheetReadingId=entry.readingId;
   if (REPEATABLE_IDS.indexOf(inp.id) > -1 || inp.id==='truefasting') {
     day[activeSession][inp.id] = day[activeSession][inp.id] || [];
@@ -1516,7 +1846,7 @@ async function saveEntry() {
   readingSaveStatus(entry.readingId,true);
   // A bowel save never holds the sheet open while the sheet is slow. The
   // outbox keeps retrying and Home shows the saving line.
-  if(inp.id==='bowel')setTimeout(()=>{if(activeInput===inp)closeSheet();},700);
+  if(typeof showSavedReceipt==='function')showSavedReceipt();
   await flushReadingOutbox();
 }
 
@@ -1527,7 +1857,7 @@ async function cancelEntry(sid, mid, idx) {
   const entry = log[idx];
   if (!entry) return;
   const id=entry.readingId||entry.iso;
-  const cancelled=cancelledReadings();cancelled[id]=Date.now()+READING_RETENTION;
+  const cancelled=cancelledReadings();cancelled[id===entry.iso?'legacy:'+entry.iso+':'+mid:id]=Date.now()+READING_RETENTION;
   localStorage.setItem(READING_CANCELLED+':'+currentClientId,JSON.stringify(cancelled));
   const pending=readingOutbox().filter(x=>x.id===id && x.payload.action==='log_entry');
   const fields=[mid];
@@ -1545,15 +1875,16 @@ async function cancelEntry(sid, mid, idx) {
   }
   if(paired)fields.push(mid==='glucose'?'truefasting':'glucose');
   pending.forEach(x=>{if(!fields.includes(x.payload.field))fields.push(x.payload.field);});
+  // A legacy pair has no ID, so each removed field needs its own tombstone.
+  if(id===entry.iso){for(const f of fields)cancelled['legacy:'+entry.iso+':'+f]=Date.now()+READING_RETENTION;localStorage.setItem(READING_CANCELLED+':'+currentClientId,JSON.stringify(cancelled));}
   // Remove every queued append for this reading. Deletions share the same
   // worker, so an append already in flight finishes before its delete runs.
-  const kept=readingOutbox().filter(x=>x.id!==id || x.payload.action!=='log_entry');
-  fields.forEach(field=>{
-    const queued=pending.find(x=>x.payload.field===field);
-    if(entry.iso && (!queued || queued.attempted))kept.push({key:'delete:'+id+':'+field,id,
-      payload:{action:'delete_entry',clientId:currentClientId,sheet:'Daily Log',timestamp:entry.iso,readingId:id}});
-  });
+  const kept=readingOutbox().filter(x=>!(x.id===id&&x.payload.action==='log_entry')&&!(x.payload.field==='boweldetails'&&x.payload.value?.readingId===id));
   storeReadingOutbox(kept);
+  if(entry.iso&&(!pending.length||pending.some(x=>x.attempted))){
+    const cancelKey=queueReadingCancellation(id,entry.iso,fields);
+    queueReadingUndoDelete(id,entry.iso,cancelKey);
+  }
   saveDay(day);
   renderSessions();
   readingSaveStatus(id,kept.some(x=>x.id===id));
@@ -2027,16 +2358,33 @@ function supplementSlot(row) {
   return (SUPPS.find(x=>name===x.name)||{}).id||'';
 }
 async function hydrateFromSheet() {
+  const result=arguments[0];
+  const meta=result?.__fhReadVersion?result:readingSnapshotMeta();
   try {
-    const r = await sheetCall({ action:'get_logs', clientId: currentClientId });
+    const resultLogs = result || await sheetCall({action:'get_logs',clientId:currentClientId});
+    const r=resultLogs?{...resultLogs}:resultLogs;
     if (!r || !r.success) return;
+    if(meta.__fhReadVersion<lastHydrationVersion)return;
+    lastHydrationVersion=meta.__fhReadVersion;
+    const authoritative=Array.isArray(r.logs);
+    rememberReadingCancellations(r.logs||[]);
     r.logs=dedupeReadings(r.logs||[]);
+    const details=bowelDetailsById([...r.logs,...readingOutbox().filter(x=>x.payload.clientId===currentClientId).map(x=>x.payload)],currentClientId);
     window.__clientLogs = r;
     const todayStr = localDayStr();
     const day = loadDay();
     let changed = false;
+    for(const sid of SESSION_ORDER)if(day[sid])for(const mid of Object.keys(day[sid]))if(Array.isArray(day[sid][mid])){
+      const kept=day[sid][mid].filter(e=>{
+        if(readingIsCancelled({...e,field:mid}))return false;
+        const id=e.readingId||e.iso;
+        if(!authoritative||!e.sheetConfirmedVersion&&!meta.__fhCachedIds.includes(id)||e.sheetConfirmedVersion>meta.__fhReadVersion||meta.__fhPendingIds.includes(id)||meta.__fhPendingIds.includes(e.iso)||readingOutbox().some(x=>x.id===id||x.payload.timestamp===e.iso))return true;
+        return r.logs.some(row=>row.field===mid&&(readingIdOf(row)?readingIdOf(row)===id||!e.readingId&&row.timestamp===e.iso:row.timestamp===e.iso));
+      });
+      if(kept.length!==day[sid][mid].length){day[sid][mid]=kept;changed=true;}
+    }
     (r.logs || []).forEach(function(row){
-      if(readingOutbox().some(x=>x.payload.action==='delete_entry' && (x.id===readingIdOf(row) || x.payload.timestamp===row.timestamp)))return;
+      if(readingOutbox().some(x=>!x.undoReadingId&&x.payload.action==='delete_entry' && (x.id===readingIdOf(row) || x.payload.timestamp===row.timestamp)))return;
       const taken=String(row.timeLocal||'').match(/\[takenAt:([^;]+);local:([^\]]+)\]/);
       const d = new Date(row.field==='bowel'?(row.takenAt||(taken&&taken[1])||row.timestamp):row.timestamp);
       if (isNaN(d) || localDayStr(d) !== todayStr) return;
@@ -2045,9 +2393,26 @@ async function hydrateFromSheet() {
       const sid = row.field==='bowel'?sessionForEntry({iso:d.toISOString()}):sessionFromRow(row) || sessionForEntry({ iso: row.timestamp });
       day[sid] = day[sid] || {};
       const arr = day[sid][inp.id] = day[sid][inp.id] || [];
-      if (arr.some(function(e){ return readingIdOf(row)?e.readingId===readingIdOf(row):e.iso===row.timestamp; })) return;
-      arr.push({ disp: displayVal(inp, row.value), when: cleanTimeLocal(row.timeLocal), iso: row.timestamp,
-        value:row.value, readingId:readingIdOf(row)||row.timestamp, beforeCoffee:row.beforeCoffee||'',
+      const detail=row.field==='bowel'?details.get(JSON.stringify([row.clientId||currentClientId,readingIdOf(row)||row.__utc||row.timestamp])):null;
+      const existing=arr.find(e=>readingIdOf(row)?e.readingId===readingIdOf(row)||!e.readingId&&e.iso===row.timestamp:e.iso===row.timestamp);
+      if(existing&&!existing.readingId&&readingIdOf(row)){existing.readingId=readingIdOf(row);changed=true;}
+      if(existing){existing.sheetConfirmedVersion=Math.max(existing.sheetConfirmedVersion||0,meta.__fhReadVersion);changed=true;}
+      // Keep this version after the outbox clears and across reloads. Equal
+      // saved times keep the phone's value, so an opening read cannot undo it.
+      if(existing){
+        if(detail){
+          existing.detailsVersions=existing.detailsVersions||Object.fromEntries(['type','severity','warning'].filter(k=>existing.value?.[k]!=null).map(k=>[k,existing.detailsSavedAt||existing.iso]));
+          for(const k of ['type','severity','warning'])if(detail.value[k]!=null&&Date.parse(detail.versions[k])>(Date.parse(existing.detailsVersions[k])||0)){
+            existing.value={...existing.value,[k]:detail.value[k]};existing.detailsVersions[k]=detail.versions[k];changed=true;
+          }
+          if(Date.parse(detail.savedAt)>(Date.parse(existing.detailsSavedAt)||0))existing.detailsSavedAt=detail.savedAt;
+          existing.disp=displayVal(inp,existing.value);
+        }return;
+      }
+      const value=detail?{...row.value,...detail.value}:row.value;
+      arr.push({ disp: displayVal(inp, value), when: cleanTimeLocal(row.timeLocal), iso: row.timestamp,
+        value, readingId:readingIdOf(row)||row.timestamp, beforeCoffee:row.beforeCoffee||'',sheetConfirmedVersion:meta.__fhReadVersion,
+        ...(detail?{detailsSavedAt:detail.savedAt,detailsVersions:detail.versions}:{}),
         ...(taken?{takenAt:taken[1],takenAtLocal:taken[2]}:{}) });
       changed = true;
     });
@@ -2119,7 +2484,18 @@ async function hydrateFromSheet() {
       const on = /^(YES|true)$/i.test(String(srow.taken));
       if (day.supps[sdef.id] !== on) { day.supps[sdef.id] = on; day.suppTimes[sdef.id] = cleanTimeLocal(srow.timeLocal); changed = true; }
     });
-    window.__foodHistory = dedupeMeals(r.food || []);
+    const localMeals=recentLocalMeals(),foodDetails=[...r.logs,...readingOutbox().filter(x=>x.payload.clientId===currentClientId).map(x=>x.payload),...localMeals.filter(f=>f.detailsSavedAt).map(f=>({field:'mealdetails',clientId:currentClientId,timestamp:f.detailsSavedAt,value:{mealId:f.mealId||f.iso,food:f.text}}))];
+    window.__foodHistory = dedupeMeals([...(r.food||[]),...localMeals.map(f=>({clientId:currentClientId,food:f.text,mealId:f.mealId,timestamp:f.iso,timeLocal:f.time,detailsSavedAt:f.detailsSavedAt}))],foodDetails);
+    const priorFoodLog=day.foodLog||[];
+    day.foodLog=dedupeMeals(priorFoodLog.map(f=>({clientId:currentClientId,food:f.text,mealId:f.mealId,timestamp:f.iso,detailsSavedAt:f.detailsSavedAt,localMeal:f})),foodDetails)
+      .map(r=>({...r.localMeal,text:r.food,...(r.detailsSavedAt?{detailsSavedAt:r.detailsSavedAt}:{})}));
+    if(JSON.stringify(day.foodLog)!==JSON.stringify(priorFoodLog))changed=true;
+    for(const row of window.__foodHistory){
+      if(row.clientId&&row.clientId!==currentClientId||localDayStr(new Date(row.timestamp))!==todayStr)continue;
+      const id=eventIdOf(row,'mealId')||row.timestamp,existing=day.foodLog.find(f=>mealIdentity({mealId:f.mealId,timestamp:f.iso,food:f.text})===mealIdentity(row)||!f.mealId&&f.iso===row.timestamp&&f.text===row.food);
+      if(!existing){day.foodLog.push({text:row.food,time:cleanTimeLocal(row.timeLocal),iso:row.timestamp,mealId:id,detailsSavedAt:row.detailsSavedAt});changed=true;}
+      else if(Date.parse(row.detailsSavedAt)>(Date.parse(existing.detailsSavedAt)||0)){existing.text=row.food;existing.detailsSavedAt=row.detailsSavedAt;changed=true;}
+    }
     window.__focusState = window.__focusState || {};
     // Magnesium's skip night must agree across devices, not just this phone.
     const yesterday=localDayStr(new Date(Date.now()-86400000));
@@ -2129,6 +2505,7 @@ async function hydrateFromSheet() {
     renderSessions();
     renderSupps();
     renderFoodHistory();
+    renderFoodToday();
     renderFoodQuick();
     renderYesterdayFood();
     renderFocusCard();
@@ -2232,7 +2609,7 @@ function focusReadings() {
     for(const e of entries)if(e.value!==undefined)rows.push({field,value:e.value,timestamp:e.iso,readingId:e.readingId,
       takenAt:e.takenAt,takenAtLocal:e.takenAtLocal,timeLocal:e.when+' · '+sid,session:sid});
   }
-  return dedupeReadings(rows).filter(r=>!readingOutbox().some(x=>x.payload.action==='delete_entry'&&x.payload.timestamp===r.timestamp));
+  return mergeBowelDetails(dedupeReadings(rows),currentClientId).filter(r=>!readingOutbox().some(x=>!x.undoReadingId&&x.payload.action==='delete_entry'&&x.payload.timestamp===r.timestamp));
 }
 function readingDay(r) {
   const local=r.takenAtLocal||(String(r.timeLocal||'').match(/\[takenAt:[^;]+;local:([^\]]+)\]/)||[])[1];
@@ -2302,9 +2679,8 @@ function usualMeals(rows) {
   return [...counts.values()].sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name)).slice(0,8);
 }
 function allFoodRows() {
-  const rows=dedupeMeals(window.__foodHistory||[]).slice(),d=loadDay();
-  for(const f of d.foodLog||[])if(!rows.some(r=>f.mealId?eventIdOf(r,'mealId')===f.mealId:r.timestamp===f.iso||r.food===f.text&&r.timeLocal===f.time))rows.push({food:f.text,timeLocal:f.time,timestamp:f.iso,mealId:f.mealId});
-  return dedupeMeals(rows);
+  const local=(loadDay().foodLog||[]).map(f=>({clientId:currentClientId,food:f.text,timeLocal:f.time,timestamp:f.iso,mealId:f.mealId,detailsSavedAt:f.detailsSavedAt}));
+  return dedupeMeals([...(window.__foodHistory||[]),...local]);
 }
 function renderFoodQuick() {
   const kind=document.getElementById('meal-kind');
@@ -2319,10 +2695,10 @@ function renderYesterdayFood() {
   el.innerHTML="<h3>Yesterday's food</h3><p>"+escapeHtml(humanDates(saved?saved.body:'Your food review will appear here after your morning review.'))+"</p>";
   el.hidden=false;
 }
-async function quickFood(text) {
+async function quickFood(text,button='familiar') {
   if(foodTier(text)==='red')return;
   document.getElementById('food-input').value=text;
-  await saveFood();
+  await saveFood(button);
 }
 
 /* ── FOOD ── */
@@ -3040,7 +3416,7 @@ function searchFood(q) {
   FOOD_YELLOW.forEach(f => { if (f.toLowerCase().includes(q)) hits.push({f, tier:'yellow', label:'Caution, small amounts', color:'var(--amber)'}); });
   // Red foods are explained by the guide, never offered as a meal suggestion.
   out.innerHTML = hits.length
-    ? hits.slice(0,8).map(h=>`<button type="button" class="search-result" data-food="${escapeHtml(h.f)}" onclick="quickFood(this.dataset.food)"><div class="tier-dot" style="background:${h.color};width:20px;height:20px;flex-shrink:0;border-radius:50%;"></div><div>${h.f}<p>${escapeHtml(foodWhy(h.f))}</p><div style="font-size:0.9rem;color:${h.color};font-weight:700;">${h.label}</div></div></button>`).join('')
+    ? hits.slice(0,8).map(h=>`<button type="button" class="search-result" data-food="${escapeHtml(h.f)}" onclick="quickFood(this.dataset.food,'search')"><div class="tier-dot" style="background:${h.color};width:20px;height:20px;flex-shrink:0;border-radius:50%;"></div><div>${h.f}<p>${escapeHtml(foodWhy(h.f))}</p><div style="font-size:0.9rem;color:${h.color};font-weight:700;">${h.label}</div></div></button>`).join('')
     : (foodTier(rawQ)==='red'
       ? `<div class="search-result" id="food-noresult"><div>${escapeHtml(foodFeedback(rawQ))}</div></div>`
       : `<div class="search-result" id="food-noresult"><div>Not on your lists yet. Tap Send to Christopher below and he will review it.</div></div>`);
@@ -3068,7 +3444,7 @@ function renderFoodToday() {
     <div class="food-logged">
       <div class="food-logged-body">
         <div class="food-logged-text">${f.text.replace(/</g,'&lt;')}</div>
-        <div class="food-logged-time">${readingOutbox().some(x=>x.id===f.mealId)?'Saving... We will retry.':'Saved ✓'} · ${f.time}</div>
+        <div class="food-logged-time">Saved ✓ · ${f.time}</div>
       </div>
     </div>`).join('');
 }
@@ -3084,56 +3460,125 @@ function mealWhenSuffix() {
 }
 function clearMealWhen() { const el = document.getElementById('meal-when'); if (el) el.value = ''; }
 
-// duplicate guard: the same food text arriving within 2 minutes is a double tap, not a meal
-let lastFoodSent = { text: '', at: 0, day: '', clientId: '' };
-function foodIsDuplicate(txt) {
-  const now = Date.now(),day=localDayStr();
-  if((loadDay().foodLog||[]).some(f=>f.text===txt&&now-Date.parse(f.iso)>=0&&now-Date.parse(f.iso)<2*60*1000))return true;
-  if (txt === lastFoodSent.text && day===lastFoodSent.day && currentClientId===lastFoodSent.clientId && now - lastFoodSent.at < 2 * 60 * 1000) return true;
-  lastFoodSent = { text: txt, at: now, day, clientId: currentClientId };
-  return false;
+function recentLocalMeals(){return entryDayKeys().flatMap(day=>{try{return (JSON.parse(localStorage.getItem('fh_'+day)||'{}').foodLog||[]).map(f=>({...f,mealDay:day}));}catch(e){return [];}});}
+function mealKindOf(text){return String(text||'').split(':')[0].trim().toLowerCase();}
+function mealEatingTime(text){
+  const raw=(String(text||'').match(/\s*·\s*ate\s+(.+)$/i)||[])[1];
+  if(!raw)return '';
+  const time=raw.toLowerCase().replace(/^at\s+/,'').replace(/\./g,'').trim();
+  const clock=time.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/);
+  if(!clock)return time.replace(/\s+/g,' ');
+  let hour=Number(clock[1]);const minute=Number(clock[2]||0),period=clock[3];
+  if(minute>59||hour>(period?12:23)||period&&hour<1)return time;
+  if(period)hour=hour%12+(period==='pm'?12:0);
+  return String(hour*60+minute);
 }
-
-async function logMeal(text) {
-  const hint=document.getElementById('food-hint');
-  if(foodIsDuplicate(text)){
-    const meal=(loadDay().foodLog||[]).find(f=>f.text===text&&Date.now()-Date.parse(f.iso)>=0&&Date.now()-Date.parse(f.iso)<2*60*1000);
-    const pending=meal&&readingOutbox().find(x=>x.payload.action==='log_food'&&x.payload.clientId===currentClientId&&x.payload.mealId===meal.mealId);
-    if(pending){await flushReadingOutbox();mealSaveStatus(pending.id);return !readingOutbox().some(x=>x.id===pending.id);}
-    hint.textContent='Already saved ✓';return true;
+function mealRows(){
+  const local=recentLocalMeals(),rows=local.concat((window.__foodHistory||[]).filter(r=>!r.clientId||r.clientId===currentClientId).map(r=>({text:r.food,time:cleanTimeLocal(r.timeLocal),iso:r.timestamp,mealId:eventIdOf(r,'mealId')||r.timestamp,mealDay:localDayStr(new Date(r.timestamp)),detailsSavedAt:r.detailsSavedAt,changedAt:r.changedAt})));
+  // Resolve versions before asking whether a meal is blank. Yesterday's cache
+  // can still hold a blank after hydration has received its completed version.
+  const newest=new Map(),version=f=>Date.parse(f.detailsSavedAt)||Date.parse(f.changedAt)||Date.parse(f.iso)||0;
+  for(const f of rows){
+    const id=f.mealId||f.iso,prior=newest.get(id);
+    if(!prior||version(f)>version(prior)||version(f)===version(prior)&&/^Meal$/i.test(mealName(prior.text))&&!/^Meal$/i.test(mealName(f.text)))
+      newest.set(id,prior?.text===f.text?{...prior,...f}:f);
   }
-  const p=queueSavedEvent({action:'log_food',clientId:currentClientId,food:text},'mealId');
-  const day=loadDay();day.foodLog=day.foodLog||[];
-  day.foodLog.push({text,time:cleanTimeLocal(p.timeLocal),iso:p.timestamp,mealId:p.mealId});saveDay(day);
-  window.__foodHistory=window.__foodHistory||[];
-  window.__foodHistory.push(p);
-  await flushReadingOutbox();mealSaveStatus(p.mealId);
-  const confirmed=!readingOutbox().some(x=>x.id===p.mealId);
-  if(confirmed){clearMealWhen();hint.textContent='Saved. '+proteinLine(text);}
-  renderFoodToday();renderFoodHistory();renderFoodQuick();renderYesterdayFood();
-  return confirmed;
+  return [...newest.values()];
+}
+function mealTarget(meal,edit=false){localStorage.setItem('fh_meal_target:'+currentClientId,JSON.stringify({id:meal.mealId||meal.iso,day:meal.mealDay||localDayStr(new Date(meal.iso)),iso:meal.iso,edit}));}
+// MEAL-RULES-2026-10-31: every entry path makes its one merge/repeat/new
+// decision here. The transport and readers continue to use the original ID.
+function mealSaveDecision(action,text,rows,target,now=Date.now()) {
+  const kind=mealKindOf(text),typed=mealEatingTime(text);
+  const recent=rows.filter(f=>mealKindOf(f.text)===kind&&now-Date.parse(f.iso)>=0&&now-Date.parse(f.iso)<=1800000)
+    .sort((a,b)=>Date.parse(b.iso)-Date.parse(a.iso));
+  const targeted=target&&rows.find(f=>(f.mealId||f.iso)===target.id&&f.mealDay===target.day);
+  const sameTime=(oldText,iso)=>{
+    if(!typed)return true; // Untimed taps/details have the explicit 30 min rule.
+    const date=new Date(iso),old=mealEatingTime(oldText)||String(date.getHours()*60+date.getMinutes());
+    if(!/^\d+$/.test(typed)||!/^\d+$/.test(old))return typed===old;
+    const delta=Math.abs(Number(typed)-Number(old));return Math.min(delta,1440-delta)<=15;
+  };
+  if(action==='tap')return {mode:recent.some(f=>sameTime(f.text,f.iso))?'repeat':'new',meal:recent.find(f=>sameTime(f.text,f.iso))};
+  if(target?.edit&&targeted)return {mode:'fill',meal:targeted};
+  // The successful draft receipt lives on its local meal, so the five-second
+  // guard survives reload/offline/midnight and does not extend on repeat taps.
+  const repeated=rows.find(f=>{
+    const saved=f.lastMealSave,age=now-saved?.at;
+    return saved&&saved.action===action&&age>=0&&age<=5000&&mealKindOf(saved.text)===kind&&
+      mealName(saved.text)===mealName(text)&&sameTime(saved.text,new Date(saved.at).toISOString());
+  });
+  if(repeated)return {mode:'repeat',meal:repeated};
+  const candidate=[targeted,...recent].find(f=>f&&mealKindOf(f.text)===kind&&/^Meal$/i.test(mealName(f.text))&&
+    now-Date.parse(f.iso)>=0&&now-Date.parse(f.iso)<=1800000&&sameTime(f.text,f.iso));
+  return candidate?{mode:'fill',meal:candidate}:{mode:'new'};
+}
+async function logMeal(text,action='details') {
+  const hint=document.getElementById('food-hint');
+  const target=JSON.parse(localStorage.getItem('fh_meal_target:'+currentClientId)||'null');
+  const decision=mealSaveDecision(action,text,mealRows(),target),candidate=decision.meal;
+  if(decision.mode==='repeat'){hint.textContent='Already saved';clearMealWhen();void flushReadingOutbox();return true;}
+  const requestText=text,chosen=decision.mode==='fill'?{id:candidate.mealId||candidate.iso,day:candidate.mealDay,iso:candidate.iso}:null;
+  if(chosen&&mealEatingTime(candidate.text)&&!mealEatingTime(text))text+=candidate.text.match(/\s*·\s*ate\s+.+$/i)[0];
+  const mealDay=chosen?.day||localDayStr(),day=JSON.parse(localStorage.getItem('fh_'+mealDay)||'{}');day.foodLog=day.foodLog||[];
+  let meal=chosen&&day.foodLog.find(f=>(f.mealId||f.iso)===chosen.id);
+  if(meal)Object.assign(meal,candidate); // Retain the resolved correction version when filling or editing.
+  if(!meal&&chosen){meal={...candidate};day.foodLog.push(meal);}
+  if(meal?.text===text){
+    mealTarget({...meal,mealDay});clearMealWhen();
+    hint.textContent='Already saved';void flushReadingOutbox();return true;
+  }
+  let p,detailsSavedAt;
+  const pending=meal&&readingOutbox().find(x=>x.payload.action==='log_food'&&x.payload.clientId===currentClientId&&x.id===(meal.mealId||meal.iso));
+  try{
+    if(pending&&!pending.attempted&&!readingSending.has(pending.key)){
+      p={...pending.payload,food:text};
+      storeReadingOutbox(readingOutbox().map(x=>x.key===pending.key?{...x,payload:p,notBefore:0,blankMeal:false,queuedAt:Date.now()}:x));
+    }else if(meal){
+      // Version 17 appends corrections to Daily Log. The Food Log event stays
+      // one row, even if its original reply is lost or still in flight.
+      const saved=nextRecordStamp(meal.detailsSavedAt);detailsSavedAt=saved.iso;
+      queueAppRecord('mealdetails',{mealId:meal.mealId||meal.iso,food:text},saved);
+      p={food:text,mealId:meal.mealId||meal.iso,timestamp:meal.iso,timeLocal:meal.time};
+    }else p=queueSavedEvent({action:'log_food',clientId:currentClientId,food:text},'mealId');
+  }catch(e){hint.textContent='Your phone could not keep this meal. Please try Save again.';return false;}
+  const savedMeal={text,time:cleanTimeLocal(p.timeLocal),iso:p.timestamp,changedAt:new Date().toISOString(),mealId:p.mealId,lastMealSave:{action,text:requestText,at:Date.now()},...(detailsSavedAt?{detailsSavedAt}:{})};
+  if(meal)Object.assign(meal,savedMeal,{pendingBlank:false});else {meal=savedMeal;day.foodLog.push(meal);}
+  localStorage.setItem('fh_'+mealDay,JSON.stringify(day));mealTarget({...meal,mealDay});
+  window.__foodHistory=(window.__foodHistory||[]).filter(r=>(eventIdOf(r,'mealId')||r.timestamp)!==p.mealId).concat({...p,detailsSavedAt});
+  hint.textContent='Saved. '+proteinLine(text);renderFoodToday();renderFoodHistory();renderFoodQuick();renderYesterdayFood();
+  void flushReadingOutbox();
+  clearMealWhen();
+  return true; // The durable phone save is complete, including while offline.
 }
 function mealSaveStatus(id) {
-  const pending=readingOutbox().some(x=>x.id===id),hint=document.getElementById('food-hint');
-  if(hint)hint.textContent=pending?'Your meal did not save yet. Saving... We will retry. Your words are still here.':'Saved ✓';
+  // Only the local save owns its receipt. A late reply must preserve a newer
+  // draft, repeat-tap prompt or storage error.
   renderFoodToday();
 }
-async function mealTap() { await logMeal(selectedMeal()+': Meal'+mealWhenSuffix()); }
-async function saveFood() {
+async function mealTap() {
+  const text=selectedMeal()+': Meal'+mealWhenSuffix(),prior=mealSaveDecision('tap',text,mealRows(),null).meal;
+  if(prior){mealTarget(prior);document.getElementById('food-hint').textContent='Already saved at '+String(prior.iso?new Date(prior.iso).toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}):(prior.time||'')).replace(/\.+$/,'')+'. Add more details?';return;}
+  const day=loadDay();day.foodLog=day.foodLog||[];
+  let p;
+  try{
+    p=queueSavedEvent({action:'log_food',clientId:currentClientId,food:text},'mealId');
+    storeReadingOutbox(readingOutbox().map(x=>x.id===p.mealId?{...x,notBefore:Date.now()+1800000,blankMeal:true,mealDay:localDayStr()}:x));
+  }catch(e){document.getElementById('food-hint').textContent='Your phone could not keep this meal. Please try again.';return;}
+  const meal={text:p.food,time:cleanTimeLocal(p.timeLocal),iso:p.timestamp,mealId:p.mealId,pendingBlank:true};day.foodLog.push(meal);saveDay(day);mealTarget(meal);
+  document.getElementById('food-hint').textContent='Saved. Add details below if you like.';renderFoodToday();
+}
+async function saveFood(action='details') {
   const input=document.getElementById('food-input'),raw=input.value.trim();if(!raw)return;
-  if(await logMeal(selectedMeal()+': '+raw+mealWhenSuffix()))input.value='';
+  if(await logMeal(selectedMeal()+': '+raw+mealWhenSuffix(),action)&&input.value.trim()===raw)input.value='';
 }
 
 function editFood(i) {
-  const day = loadDay();
-  const item = (day.foodLog || [])[i];
-  if (!item) return;
-  document.getElementById('food-input').value = item.text;
-  day.foodLog.splice(i, 1);
-  saveDay(day);
-  renderFoodToday();
+  const item=(loadDay().foodLog||[])[i];if(!item)return;
+  mealTarget({...item,mealDay:localDayStr()},true);
+  document.getElementById('food-input').value=item.text.replace(/^[^:]+:\s*/,'').replace(/^Meal$/,'');
   document.getElementById('food-input').focus();
-  document.getElementById('food-hint').textContent = 'Edit your entry and tap Save again.';
+  document.getElementById('food-hint').textContent='Edit your entry and tap Save again.';
 }
 
 /* ── VERSES ── */
@@ -4291,6 +4736,17 @@ function cleanTimeLocal(t) {
   return String(t||'').replace(/ · (morning|noon|night)$/i,'')
     .replace(/\s*\[(?:readingId|mealId|supplementId|takenAt):[^\]]+\]/g,'');
 }
+function bowelDisplayTime(r) {
+  const marker=String(r.timeLocal||'').match(/\[takenAt:([^;]+);local:([^\]]+)\]/);
+  const local=r.takenAtLocal||(marker&&marker[2]);
+  const m=String(local||'').match(/T(\d{2}):(\d{2})/);
+  if(m)return (Number(m[1])%12||12)+':'+m[2]+(Number(m[1])<12?' am':' pm');
+  const when=cleanTimeLocal(r.when||r.t||r.timeLocal||'');
+  const time=when.match(/(\d{1,2}):(\d{2})\s*(a\.?m\.?|p\.?m\.?)/i);
+  if(time)return time[1]+':'+time[2]+' '+time[3].replace(/\./g,'').toLowerCase();
+  const d=new Date(r.takenAt||(marker&&marker[1])||r.iso||r.timestamp);
+  return Number.isFinite(d.getTime())?(d.getHours()%12||12)+':'+String(d.getMinutes()).padStart(2,'0')+(d.getHours()<12?' am':' pm'):'';
+}
 function readingDisplayTime(r) {
   const when=cleanTimeLocal(r.when||r.t||r.timeLocal||'').replace(/\s*· taken .*$/,'');
   const marker=String(r.timeLocal||'').match(/\[takenAt:([^;]+);local:([^\]]+)\]/);
@@ -4333,7 +4789,7 @@ function renderCoachHome() {
   if (!el || !window.__lastGetLogs) return;
   try {
     const d = window.__lastGetLogs;
-    const logs = dedupeReadings(d.logs || []);
+    const logs = mergeBowelDetails(dedupeReadings(d.logs || []),currentClientId).filter(r=>!['readingcancelled','mealdetails','boweldetails','apperror','logorder'].includes(r.field));
     const todayStr = localDayStr();
     const latest = function(field){ for (let i = logs.length - 1; i >= 0; i--) { if (logs[i].field === field) return logs[i]; } return null; };
     const fmtVal = function(r){
@@ -4365,15 +4821,17 @@ function renderCoachHome() {
 }
 
 function coachLogRow(r) {
+  if(['readingcancelled','mealdetails','boweldetails','apperror','logorder'].includes(r.field))return '';
   const inp = INPUTS.find(i=>i.id===r.field);
   const label = inp ? inp.icon+' '+inp.label : r.field;
   let val = r.value;
-  if (val && typeof val === 'object') val = val.sys ? val.sys+'/'+val.dia : (val.type!==undefined ? 'Type '+val.type+' '+(val.warning||'') : (val.intensity!==undefined ? val.intensity+' · '+(val.source||'') : JSON.stringify(val)));
+  if(r.field==='bowel'&&val&&typeof val==='object') val=escapeHtml([val.kind==='none'?'No movement today':val.kind==='accident'?'Whoosh':val.kind==='normal'?'Normal':'',val.type!=null?'Type '+val.type:'',val.severity||'',val.warning||''].filter(Boolean).join(' · '));
+  else if (val && typeof val === 'object') val = val.sys ? val.sys+'/'+val.dia : (val.type!==undefined ? 'Type '+val.type+' '+(val.warning||'') : (val.intensity!==undefined ? val.intensity+' · '+(val.source||'') : JSON.stringify(val)));
   return `<div class="coach-log-item"><div><div class="coach-log-field">${label}</div><div class="coach-log-time">${sessionTag(sessionFromRow(r))}${cleanTimeLocal(r.timeLocal)}</div></div><div class="coach-log-val">${val}</div></div>`;
 }
 
 function initCoachView(logsData) {
-  logsData=dedupeReadings(logsData);
+  logsData=mergeBowelDetails(dedupeReadings(logsData),currentClientId).filter(r=>!['readingcancelled','mealdetails','boweldetails','apperror','logorder'].includes(r.field));
   // The dated log list renders FIRST so her history always shows, whatever the charts do.
   try {
     const todayStr = localDayStr();
@@ -4494,10 +4952,10 @@ function loadCoachChat() {
 
 function loadCoachLogs() {
   return sheetCall({ action:'get_logs', clientId: currentClientId }).then(r => {
-    if (r.success) {
+    if (r.success && Array.isArray(r.logs)) {
       r.logs=dedupeReadings(r.logs||[]);
       window.__lastGetLogs = r;
-      try { if (r.logs && r.logs.length) initCoachView(r.logs); } catch(e) { console.error('Future Health coach view error', e); }
+      try { initCoachView(r.logs); } catch(e) { console.error('Future Health coach view error', e); }
       try { renderCoachHome(); } catch(e) { console.error('Future Health coach home error', e); }
       // Food diary and supplement feeds were removed from the dashboard by Christopher's
       // request July 21 2026. The data still lands in the sheet for the analysis pass.
@@ -5119,6 +5577,7 @@ function p2Render() {
 try { if (P2_PREVIEW || P2_LIVE) document.getElementById('nav-phase2').style.display = ''; } catch(e) {}
 
 /* ── INIT ── every step is guarded so one error can never blank the screens after it */
+function afterPaint(fn){requestAnimationFrame(()=>setTimeout(fn,0));}
 function safeRun(label, fn) { try { fn(); } catch(e) { console.error('Future Health init error in ' + label, e); } }
 // Browsers restore the previous scroll position on reload, so reopening the app
 // dropped her partway down the Home page. Every open starts at the top now.
@@ -5159,7 +5618,8 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addEventListener('pageshow',()=>safeRun('reading saves',startReadingOutbox));
   setInterval(()=>safeRun('reading saves',startReadingOutbox),30000);
   safeRun('tiles', renderTiles);
-  safeRun('whooshes', fetchWhooshesToday);
+  safeRun('log order', renderLogOrder);
+  afterPaint(()=>safeRun('whooshes', fetchWhooshesToday));
   safeRun('supplements', renderSupps);
   let pensClock=localDayStr()+':'+new Date().getHours();
   setInterval(function(){const clock=localDayStr()+':'+new Date().getHours();if(clock!==pensClock){pensClock=clock;safeRun('supplements',renderSupps);safeRun('sessions',renderSessions);safeRun('focus',renderFocusCard);safeRun('yesterdayfood',renderYesterdayFood);}},30000);
@@ -5167,7 +5627,7 @@ document.addEventListener('DOMContentLoaded', function() {
   safeRun('foodquick', renderFoodQuick);
   safeRun('yesterdayfood', renderYesterdayFood);
   safeRun('foodtoday', renderFoodToday);
-  safeRun('wins', initWins);
+  afterPaint(()=>safeRun('wins', initWins));
   safeRun('focuscard', initFocusCard);
   const refreshReview=()=>{if(document.visibilityState==='hidden')return;safeRun('focuscard refresh',initFocusCard);safeRun('review news refresh',loadUpdatesClient);safeRun('question answers refresh',loadReviewLists);};
   document.addEventListener('visibilitychange',refreshReview);
@@ -5177,8 +5637,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (__pendingNav) { const p = __pendingNav; __pendingNav = null; safeRun('pendingnav', function(){ showPage(p.id, p.btn); }); }
     return; }
   safeRun('news', loadUpdatesClient);
-  safeRun('hydrate', hydrateFromSheet);
-  safeRun('reviewlists', loadReviewLists);
+  afterPaint(()=>{openLogs().then(r=>{void reconcileReadings(r);return hydrateFromSheet(r);}).catch(()=>{});});
+  afterPaint(()=>safeRun('reviewlists', loadReviewLists));
 
   if (__pendingNav) { const p = __pendingNav; __pendingNav = null; safeRun('pendingnav', function(){ showPage(p.id, p.btn); }); }
 });

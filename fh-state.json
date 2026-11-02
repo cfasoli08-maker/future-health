@@ -1228,9 +1228,10 @@
       "[\"2026-10-30\",null,null,null]",
       "[\"2026-10-30\",0,null,0]",
       "[\"2026-10-31\",null,null,null]",
-      "[\"2026-10-31\",0,null,1]"
+      "[\"2026-10-31\",0,null,1]",
+      "[\"2026-11-01\",null,null,null]"
     ],
-    "gutCheckedThrough": "2026-10-30",
+    "gutCheckedThrough": "2026-10-31",
     "outbox": [
       {
         "id": "ask:2026-07-20T17%3A58%3A57.609Z%7CBeet%20chips",

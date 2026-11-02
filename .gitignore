@@ -5,3 +5,9 @@ _to_delete/
 .claude/
 .model-key
 .api-key
+.test-temp/
+.walk-temp/
+.codex-builds
+.complaints-2026-10-31/
+.job-shots/
+RECOVERED-AUG-29.md
