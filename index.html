@@ -3566,6 +3566,8 @@ async function mealTap() {
     storeReadingOutbox(readingOutbox().map(x=>x.id===p.mealId?{...x,notBefore:Date.now()+1800000,blankMeal:true,mealDay:localDayStr()}:x));
   }catch(e){document.getElementById('food-hint').textContent='Your phone could not keep this meal. Please try again.';return;}
   const meal={text:p.food,time:cleanTimeLocal(p.timeLocal),iso:p.timestamp,mealId:p.mealId,pendingBlank:true};day.foodLog.push(meal);saveDay(day);mealTarget(meal);
+  // The typed time belongs to this meal only; the next meal starts fresh.
+  const when=document.getElementById('meal-when');if(when)when.value='';
   document.getElementById('food-hint').textContent='Saved. Add details below if you like.';renderFoodToday();
 }
 async function saveFood(action='details') {
