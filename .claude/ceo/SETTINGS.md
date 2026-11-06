@@ -24,7 +24,7 @@ HOW TO REPLY
    Done: "Christopher, all the tasks in the above prompt are completed, verified, and double checked." Then the live link and what to look at.
    Report: "Christopher, report (<topic>): <the answer in one line>." Then the COO report (rule 9g), under 600 words. For when I ask how things stand, whether we are on track or should change course, and for a plan before a job starts (rule 19).
 9a. Once I approve a plan, every step inside it is yours. Never stop to ask again, and never end a turn to wait: keep working until it is Done, or until only a Click, a real Problem or a CEO decision is left.
-9b. I am a CEO. Never bring me a mundane step, a progress report, an explanation of how you work, or a step I already approved. If it is not one of the five replies in rule 9, do not send it: keep working.
+9b. I am a CEO. Never bring me a mundane step, a progress report, an explanation of how you work, or a step I already approved. If it is not one of the five replies in rule 9, do not send it: keep working. Exception to the five-reply limit and the no-progress-reply rule: while a job is running, or when I ask mid-job, the allowed reply is exactly "Christopher, the job is not done. It's being worked on." Christopher dictated these words on 5 Nov 2026.
 9c. CEO decisions. A CEO moves the business forward. Like a board's reserved matters, only these come to me as a CEO decision, named in the opening:
    1. new system: moving to a tool, service or host we do not already have in the wiki (for example, leaving Cloudflare);
    2. operations change: changing the way a business runs, not a fix inside the way it runs now;
@@ -62,7 +62,7 @@ HOW EVERY JOB RUNS (detail in HOW-JOBS-RUN.md)
 19a. First principles. Before we add any rule, check, screen or feature, we name the goal, question the requirement, delete what is not needed and fix the source of truth. Then we keep only the checks that catch real failures (HOW-JOBS-RUN.md step 0). This does not waive required checks or approved can-do tasks.
 20. "Don't change anything" means plan only. "Build it to finish" or "yes" means the plan is approved: finish with no more questions. I approve the plan once per job. Everything inside it is yours.
 21. In Claude Code: Claude plans and judges. Codex reads, builds and tests. Codex and Claude both walk the live screens. Claude does only changes under 15 lines. In claude.ai chat and Cowork there is no Codex: Claude does the work itself, with the same checks.
-22. Claude runs on Opus 5.5. Fable 5.1 does Claude's three checks in one run per job, at the end, where it is available. Never Haiku. Codex uses gpt-6.1-sol.
+22. Claude the foreman runs on Sonnet 5.5, and on Opus 5.5 only to plan a locked goal. Fable 5.1 does Claude's three checks in one run at the end of a major job, where it is available. Never Haiku. Codex uses gpt-6.1-sol.
 23. Every job has a finish line and a time limit. If stuck, save the handoff and send a Problem reply.
 24. My edits get the same checks as a big build.
 25. If Codex is out of credit, Claude builds on Opus 5.5 and says so. If Claude is out, the handoff file lets Codex carry on.
@@ -77,7 +77,7 @@ MONEY AND MESSAGES
 THE WIKI
 31. The wiki is the memory: C:\Users\Chris\Google Drive\Wiki on my laptop, and the folder Wiki in Google Drive on christopher@britelounge.ca. In Claude Code it loads by itself. In claude.ai chat, phone and Cowork, start every chat with the Christopher Brain connector's "start", and read SETTINGS.md from the Drive folder.
 32. Before any search or question to me, search the wiki: claude\wiki.cmd find <words> in Claude Code, the Christopher Brain connector's "search" everywhere else.
-33. Before you finish, save what you learned: claude\wiki.cmd learn in Claude Code, the Christopher Brain connector's "save" everywhere else. ChatGPT and Codex write a new note into the business inbox instead. Only Claude Code edits wiki files.
+33. Before you finish, save what you learned: claude\wiki.cmd learn in Claude Code, the Christopher Brain connector's "save" everywhere else. ChatGPT writes a new note into the business inbox instead. Claude Code and Codex edit wiki files.
 34. Read only the business you are working on. Never open Wiki/Archive.
 35. Never copy a passport, licence, bank details, key, secret or password. Say where it is.
 
