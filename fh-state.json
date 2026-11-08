@@ -250,7 +250,7 @@
       "start": "2026-10-25",
       "opened": "2026-10-25",
       "readout": "2026-11-08",
-      "status": "running",
+      "status": "closed 2026-11-08: NOT SUPPORTED OR TOO FEW READINGS",
       "rootCause": true,
       "ask": "Please take your morning sugar before coffee, as soon as you wake, every day for 14 days. Save its time with Taken earlier if needed.",
       "why": "Persistent healthy-range red since 2026-07-13. Observational comparison; an association is not proof of cause.",
@@ -264,6 +264,28 @@
             "value": 7
           }
         ]
+      },
+      "closedOn": "2026-11-08",
+      "result": {
+        "verdict": "NOT SUPPORTED OR TOO FEW READINGS",
+        "from": "2026-10-25",
+        "to": "2026-11-07",
+        "doses": null,
+        "checks": [
+          {
+            "called": "waking morning sugar mean under 7.0",
+            "safety": false,
+            "n": 1,
+            "pass": false,
+            "min": 7.7,
+            "minOn": "2026-10-26",
+            "max": 7.7,
+            "maxOn": "2026-10-26",
+            "mean": 7.7,
+            "reason": "too few days"
+          }
+        ],
+        "consequence": "Nothing on her list changes."
       }
     },
     {
@@ -350,6 +372,12 @@
       "closed": "2026-10-04",
       "verdict": "SAFE, BUT BARELY TAKEN",
       "evidence": "She ticked magnesium on 24 Sep and on 2 Oct, between 24 Sep and 4 Oct. No other day in that stretch has a tick. That is too few ticks to say what magnesium does for her. It shows only that nothing went wrong on the days around them. HELD: the bottom number of her morning blood pressure stayed over 65. The lowest reading was 69 on 29 Sep. The line is 65. HELD: the top number of her blood pressure stayed at or over 105. The lowest reading was 124 on 24 Sep. The line is 105. HELD: her gut was no worse than the week before. It averaged 2.25, compared to 2.67 the week before. Nothing on her list changes."
+    },
+    {
+      "id": "root:sugar:waking-before-coffee",
+      "closed": "2026-11-08",
+      "verdict": "NOT SUPPORTED OR TOO FEW READINGS",
+      "evidence": "DID NOT HOLD: waking morning sugar mean under 7.0. It averaged 7.7, compared to undefined the week before. Nothing on her list changes."
     }
   ],
   "corrections": [
@@ -1263,7 +1291,7 @@
       "[\"2026-11-06\",null,null,null]",
       "[\"2026-11-07\",null,null,null]"
     ],
-    "gutCheckedThrough": "2026-11-06",
+    "gutCheckedThrough": "2026-11-07",
     "outbox": [
       {
         "id": "ask:2026-07-20T17%3A58%3A57.609Z%7CBeet%20chips",
