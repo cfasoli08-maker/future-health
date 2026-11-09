@@ -1289,9 +1289,11 @@
       "[\"2026-11-04\",2,null,2]",
       "[\"2026-11-05\",1,null,1]",
       "[\"2026-11-06\",null,null,null]",
-      "[\"2026-11-07\",null,null,null]"
+      "[\"2026-11-07\",null,null,null]",
+      "[\"2026-11-08\",0,null,1]",
+      "[\"2026-11-09\",null,null,null]"
     ],
-    "gutCheckedThrough": "2026-11-07",
+    "gutCheckedThrough": "2026-11-08",
     "outbox": [
       {
         "id": "ask:2026-07-20T17%3A58%3A57.609Z%7CBeet%20chips",
@@ -1422,6 +1424,26 @@
         "id": "gut:2026-11-02",
         "title": "A gentler magnesium schedule",
         "body": "An accident was logged. Magnesium glycinate is now 200mg every second night. Please keep logging every movement. We check your magnesium again on Monday, November 16."
+      },
+      {
+        "id": "ask:2026-11-09T01%3A12%3A05.681Z%7CASK%3A%20First%20supper%20entry%20is%20not%20correct%20%0AEliminate",
+        "title": "You asked about First supper entry",
+        "body": "Not yet. There is no decision for this item in your current list. We will check your list and food guide again at your next review on Tuesday, November 10. If this is a product, type its ingredient label in Ask so we can check that too. Keep your current plan until then.\n<!-- fh-ask:2026-11-09T01%3A12%3A05.681Z%7CASK%3A%20First%20supper%20entry%20is%20not%20correct%20%0AEliminate -->",
+        "followUp": {
+          "question": {
+            "timestamp": "2026-11-09T01:12:05.681Z",
+            "timeLocal": "Sun, Nov 8 at 7:12 PM",
+            "query": "ASK: First supper entry is not correct \nEliminate"
+          },
+          "questions": [
+            {
+              "timestamp": "2026-11-09T01:12:05.681Z",
+              "timeLocal": "Sun, Nov 8 at 7:12 PM",
+              "query": "ASK: First supper entry is not correct \nEliminate"
+            }
+          ],
+          "on": "2026-11-10"
+        }
       }
     ],
     "gutReview": {
