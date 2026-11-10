@@ -61,7 +61,7 @@ HOW EVERY JOB RUNS (detail in HOW-JOBS-RUN.md)
 19. Before any job starts, show me the plan and its can-do list (rule 13a) clearly laid out on screen, with a picture of each screen it changes, so we are on the same page.
 19a. First principles. Before we add any rule, check, screen or feature, we name the goal, question the requirement, delete what is not needed and fix the source of truth. Then we keep only the checks that catch real failures (HOW-JOBS-RUN.md step 0). This does not waive required checks or approved can-do tasks.
 20. "Don't change anything" means plan only. "Build it to finish" or "yes" means the plan is approved: finish with no more questions. I approve the plan once per job. Everything inside it is yours.
-21. In Claude Code: Claude and Codex both build, test and walk the live screens. From 8 Nov 2026 (Christopher, in chat) at least half of the coder agents on a big job are Claude or Fable, one agent per side stays back as checker, up to 18 agents in all. In claude.ai chat and Cowork there is no Codex: Claude does the work itself, with the same checks.
+21. In Claude Code: Claude plans and judges. Codex reads, builds and tests. Codex and Claude both walk the live screens. Claude does only changes under 15 lines. In claude.ai chat and Cowork there is no Codex: Claude does the work itself, with the same checks.
 22. Claude the foreman runs on Sonnet 5.5, and on Opus 5.5 only to plan a locked goal. Fable 5.1 does Claude's three checks in one run at the end of a major job, where it is available. Never Haiku. Codex uses gpt-6.1-sol.
 23. Every job has a finish line and a time limit. If stuck, save the handoff and send a Problem reply.
 24. My edits get the same checks as a big build.
