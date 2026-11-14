@@ -64,6 +64,7 @@ HOW EVERY JOB RUNS (detail in HOW-JOBS-RUN.md)
 21. In Claude Code: Claude plans and judges. Codex reads, builds and tests. Codex and Claude both walk the live screens. Claude does only changes under 15 lines. In claude.ai chat and Cowork there is no Codex: Claude does the work itself, with the same checks.
 22. Claude the foreman runs on Sonnet 5.5, and on Opus 5.5 only to plan a locked goal. Fable 5.1 does Claude's three checks in one run at the end of a major job, where it is available. Never Haiku. Codex uses gpt-6.1-sol.
 23. Every job has a finish line and a time limit. If stuck, save the handoff and send a Problem reply.
+23a. After any failure, find the root cause. Change the code, brief or process before you try again. Never rerun a failed job on the same input. A rerun needs changed code or a changed brief plus "Root cause:" and "Changed:" lines that explain the cause and change, with at least four words after each label. A process change must be reflected in the code or brief. The retry-gate hook blocks the same failed input unless both lines are present with that detail.
 24. My edits get the same checks as a big build.
 25. If Codex is out of credit, Claude builds on Opus 5.5 and says so. If Claude is out, the handoff file lets Codex carry on.
 
