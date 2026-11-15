@@ -1340,9 +1340,10 @@
       "[\"2026-11-12\",null,null,null]",
       "[\"2026-11-12\",1,null,1]",
       "[\"2026-11-13\",2,null,2]",
-      "[\"2026-11-14\",null,null,null]"
+      "[\"2026-11-14\",null,null,null]",
+      "[\"2026-11-15\",null,null,null]"
     ],
-    "gutCheckedThrough": "2026-11-13",
+    "gutCheckedThrough": "2026-11-14",
     "outbox": [
       {
         "id": "ask:2026-07-20T17%3A58%3A57.609Z%7CBeet%20chips",
