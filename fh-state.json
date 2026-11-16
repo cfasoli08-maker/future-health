@@ -898,6 +898,13 @@
         "penId": "ara"
       },
       {
+        "name": "ARA-290 course 2",
+        "starts": "2026-12-11",
+        "ends": "2027-01-07",
+        "dose": "40 units daily (4mg)",
+        "penId": "ara2"
+      },
+      {
         "name": "MOTS-c",
         "starts": "2026-10-19",
         "ends": "2026-12-10",
@@ -920,6 +927,19 @@
       }
     ],
     "detail": {
+      "ARA-290 course 2": {
+        "say": "ARA-290",
+        "dose": "40 units daily (4mg)",
+        "doses": [
+          "40 units",
+          "4mg"
+        ],
+        "why": "For the nerves behind your slow gut.",
+        "aliases": [
+          "ara-290",
+          "ara 290"
+        ]
+      },
       "Alpha lipoic acid": {
         "say": "Alpha Lipoic Acid",
         "dose": "600mg every day, 30 minutes before breakfast",

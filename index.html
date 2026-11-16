@@ -2086,10 +2086,11 @@ function penDays(a,b) { return Math.round((Date.parse(b)-Date.parse(a))/86400000
 const PENS = [
   {id:'bpctb',name:'BPC-157 + TB-500',purpose:'For your back, left knee and gut lining.',units:20,dose:'20 units',length:84,days:'daily',mixOffsets:[0],keep:28,color:null},
   {id:'ara',name:'ARA-290',purpose:'For the nerves behind your slow gut.',units:40,dose:'40 units',length:28,days:'daily',mixOffsets:[0,14],keep:14,color:null},
+  {id:'ara2',name:'ARA-290 course 2',purpose:'For the nerves behind your slow gut.',units:40,dose:'40 units',length:28,days:'daily',mixOffsets:[0,14],keep:14,color:null,start:'2026-12-11'},
   {id:'mots',name:'MOTS-c',purpose:'For muscle and blood sugar.',units:null,dose:'5 mg',length:53,days:[0,7,14,21,28,31,35,38,42,45,49,52],mixOffsets:[0,14,28,35,42,49],throwOffsets:[7,21,31,38,45,52],color:null},
   {id:'ta1',name:'Thymosin Alpha-1',purpose:'To build up your immune system.',units:null,dose:'1.6 mg',length:39,days:[0,3,7,10,14,17,21,24,28,31,35,38],mixOffsets:[0,21],throwOffsets:[17,38],keep:28,color:null},
   {id:'semax',name:'Semax',label:'Semax nose spray',purpose:'For brain fog and nerve repair.',units:null,dose:'2 sprays',length:42,days:'blocks',mixOffsets:[0,28],throwOffsets:[13,41],color:null}
-].map(p=>Object.assign(p,{start:PEN_START,end:penAdd(PEN_START,p.length-1),mixDates:p.mixOffsets.map(n=>penAdd(PEN_START,n)),throwRule:p.throwOffsets?'After its last dose':'At the next mix or storage limit, whichever comes first'}));
+].map(p=>Object.assign(p,{start:p.start||PEN_START,end:penAdd(p.start||PEN_START,p.length-1),mixDates:p.mixOffsets.map(n=>penAdd(p.start||PEN_START,n)),throwRule:p.throwOffsets?'After its last dose':'At the next mix or storage limit, whichever comes first'}));
 function penState(p,day) {
   const n=penDays(p.start,day),active=n>=0&&day<=p.end;
   const due=active&&(p.days==='daily'||(p.days==='blocks'?(n<14||n>=28):p.days.includes(n)));
@@ -2097,7 +2098,7 @@ function penState(p,day) {
   const mix=mi>=0?p.mixDates[mi]:null;
   let discard=null,pen=null;
   if(mix){
-    if(p.id==='ara'){pen=Math.floor((n-p.mixOffsets[mi])/7)+1; discard=penAdd(mix,pen===1?7:14);}
+    if(p.id==='ara'||p.id==='ara2'){pen=Math.floor((n-p.mixOffsets[mi])/7)+1; discard=penAdd(mix,pen===1?7:14);}
     else if(p.throwOffsets) discard=penAdd(p.start,p.throwOffsets[mi]);
     else discard=[penAdd(mix,p.keep),p.mixDates[mi+1]].filter(Boolean).sort()[0];
   }
@@ -5566,7 +5567,8 @@ function p2Render() {
   } else {
     main = `<div class="p2-read"><p>Christopher is still writing this one. It will be here soon.</p></div>`;
   }
-  const penMap={bpc157:'bpctb',tb500:'bpctb',ara290:'ara',motsc:'mots',semax:'semax',ta1:'ta1',thymosin:'ta1'};
+  const araToday=PENS.find(p=>(p.id==='ara'||p.id==='ara2')&&penState(p,localDayStr()).active);
+  const penMap={bpc157:'bpctb',tb500:'bpctb',ara290:araToday?araToday.id:'ara',motsc:'mots',semax:'semax',ta1:'ta1',thymosin:'ta1'};
   const p=PENS.find(p=>p.id===penMap[p2Stack[0]]);
   const intro=!p2Stack.length?'<div class="p2-read"><p>Why phase two: phase one fixed food, sleep and supplements; phase two adds peptides to repair nerves, gut and muscle.</p><p>A peptide is a short chain of the building blocks of protein. It carries messages between your cells.</p></div>':'';
   let dose='';
