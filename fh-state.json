@@ -323,12 +323,17 @@
       "id": "magnesium-gut-review:2026-11-02",
       "opened": "2026-11-02",
       "start": "2026-11-02",
-      "status": "running",
+      "status": "closed 2026-11-16: reviewed",
       "variable": "magnesiumMg",
       "change": "Magnesium glycinate, gentler schedule",
       "readout": "2026-11-16",
       "readoutSpec": {
         "responder": true
+      },
+      "closedOn": "2026-11-16",
+      "result": {
+        "days": 11,
+        "accidentDays": 9
       }
     }
   ],
@@ -1361,9 +1366,11 @@
       "[\"2026-11-12\",1,null,1]",
       "[\"2026-11-13\",2,null,2]",
       "[\"2026-11-14\",null,null,null]",
-      "[\"2026-11-15\",null,null,null]"
+      "[\"2026-11-15\",null,null,null]",
+      "[\"2026-11-15\",2,null,4]",
+      "[\"2026-11-16\",1,null,1]"
     ],
-    "gutCheckedThrough": "2026-11-14",
+    "gutCheckedThrough": "2026-11-15",
     "outbox": [
       {
         "id": "ask:2026-07-20T17%3A58%3A57.609Z%7CBeet%20chips",
@@ -1542,12 +1549,22 @@
         "title": "You asked about Wild Berry Blast: your review",
         "body": "Not yet. I checked your current list and food guide again today. There is still no decision for this item. Keep your current plan. To check a product too, I need its ingredient label; please type it in Ask when you have it.\n<!-- fh-ask:2026-09-25T02%3A14%3A39.694Z%7CSUPPLEMENT%3A%20Wild%20Berry%20Blast%20-%20Hybrid%20THC%26%20CBD2.5 -->",
         "answerFor": "ask:2026-09-25T02%3A14%3A39.694Z%7CSUPPLEMENT%3A%20Wild%20Berry%20Blast%20-%20Hybrid%20THC%26%20CBD2.5"
+      },
+      {
+        "id": "gut-review:2026-11-02",
+        "title": "Your magnesium check",
+        "body": "From your past two weeks: 11 days with movement logs and 9 days with accidents. Keep magnesium glycinate 200mg every second night. Some days are missing, so there is no new magnesium change. Your next sugar and pressure review is Tuesday, November 24."
       }
     ],
     "gutReview": {
       "on": "2026-11-02",
       "nextReview": "2026-11-16",
-      "status": "running"
+      "status": "reviewed",
+      "reviewedOn": "2026-11-16",
+      "result": {
+        "days": 11,
+        "accidentDays": 9
+      }
     },
     "activePlan": {},
     "steps": [],
