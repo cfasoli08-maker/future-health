@@ -56,7 +56,7 @@ if (/^#{1,6}\s/m.test(prose)) broke.push('drop the headers')
 // The old "question" and "decision needed" openings are retired and sent back.
 // 29 Oct 2026: the fifth reply is Report, with sources and an independent checker (rule 9g).
 const running = /^\s*Christopher, (?:report \([^)\r\n]+\): )?Codex is running(?: in the background)?[.!]\s*$/i.test(reply);
-const shape = [/^\s*Christopher, CEO decision \([a-z -]+\):/, /^\s*Christopher, problem \([a-z -]+\):/, /^\s*Christopher, all the tasks in the above prompt are completed, verified, and double checked\./, /^\s*Christopher, your click:/, /^\s*Christopher, report \([^)\r\n]+\):/i].findIndex((r) => r.test(reply))
+const shape = [/^\s*Christopher, CEO decision \([a-z -]+\):/, /^\s*Christopher, problem \([a-z -]+\):/, /^\s*Christopher, all the tasks in the above prompt are completed, verified, and double checked\./, /^\s*Christopher, your click:/, /^\s*Christopher, report \([^)\r\n_]+\):/i].findIndex((r) => r.test(reply))
 if (shape >= 0 && prose.replace(/^\s*Christopher, (?:(?:CEO decision|problem) \([a-z -]+\):|report \([^)\r\n]+\):|your click:|all the tasks in the above prompt are completed, verified, and double checked\.)/i, '').split(/\s+/).filter(Boolean).length < 2) broke.push('say what it is after the opening words')
 if (shape === 3 && !/\b(?:open|in front)\b/i.test(prose)) broke.push('a Click reply must say the screen is already open')
 if (shape === 3 && /Reply yes/i.test(prose)) broke.push('a Click reply never asks "reply yes"')
