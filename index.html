@@ -847,7 +847,7 @@ const OLD_MORNING=['glucose','pulse','bp','weight','sleephours','mood','kneepain
 const OLD_EVENING=['glucose','pulse','bp','activity','stress','hydration','salt','headache','stairs'];
 function renderLogOrder(force=false){
   const el=document.getElementById('log-order-choice');if(!el)return;
-  const chosen=localStorage.getItem(LOG_ORDER_KEY);
+  const chosen=localStorage.getItem(LOG_ORDER_KEY)||'old';
   const current=document.getElementById('log-order-current');
   if(current)current.innerHTML=chosen?'<p>Daily log: '+(chosen==='old'?'The order I had before':'The new order')+'</p><button class="cancel-btn" onclick="renderLogOrder(true);document.getElementById(\'log-order-choice\').scrollIntoView({block:\'start\'})">Change order</button>':'';
   el.innerHTML=chosen&&!force?'':
@@ -860,7 +860,7 @@ function chooseLogOrder(order){
 }
 function sessionMetrics(s) {
   const list=s.metrics.concat(s.id==='night' && new Date(localDayStr()+'T12:00:00').getDay()===0 ? ['stairs'] : []);
-  if(localStorage.getItem(LOG_ORDER_KEY)==='old'){
+  if((localStorage.getItem(LOG_ORDER_KEY)||'old')==='old'){
     const order=s.id==='morning'?OLD_MORNING:OLD_EVENING;
     return order.filter(id=>list.includes(id)).concat(list.filter(id=>!order.includes(id)));
   }
@@ -2559,10 +2559,14 @@ function visibleAnswer(body){return String(body||'').replace(/<!-- fh-ask:[\s\S]
 // END ASK CONTRACT
 function renderAsk(){
   const el=document.getElementById('ask-answers');if(!el)return;
-  el.innerHTML=realQuestions(window.__askRows||[]).slice().reverse().map(q=>{
+  const shown=[],folded=[],cutoff=Date.now()-7*24*60*60*1000;
+  realQuestions(window.__askRows||[]).slice().reverse().forEach(q=>{
     const answer=(window.__askUpdates||[]).find(u=>String(u.body||'').includes(askMarker(q)));
-    return '<article class="tier-item"><b>'+escapeHtml(humanDates(String(q.query||q.q).replace(/^(ASK|SUPPLEMENT):\s*/i,'')))+'</b><p>'+escapeHtml(humanDates(answer?visibleAnswer(answer.body):'Answer coming tomorrow morning'))+'</p></article>';
-  }).join('');
+    const answeredAt=answer?Date.parse(answer.timestamp):NaN;
+    const html='<article class="tier-item"><b>'+escapeHtml(humanDates(String(q.query||q.q).replace(/^(ASK|SUPPLEMENT):\s*/i,'')))+'</b><p>'+escapeHtml(humanDates(answer?visibleAnswer(answer.body):'Answer coming tomorrow morning'))+'</p></article>';
+    (answer&&Number.isFinite(answeredAt)&&answeredAt<cutoff?folded:shown).push(html);
+  });
+  el.innerHTML=shown.join('')+(folded.length?'<details><summary>Answered questions ('+folded.length+')</summary>'+folded.join('')+'</details>':'');
 }
 async function sendAsk(){
  const input=document.getElementById('ask-input'),hint=document.getElementById('ask-hint'),q=input.value.trim();if(!q)return;
