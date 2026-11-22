@@ -2161,14 +2161,23 @@ const SUPP_RED = []; // The guide is rendered from fh-state.json protocol.
 
 
 function penDate(d,weekday) { const date=new Date(d+'T12:00:00'); return (weekday?date.toLocaleDateString('en-CA',{weekday:'long'})+' ':'')+date.getDate()+' '+date.toLocaleDateString('en-CA',{month:'long'}); }
+function confirmedPenCourse(p){
+  if(!p || !/ course \d+$/i.test(p.name))return true;
+  return (globalThis.window?.__focusState?.protocol?.on||[]).includes(p.name);
+}
 function renderPens(day) {
   const today=localDayStr(), live=PENS.filter(p=>today<=p.end);
   if(!live.length)return '';
   let out='<section id="pens-today"><h2>Your pens today</h2>';
-  if(today<PEN_START)return out+'<p>Your pens start '+penDate(PEN_START,true)+'.</p><p>Mix with Christopher: '+PENS.map(p=>p.name+(p.id==='ara'?' (two pens)':'')).join(', ')+'.</p></section>';
+  if(today<PEN_START)return out+'<p>Your pens start '+penDate(PEN_START,true)+'.</p><p>Mix with Christopher: '+PENS.filter(confirmedPenCourse).map(p=>p.name+(p.id==='ara'?' (two pens)':'')).join(', ')+'.</p></section>';
   const next=[];
   live.forEach(p=>{
     const s=penState(p,today);
+    if(!confirmedPenCourse(p)){
+      const prior=PENS.find(course=>course.end<today&&p.name.startsWith(course.name+' course '));
+      if(prior)next.push(prior.name+': completed course.');
+      return;
+    }
     if(!s.due){ next.push(s.off?'Off week. No spray. Back on '+penDate(s.next,true)+'.':p.name+': next shot '+penDate(s.next,true)+'.');return; }
     const on=!!(day.supps||{})[p.id],time=(day.suppTimes||{})[p.id]||'';
     const style='--pen-color:'+(p.color||'#a1a1a1')+';';
@@ -2191,7 +2200,8 @@ function renderPens(day) {
   return out+next.map(x=>'<p class="pen-next">'+x+'</p>').join('')+'</section>';
 }
 function togglePen(id) {
-  const p=PENS.find(x=>x.id===id),s=penState(p,localDayStr()); if(!s.due)return;
+  const p=PENS.find(x=>x.id===id); if(!p||!confirmedPenCourse(p))return;
+  const s=penState(p,localDayStr()); if(!s.due)return;
   const day=loadDay(); day.supps=day.supps||{};day.suppTimes=day.suppTimes||{};
   day.supps[id]=!day.supps[id];day.suppTimes[id]=day.supps[id]?timeOnly():'';
   saveDay(day);renderSupps();
@@ -2580,7 +2590,7 @@ function renderProtocolGuide(){
  const detail=P.detail||{},today=localDayStr();
  const entry=(name,why,dose)=>({name,note:[dose,why||detail[name]?.why||'Follow your current plan.'].filter(Boolean).join('. ')});
  const current=name=>{const d=detail[name]||{},change=(d.changes||[]).filter(c=>c.on<=today).sort((a,b)=>a.on.localeCompare(b.on)).at(-1);return entry(name,d.why,change?.dose||d.dose);};
- document.getElementById('supp-green').innerHTML=[...(P.on||[]).map(current),...(P.dated||[]).filter(x=>today>=x.starts&&today<=x.ends).map(x=>entry(x.name,detail[x.name]?.why,x.dose)),...(P.foodAllowed||[]).map(x=>entry(x.name,x.why))].map(tierItem).join('');
+ document.getElementById('supp-green').innerHTML=[...(P.on||[]).map(current),...(P.dated||[]).filter(x=>today>=x.starts&&today<=x.ends&&!(P.on||[]).includes(x.name)&&confirmedPenCourse(x)).map(x=>entry(x.name,detail[x.name]?.why,x.dose)),...(P.foodAllowed||[]).map(x=>entry(x.name,x.why))].map(tierItem).join('');
  document.getElementById('supp-red').innerHTML=[...(P.red||[]).map(n=>entry(n)),...(P.held||[]).map(x=>entry(x.name,x.why)),...(P.notForYou||[]).map(x=>entry(x.name,x.why))].map(tierItem).join('');
  document.getElementById('supp-logging').innerHTML=(P.loggingOnly||[]).map(x=>entry(x.name,x.why)).map(tierItem).join('');
  const tests=(s.tests||[]).filter(t=>/^running/.test(t.status)&&/^\d{4}-\d{2}-\d{2}$/.test(t.readout)&&t.readout>=today&&t.variable);
@@ -5571,7 +5581,7 @@ function p2Render() {
   } else {
     main = `<div class="p2-read"><p>Christopher is still writing this one. It will be here soon.</p></div>`;
   }
-  const araToday=PENS.find(p=>(p.id==='ara'||p.id==='ara2')&&penState(p,localDayStr()).active);
+  const araToday=PENS.find(p=>(p.id==='ara'||p.id==='ara2')&&confirmedPenCourse(p)&&penState(p,localDayStr()).active);
   const penMap={bpc157:'bpctb',tb500:'bpctb',ara290:araToday?araToday.id:'ara',motsc:'mots',semax:'semax',ta1:'ta1',thymosin:'ta1'};
   const p=PENS.find(p=>p.id===penMap[p2Stack[0]]);
   const intro=!p2Stack.length?'<div class="p2-read"><p>Why phase two: phase one fixed food, sleep and supplements; phase two adds peptides to repair nerves, gut and muscle.</p><p>A peptide is a short chain of the building blocks of protein. It carries messages between your cells.</p></div>':'';
