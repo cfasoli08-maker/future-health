@@ -1416,9 +1416,11 @@
       "[\"2026-11-19\",null,null,null]",
       "[\"2026-11-19\",2,null,2]",
       "[\"2026-11-20\",1,null,1]",
-      "[\"2026-11-21\",null,null,null]"
+      "[\"2026-11-21\",null,null,null]",
+      "[\"2026-11-21\",1,null,1]",
+      "[\"2026-11-22\",0,null,1]"
     ],
-    "gutCheckedThrough": "2026-11-20",
+    "gutCheckedThrough": "2026-11-21",
     "outbox": [
       {
         "id": "ask:2026-07-20T17%3A58%3A57.609Z%7CBeet%20chips",
@@ -1608,6 +1610,26 @@
         "title": "You asked about First supper entry: your review",
         "body": "Not yet. I checked your current list and food guide again today. There is still no decision for this item. Keep your current plan. To check a product too, I need its ingredient label; please type it in Ask when you have it.\n<!-- fh-ask:2026-11-09T01%3A12%3A05.681Z%7CASK%3A%20First%20supper%20entry%20is%20not%20correct%20%0AEliminate -->",
         "answerFor": "ask:2026-11-09T01%3A12%3A05.681Z%7CASK%3A%20First%20supper%20entry%20is%20not%20correct%20%0AEliminate"
+      },
+      {
+        "id": "ask:2026-11-22T05%3A31%3A08.367Z%7CASK%3A%20Can%20I%20begin%20NMN%20Surge%20in%20the%20morning%3F%20150%0AMg.",
+        "title": "You asked about Can I begin",
+        "body": "Not yet. There is no decision for this item in your current list. We will check your list and food guide again at your next review on Tuesday, November 24. If this is a product, type its ingredient label in Ask so we can check that too. Keep your current plan until then.\n<!-- fh-ask:2026-11-22T05%3A31%3A08.367Z%7CASK%3A%20Can%20I%20begin%20NMN%20Surge%20in%20the%20morning%3F%20150%0AMg. -->",
+        "followUp": {
+          "question": {
+            "timestamp": "2026-11-22T05:31:08.367Z",
+            "timeLocal": "Sat, Nov 21 at 11:31 PM",
+            "query": "ASK: Can I begin NMN Surge in the morning? 150\nMg."
+          },
+          "questions": [
+            {
+              "timestamp": "2026-11-22T05:31:08.367Z",
+              "timeLocal": "Sat, Nov 21 at 11:31 PM",
+              "query": "ASK: Can I begin NMN Surge in the morning? 150\nMg."
+            }
+          ],
+          "on": "2026-11-24"
+        }
       }
     ],
     "gutReview": {
