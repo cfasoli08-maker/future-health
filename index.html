@@ -2235,9 +2235,9 @@ function renderSupps() {
     boxes += `<button type="button" class="mag-box ${on?'on':''}" aria-label="I took it" aria-pressed="${on}" onclick="setMag(${n},event)">I took it${on?' ✓':''}<span class="mag-mg">${n*MAG.pill} mg</span></button>`;
   }
   html += `
-    <div id="magnesium-tile" class="supp-tick ${magCount>0?'checked':''} ${magSkipTonight()?'supp-skip':''}" style="flex-wrap:wrap;">
+    <div id="magnesium-tile" class="supp-tick ${magCount>0?'checked':''}" style="flex-wrap:wrap;">
       <div style="flex:1 1 100%;display:flex;align-items:center;gap:1rem;">
-        <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">${magSkipTonight()?'Not tonight':'Take tonight'}</div></div>
+        <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">Schedule needs confirmation</div></div>
       </div>
       <div class="mag-row">${boxes}</div>
     </div>`;
