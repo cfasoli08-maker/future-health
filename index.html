@@ -474,6 +474,7 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
       <p class="food-hint">Log each movement when it happens, any time of day. You do not have to go every day.</p>
     </div>
 
+    <section class="focus-card" id="device-home-readings"></section>
     <div class="focus-card" id="focus-card" aria-live="polite">
       <div class="focus-eyebrow">This week's focus</div>
       <p>Reading your recent mornings, evening sugar and pressure.</p>
@@ -725,7 +726,7 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js" integrity="sha384-FcQlsUOd0TJjROrBxhJdUhXTUgNJQxTMcxZe6nHbaEfFL1zjQ+bq/uRoBQxb0KMo" crossorigin="anonymous"></script>
 <script>
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbwc-FLnsJThCFmynUFb4m3KN3P895I-wATyPOxoGK4lWnIpVw6WGYkbBc3lCzJDMOymGg/exec";
 const PROTOCOL_START = new Date("2026-03-07");
@@ -1033,13 +1034,62 @@ function bowelToday(day){
   return dedupeReadings(SESSION_ORDER.flatMap(sid=>((day[sid]||{}).bowel||[])))
     .filter(r=>localDayStr(new Date(r.takenAt||r.iso||Date.now()))===localDayStr());
 }
+function deviceNoteKey(kind,id){
+  return 'device-note-v1:'+encodeURIComponent(currentClientId)+':'+kind+':'+encodeURIComponent(id);
+}
+function readDeviceNote(kind,id){
+  try{return localStorage.getItem(deviceNoteKey(kind,id));}catch{return null;}
+}
+function setDeviceNote(kind,id,value){
+  const key=deviceNoteKey(kind,id);
+  if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);
+  if(localStorage.getItem(key)!==value)throw Error('Device storage did not confirm the change.');
+}
+function localMealControls(){
+  return '<label>Calorie timing (optional; drinks with calories count). Only on this device; not sent to Coach <select id="device-meal"><option value="">Leave blank</option><option value="before">Before calories</option><option value="after">After calories</option><option value="unsure">Unsure</option></select></label>';
+}
+function localMealReceipt(id){
+  const value=readDeviceNote('meal',id);
+  const labels={before:'Before calories',after:'After calories',unsure:'Unsure'};
+  if(!Object.hasOwn(labels,value))return '';
+  return '<span>Calorie timing on this device: '+labels[value]+'</span>';
+}
+function keepMealChoice(id){
+  const value=document.getElementById('device-meal')?.value;
+  if(!['before','after','unsure'].includes(value))return true;
+  try{setDeviceNote('meal',id,value);return true;}
+  catch{
+    entryError('Your reading was saved for sync. Calorie timing was not saved on this device.');
+    const retry=document.querySelector('#sheet .save-btn');
+    if(retry){
+      retry.textContent='Retry calorie timing on this device';
+      retry.onclick=()=>{if(keepMealChoice(id))showSavedReceipt();};
+    }
+    return false;
+  }
+}
+function localZeroControls(hasAccident){
+  const day=localDayStr(),value=readDeviceNote('zero',day);
+  const confirmed=typeof value==='string'&&/^\d\d:\d\d$/.test(value);
+  if(hasAccident&&!confirmed)return '';
+  return '<div><p>'+(confirmed?'No accidents reported as of '+value+'. ':'')+'Only on this device; not sent to Coach.</p><button type="button" class="opt-btn" data-day="'+day+'" onclick="changeLocalZero(this,'+confirmed+')">'+(confirmed?'Undo local report':'No accidents so far today')+'</button><span role="status"></span></div>';
+}
+function changeLocalZero(button,undo){
+  const day=localDayStr();
+  if(button.dataset.day!==day){renderSessions();return;}
+  if(!undo&&bowelToday(loadDay()).some(r=>r.value?.kind==='accident')){renderSessions();return;}
+  const now=new Date(),at=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  try{setDeviceNote('zero',day,undo?null:at);renderSessions();}
+  catch{button.nextElementSibling.textContent='This device could not save the change. Please retry.';}
+}
+
 function bowelTodayTile(day){
   const entries=bowelToday(day), movements=entries.filter(r=>r.value?.kind!=='none');
   const times=movements.map(r=>new Date(r.takenAt||r.iso).toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}));
   const text=movements.length?movements.length+' logged today: '+times.join(', '):entries.length?'No movement today':'';
   return `<div class="tile" id="bowel-today"><div class="tile-label">Bowel today</div>${text
     ? '<p>'+text+'</p><button class="opt-btn" onclick="openBowel()">Log another movement</button>'
-    : '<p>Did you have a movement today?</p><div class="opt-col"><button class="opt-btn" onclick="logNoBowelToday()">No movement today</button><button class="opt-btn" onclick="openBowel()">I forgot to log one</button></div>'}</div>`;
+    : '<p>Did you have a movement today?</p><div class="opt-col"><button class="opt-btn" onclick="logNoBowelToday()">No movement today</button><button class="opt-btn" onclick="openBowel()">I forgot to log one</button></div>'}${localZeroControls(movements.some(r=>r.value?.kind==='accident'))}</div>`;
 }
 function openBowel(){ openEntry('bowel',sessionForEntry({iso:new Date().toISOString()})); }
 async function logNoBowelToday(){
@@ -1183,7 +1233,7 @@ function openEntry(id, session, kind) {
   }
   if (sessLog.length) {
     priorReadings = `<div class="today-readings"><div class="today-readings-label">${inp.id==='bowel'?'Today: '+sessLog.filter(r=>r.value?.kind!=='none').length:sessName+' so far'}${repeatable?'. A new entry adds to this list, it does not replace it.':''}</div>` +
-      sessLog.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${readingDisplayTime(r)}</span>${inp.id==='bowel'&&r.value?.kind!=='none'?'<button class="cancel-btn" onclick="openBowelDetails(\''+r.readingId+'\')">Add details</button>':''}</div>`).join('') + `</div>`;
+      sessLog.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${readingDisplayTime(r)}</span>${inp.id==='glucose'?localMealReceipt(r.readingId||r.iso):''}${inp.id==='bowel'&&r.value?.kind!=='none'?'<button class="cancel-btn" onclick="openBowelDetails(\''+r.readingId+'\')">Add details</button>':''}</div>`).join('') + `</div>`;
   } else if (repeatable) {
     priorReadings = inp.id==='bowel'?'<div class="today-readings-hint">Each movement gets its own time. You can log another whenever you need.</div>':`<div class="today-readings-hint">Save your reading for this ${activeSession==='night'?'evening':activeSession}. If you need to correct a number later, its time stays on your record.</div>`;
   }
@@ -1196,6 +1246,7 @@ function openEntry(id, session, kind) {
     <div id="entry-error" role="alert" style="color:var(--red);margin:0.5rem 0;"></div>
     ${sameAs}
     ${body}
+    ${inp.id==='glucose'?localMealControls():''}
     ${priorReadings}
     ${REPEATABLE_IDS.includes(inp.id)&&inp.id!=='bowel'&&kind!=='none'?readingTimeControls():''}
 
@@ -1474,7 +1525,68 @@ function readingSnapshotMeta(){
 }
 async function readReadingSnapshot(clientId=currentClientId){const meta=readingSnapshotMeta(),r=await sheetCall({action:'get_logs',clientId},20000);return r?{...r,...meta}:r;}
 function openLogs(){return openLogsPromise||(openLogsPromise=readReadingSnapshot().then(r=>{if(!r?.success)openLogsPromise=null;return r;},e=>{openLogsPromise=null;throw e;}));}
+const DEVICE_HOME_FIELDS={glucose:['Blood sugar','mmol/L'],bp:['Blood pressure','mmHg'],weight:['Weight','lb']};
+function deviceHomeRecord(payload,id,confirmedAt){
+  if(!payload||payload.action!=='log_entry'||payload.clientId!==currentClientId||
+      !Object.hasOwn(DEVICE_HOME_FIELDS,payload.field)||!id||!Number.isFinite(Date.parse(payload.timestamp)))return null;
+  const number=v=>typeof v==='number'&&Number.isFinite(v);
+  let value=payload.value;
+  if(payload.field==='bp'){
+    if(!number(value?.sys)||!number(value?.dia))return null;
+    value=value.sys+'/'+value.dia;
+  }else if(!number(value))return null;
+  return {id,field:payload.field,value:String(value),timestamp:payload.timestamp,takenAt:Number.isFinite(Date.parse(payload.takenAt))?payload.takenAt:payload.timestamp,confirmedAt};
+}
+function deviceHomeHistory(field){
+  try{
+    const rows=JSON.parse(readDeviceNote('home',field)||'[]');
+    return Array.isArray(rows)?rows.filter(r=>r&&r.field===field&&typeof r.id==='string'&&/^\d+(?:\.\d+|\/\d+)?$/.test(r.value)&&Number.isFinite(Date.parse(r.timestamp))&&Number.isFinite(Date.parse(r.confirmedAt))):[];
+  }catch{return [];}
+}
+function recordDeviceHomeReceipt(item){
+  try{
+    const row=deviceHomeRecord(item.payload,item.id,new Date().toISOString());
+    if(!row || readingIsCancelled({...item.payload,readingId:item.id}))return;
+    const rows=deviceHomeHistory(row.field);
+    if(!rows.some(r=>r.id===row.id)){
+      rows.push(row);
+      rows.sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp));
+      setDeviceNote('home',row.field,JSON.stringify(rows.slice(0,8)));
+    }
+    renderDeviceHome();
+  }catch{/* The optional local Home summary cannot interrupt the ordinary save. */}
+}
+function forgetDeviceHomeReceipt(field,id){
+  if(field==='truefasting')field='glucose';
+  if(!Object.hasOwn(DEVICE_HOME_FIELDS,field))return;
+  try{
+    const rows=deviceHomeHistory(field);
+    if(rows.some(r=>r.id===id))setDeviceNote('home',field,JSON.stringify(rows.filter(r=>r.id!==id)));
+  }catch{/* An active cancellation still suppresses the receipt. */}
+}
+function renderDeviceHome(){
+  const target=document.getElementById('device-home-readings');if(!target)return;
+  try{
+    const pending=readingOutbox().map(item=>deviceHomeRecord(item.payload,item.id,null)).filter(Boolean);
+    const lines=[];
+    for(const [field,[label,unit]] of Object.entries(DEVICE_HOME_FIELDS)){
+      const rows=[...deviceHomeHistory(field),...pending.filter(r=>r.field===field)]
+        .filter(r=>!readingIsCancelled({field,readingId:r.id,timestamp:r.timestamp,clientId:currentClientId}))
+        .sort((a,b)=>Date.parse(b.takenAt)-Date.parse(a.takenAt)||Date.parse(b.timestamp)-Date.parse(a.timestamp));
+      if(!rows.length)continue;
+      const r=rows[0],at=new Date(r.takenAt).toLocaleString();
+      lines.push(label+' '+r.value+' '+unit+' · Taken '+at+' · '+(r.confirmedAt?'Save confirmed '+new Date(r.confirmedAt).toLocaleString():'Waiting for save confirmation'));
+    }
+    target.replaceChildren();
+    const title=document.createElement('b');title.textContent='Latest readings logged on this device';target.appendChild(title);
+    for(const text of lines.length?lines:['No reading receipt on this device yet.']){
+      const p=document.createElement('p');p.textContent=text;target.appendChild(p);
+    }
+  }catch{target.textContent='Reading receipts are unavailable on this device.';}
+}
+
 function confirmLocalReading(item){
+  recordDeviceHomeReceipt(item);
   if(item.payload.field==='readingcancelled'){localStorage.setItem('fh_sent:'+item.key,'1');return;}
   if(item.payload.action!=='log_entry'||!INPUTS.some(i=>i.id===item.payload.field))return;
   const p=item.payload,taken=String(p.timeLocal||'').match(/\[takenAt:([^;]+)/),key='fh_'+localDayStr(new Date(p.field==='bowel'?(p.takenAt||taken?.[1]||p.timestamp):p.timestamp));
@@ -1807,6 +1919,7 @@ async function saveEntry() {
   if (inp.id!=='bowel' && prior && JSON.stringify(prior.value) === JSON.stringify(entry.value) && ((automaticTime&&(prior.takenAtAuto||prior.takenAt===prior.iso))||(prior.takenAt||'')===(entry.takenAt||'')) && (prior.beforeCoffee||'')===beforeCoffee && prior.iso && (new Date(t.iso) - new Date(prior.iso)) < 2 * 60 * 1000) {
     const flash=document.getElementById('saved-flash');flash.dataset.readingId=prior.readingId||prior.iso;
     readingSaveStatus(flash.dataset.readingId,readingOutbox().some(x=>x.id===flash.dataset.readingId));
+    if(inp.id==='glucose'&&!keepMealChoice(flash.dataset.readingId)){await flushReadingOutbox();return;}
     // A repeat Save is still a Save: close the sheet the same way.
     if(typeof showSavedReceipt==='function')showSavedReceipt();
     await flushReadingOutbox();
@@ -1844,6 +1957,7 @@ async function saveEntry() {
   if(typeof renderFocusCard==='function')renderFocusCard();
   document.getElementById('saved-flash').dataset.readingId=entry.readingId;
   readingSaveStatus(entry.readingId,true);
+  if(inp.id==='glucose'&&!keepMealChoice(entry.readingId)){await flushReadingOutbox();return;}
   // A bowel save never holds the sheet open while the sheet is slow. The
   // outbox keeps retrying and Home shows the saving line.
   if(typeof showSavedReceipt==='function')showSavedReceipt();
@@ -1857,6 +1971,9 @@ async function cancelEntry(sid, mid, idx) {
   const entry = log[idx];
   if (!entry) return;
   const id=entry.readingId||entry.iso;
+  if((mid==='glucose'||mid==='truefasting')&&readDeviceNote('meal',id)!==null){
+    try{setDeviceNote('meal',id,null);}catch{alert('Calorie timing could not be erased from this device. The reading will still be undone.');}
+  }
   const cancelled=cancelledReadings();cancelled[id===entry.iso?'legacy:'+entry.iso+':'+mid:id]=Date.now()+READING_RETENTION;
   localStorage.setItem(READING_CANCELLED+':'+currentClientId,JSON.stringify(cancelled));
   const pending=readingOutbox().filter(x=>x.id===id && x.payload.action==='log_entry');
@@ -1887,6 +2004,8 @@ async function cancelEntry(sid, mid, idx) {
   }
   saveDay(day);
   renderSessions();
+  forgetDeviceHomeReceipt(mid,id);
+  renderDeviceHome();
   readingSaveStatus(id,kept.some(x=>x.id===id));
   await flushReadingOutbox();
 }
@@ -2658,6 +2777,7 @@ function focusNews(updates,news,today) {
     .sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,6);
 }
 function renderFocusCard() {
+  renderDeviceHome();
   const el=document.getElementById('focus-card');if(!el)return;
   const today=localDayStr(),m=focusModel(focusReadings(),window.__focusState||{},today);
   const mean=m.mornings.length?(m.mornings.reduce((a,b)=>a+b,0)/m.mornings.length).toFixed(1):null;
