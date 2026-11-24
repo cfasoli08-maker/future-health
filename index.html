@@ -1006,7 +1006,7 @@ function setDeviceNote(kind,id,value){
 // like with like. Nothing extra for her to tap.
 const READING_CONTEXT_TAGS={glucose:' [calories:before]',truefasting:' [calories:before]',bp:' [posture:seated]'};
 function readingContextTag(field){return Object.hasOwn(READING_CONTEXT_TAGS,field)?READING_CONTEXT_TAGS[field]:'';}
-const READING_CONTEXT_WORDS={glucose:'Saved as before food.',bp:'Saved as sitting.'};
+const READING_CONTEXT_WORDS={glucose:'Saved as before food.',truefasting:'Saved as before food.',bp:'Saved as sitting.'};
 // "No accidents so far today" is saved into her record as field accidentfree,
 // value 0: the row the private reader already counts as a documented day with
 // no accident. Undo saves a cancellation for that row. Every phone shows it.
@@ -2197,7 +2197,7 @@ function penState(p,day) {
 // END PENS
 
 const SUPPS = [
-  { id:'ala',      name:'R-ALA (alpha lipoic acid) 600mg', dose:"600 mg of R-ALA, the stabilized form with a fat carrier, 30 minutes before breakfast, with a full glass of water. It feeds the nerves in your feet and your gut. If it upsets your stomach, take it with breakfast instead." },
+  { id:'ala',      name:'Alpha lipoic acid 600mg', dose:"All six capsules together, 30 minutes before breakfast, with a full glass of water. It feeds the nerves in your feet and your gut. If it upsets your stomach, take it with breakfast instead." },
   { id:'nmn',      name:'NMN Surge', dose:'2 capsules of 150 mg (300 mg) in the morning' },
   { id:'florastor',name:'Florastor', dose:'1 capsule with breakfast' },
   { id:'d3',       name:'Vitamin D3', dose:'Four 1000 IU capsules in the morning (4000 IU)' },
@@ -4630,7 +4630,23 @@ function readingSavedLine(r,cls){
   const id=r&&(r.readingId||r.iso),at=Date.parse(r&&(r.iso||r.timestamp));
   if(!r||!Number.isFinite(at))return '';
   if(!r.sheetConfirmedVersion)return readingOutbox().some(x=>x.id===id)?'<span class="'+cls+'">Saving to your record</span>':'';
-  return '<span class="'+cls+'">Saved to your record '+new Date(at).toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'})+'</span>';
+  return '<span class="'+cls+'">Saved to your record '+readingClockOnHerPhone(r,at)+'</span>';
+}
+// The taken time is her phone's own clock text, so the saved time uses her
+// phone's clock too (24 Nov 2026): the offset comes from the row itself, so a
+// viewer in another time zone never sees saved earlier than taken.
+function readingHerOffsetMin(r,at){
+  const marker=String(r.timeLocal||'').match(/\[takenAt:([^;]+);local:([^\]]+)\]/);
+  const taken=r.takenAt||(marker&&marker[1]),lm=String(r.takenAtLocal||(marker&&marker[2])||'').match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if(taken&&lm){const off=Math.round((Date.UTC(+lm[1],lm[2]-1,+lm[3],+lm[4],+lm[5])-Date.parse(taken))/900000)*15;if(Number.isFinite(off)&&Math.abs(off)<=840)return off;}
+  const c=cleanTimeLocal(r.timeLocal||'').match(/(\d{1,2}):(\d{2})\s*(a\.?m\.?|p\.?m\.?)/i);
+  if(!c)return null;
+  const clock=(Number(c[1])%12+(/^p/i.test(c[3])?12:0))*60+Number(c[2]),d=new Date(at),utc=d.getUTCHours()*60+d.getUTCMinutes();
+  return Math.round((((clock-utc)%1440+2160)%1440-720)/15)*15;
+}
+function readingClockOnHerPhone(r,at){
+  const off=readingHerOffsetMin(r,at);
+  return off===null?new Date(at).toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}):new Date(at+off*60000).toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit',timeZone:'UTC'});
 }
 function readingDisplayTime(r) {
   const when=cleanTimeLocal(r.when||r.t||r.timeLocal||'').replace(/\s*· taken .*$/,'');
