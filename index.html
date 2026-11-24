@@ -352,9 +352,14 @@ body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--ink);
 .nav-btn:not(.active) { opacity:0.55; }
 
 /* ── COACH VIEW ── */
-#coach-view { display:none; }
-body.coach-mode #coach-view { display:block; }
-body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
+.trend-row { display:flex; justify-content:space-between; align-items:center; gap:0.8rem; padding:0.75rem 0; border-bottom:1px solid rgba(0,0,0,0.06); }
+.trend-row:last-child { border-bottom:none; }
+.trend-name { font-size:1rem; font-weight:700; }
+.trend-counts { font-size:0.85rem; color:var(--muted); margin-top:0.15rem; }
+.trend-dir { font-family:'Oswald',sans-serif; font-size:1.05rem; font-weight:600; color:var(--sage); white-space:nowrap; text-align:right; }
+.trend-note { font-size:0.85rem; color:var(--muted); margin-top:0.6rem; }
+.tile-stack-saved, .reading-saved { font-size:0.8rem; color:var(--muted); font-weight:400; }
+.reading-saved { display:block; }
 .coach-banner { background:linear-gradient(145deg,#5C6E33,#7D8F4E); border-radius:var(--radius); padding:1.3rem 1.5rem; color:#fff; margin-bottom:1rem; }
 .coach-banner-label { font-size:0.78rem; letter-spacing:0.22em; text-transform:uppercase; opacity:0.85; font-weight:700; }
 .coach-banner-title { font-family:'Cormorant Garamond',serif; font-size:1.9rem; font-weight:600; margin-top:0.15rem; }
@@ -422,7 +427,8 @@ body.coach-mode .page, body.coach-mode #main-nav { display:none !important; }
 .tile-stack-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:.35rem .5rem; }
 .tile-stack-val { min-width:0; overflow-wrap:anywhere; }
 .tile-stack-when { grid-column:1; grid-row:2; text-align:left; white-space:normal; overflow-wrap:normal; }
-.tile-stack-cancel { grid-column:2; grid-row:1 / 3; }
+.tile-stack-cancel { grid-column:2; grid-row:1 / 4; }
+.tile-stack-saved { grid-column:1; grid-row:3; }
 .session-head:focus-visible, button:focus-visible { outline:3px solid var(--gold); outline-offset:2px; }
 </style>
 </head>
@@ -641,54 +647,12 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
 
 
 
-  <!-- ══ COACH VIEW (Christopher only, ?coach=future1) ══ -->
-  <div id="coach-view">
-    <div class="coach-banner">
-      <div class="coach-banner-label">Coach view · Christopher only</div>
-      <div class="coach-banner-title">Valerie — Client Dashboard</div>
-    </div>
-    <div class="coach-section" id="csec-home">
-      <div id="coach-home-tiles"><div class="coach-empty">Loading today's picture.</div></div>
-    </div>
-
-    <div class="coach-section" id="csec-chat" style="display:none">
-      <div class="chat-thread" id="coach-chat-thread"></div>
-      <div class="reply-card">
-        <textarea class="reply-box" id="coach-reply-input" placeholder="Write your message to Valerie."></textarea>
-        <button class="reply-send" onclick="sendCoachMsg()">Send to Valerie ✓</button>
-        <div class="reply-sent" id="coach-reply-sent">Sent 🌿</div>
-      </div>
-    </div>
-
-    <div class="coach-section" id="csec-updates" style="display:none">
-      <!-- ══ UPDATE MOM. The same two buttons that are on the Desktop, here on
-           his phone. The thinking runs on the PC, because that is where Node and
-           his Claude allowance are. This is the half that can live in the app:
-           read what the PC prepared, look at it, send it or throw it away. ══ -->
-      <div class="section-label" style="margin-top:0.5rem;">Update Mom</div>
-      <div class="ask-card">
-        <button class="ask-btn" id="make-update-btn" onclick="makeAnUpdateNow()">Update Mom</button>
-        <div class="ask-note" id="make-update-note">Runs the whole thing and sends it to her. One press.</div>
-      </div>
-      <div id="pending-draft"><div class="coach-empty">Checking for a prepared update.</div></div>
-
-      <!-- What the run found, and anything the daily safety check wants him to
-           know. Both used to go into files on his PC that nobody opens. -->
-      <div class="section-label">From the agent. "Needs you" is only for real danger.</div>
-      <div id="coach-notes"><div class="coach-empty">Reading.</div></div>
-
-      <div class="section-label">Weekly update to Valerie</div>
-      <div class="reply-card">
-        <input class="reply-box" id="update-title-input" style="min-height:auto;margin-bottom:0.5rem;" placeholder="Title, e.g. Week of July 13">
-        <textarea class="reply-box" id="update-body-input" placeholder="What changed, what moved to green, milestones, encouragement."></textarea>
-        <button class="reply-send" onclick="publishUpdate()">Publish update ✓</button>
-        <div class="reply-sent" id="update-published-flash">Published 🌿</div>
-      </div>
-      <div class="section-label">Past updates</div>
-      <div id="coach-updates-list"><div class="coach-empty">No updates published yet.</div></div>
-    </div>
-
-    <div class="coach-section" id="csec-trends" style="display:none">
+  <!-- ══ TRENDS ══ Her week in numbers, in her own app. Moved out of the old
+       coach link on 24 Nov 2026 by Christopher's decision; that link is gone. -->
+  <div class="page" id="page-trends">
+    <div class="section-label" style="margin-top:0.5rem;">This week, compared with the week before</div>
+    <div class="coach-chart-card" id="trend-week"><div class="coach-empty">Reading your record.</div></div>
+    <div id="csec-trends">
       <div class="coach-chart-card"><div class="coach-chart-title">🩸 Blood sugar (mmol/L)</div><div class="coach-chart-wrap"><canvas id="c-glucose"></canvas></div><div class="coach-empty" id="e-glucose">Waiting for logged data.</div></div>
       <div class="coach-chart-card"><div class="coach-chart-title">💓 Blood pressure (mmHg)</div><div class="coach-chart-wrap"><canvas id="c-bp"></canvas></div><div class="coach-empty" id="e-bp">Waiting for logged data.</div></div>
       <div class="coach-chart-card"><div class="coach-chart-title">⚖️ Weight (lb)</div><div class="coach-chart-wrap"><canvas id="c-weight"></canvas></div><div class="coach-empty" id="e-weight">Waiting for logged data.</div></div>
@@ -696,18 +660,8 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
       <div class="coach-chart-card"><div class="coach-chart-title">🌙 Sleep hours</div><div class="coach-chart-wrap"><canvas id="c-sleep"></canvas></div><div class="coach-empty" id="e-sleep">Waiting for logged data.</div></div>
       <div class="coach-chart-card"><div class="coach-chart-title">🦵⚡ Knee pain vs energy (0–10)</div><div class="coach-chart-wrap"><canvas id="c-painenergy"></canvas></div><div class="coach-empty" id="e-painenergy">Waiting for logged data.</div></div>
     </div>
-
-    <div class="coach-section" id="csec-entries" style="display:none">
-      <div id="coach-log-list"><div class="coach-empty">Entries appear here as Valerie logs them.</div></div>
-    </div>
-
-    <div class="bottom-nav" id="coach-nav">
-      <button class="nav-btn active" id="cnav-home" onclick="coachShowTab('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></button>
-      <button class="nav-btn" id="cnav-chat" onclick="coachShowTab('chat')"><span class="nav-badge" id="coach-dash-badge"></span><div class="nav-icon">💬</div><div class="nav-label">Chat</div></button>
-      <button class="nav-btn" id="cnav-updates" onclick="coachShowTab('updates')"><div class="nav-icon">🌿</div><div class="nav-label">Updates</div></button>
-      <button class="nav-btn" id="cnav-trends" onclick="coachShowTab('trends')"><div class="nav-icon">📈</div><div class="nav-label">Trends</div></button>
-      <button class="nav-btn" id="cnav-entries" onclick="coachShowTab('entries')"><div class="nav-icon">📋</div><div class="nav-label">Entries</div></button>
-    </div>
+    <div class="section-label">Today and yesterday</div>
+    <div id="coach-log-list"><div class="coach-empty">Your entries appear here as you log them.</div></div>
   </div>
 
   <!-- ══ NAV ══ -->
@@ -716,6 +670,7 @@ function showPage(id, btn) { __pendingNav = { id: id, btn: btn }; }
     <button class="nav-btn" onclick="showPage('supps',this)"><div class="nav-icon">💊</div><div class="nav-label">Supplements</div></button>
     <button class="nav-btn" onclick="showPage('food',this)"><div class="nav-icon">🍽️</div><div class="nav-label">Food</div></button>
     <button class="nav-btn" onclick="showPage('wins',this)"><div class="nav-icon">🏆</div><div class="nav-label">Wins</div></button>
+    <button class="nav-btn" id="nav-trends" onclick="showPage('trends',this)"><div class="nav-icon">📈</div><div class="nav-label">Trends</div></button>
     <button class="nav-btn" id="nav-phase2" style="display:none" onclick="showPage('phase2',this)"><div class="nav-icon">🧬</div><div class="nav-label">Phase Two</div></button>
   </div>
 
@@ -1006,7 +961,7 @@ function tileHtml(day, sid, mid){
   let stack = '';
   if (done) {
     stack = '<div class="tile-stack">' + log.map((r,ri) =>
-      `<div class="tile-stack-row"><span class="tile-stack-val">${r.disp}</span><span class="tile-stack-when">${readingDisplayTime(r)}</span><span class="tile-stack-cancel" onclick="event.stopPropagation();cancelEntry('${holder}','${mid}',${ri})" title="Cancel this entry">✕</span></div>`).join('') + '</div>';
+      `<div class="tile-stack-row"><span class="tile-stack-val">${r.disp}</span><span class="tile-stack-when">${readingDisplayTime(r)}</span>${readingSavedLine(r,'tile-stack-saved')}<span class="tile-stack-cancel" onclick="event.stopPropagation();cancelEntry('${holder}','${mid}',${ri})" title="Cancel this entry">✕</span></div>`).join('') + '</div>';
   }
   const restSub = (SESSION_SUBS[mid] && SESSION_SUBS[mid][sid]) || inp.sub;
   const sub = done ? 'Logged ✓ tap to correct'
@@ -1045,42 +1000,52 @@ function setDeviceNote(kind,id,value){
   if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);
   if(localStorage.getItem(key)!==value)throw Error('Device storage did not confirm the change.');
 }
-function localMealControls(){
-  return '<label>Calorie timing (optional; drinks with calories count). Only on this device; not sent to Coach <select id="device-meal"><option value="">Leave blank</option><option value="before">Before calories</option><option value="after">After calories</option><option value="unsure">Unsure</option></select></label>';
-}
-function localMealReceipt(id){
-  const value=readDeviceNote('meal',id);
-  const labels={before:'Before calories',after:'After calories',unsure:'Unsure'};
-  if(!Object.hasOwn(labels,value))return '';
-  return '<span>Calorie timing on this device: '+labels[value]+'</span>';
-}
-function keepMealChoice(id){
-  const value=document.getElementById('device-meal')?.value;
-  if(!['before','after','unsure'].includes(value))return true;
-  try{setDeviceNote('meal',id,value);return true;}
-  catch{
-    entryError('Your reading was saved for sync. Calorie timing was not saved on this device.');
-    const retry=document.querySelector('#sheet .save-btn');
-    if(retry){
-      retry.textContent='Retry calorie timing on this device';
-      retry.onclick=()=>{if(keepMealChoice(id))showSavedReceipt();};
-    }
-    return false;
-  }
+// 24 Nov 2026, Christopher: she always tests her sugar before food and always
+// takes her pressure sitting at her desk. Each reading carries that in its own
+// record line, before the " · session" part, so the private reader compares
+// like with like. Nothing extra for her to tap.
+const READING_CONTEXT_TAGS={glucose:' [calories:before]',truefasting:' [calories:before]',bp:' [posture:seated]'};
+function readingContextTag(field){return Object.hasOwn(READING_CONTEXT_TAGS,field)?READING_CONTEXT_TAGS[field]:'';}
+const READING_CONTEXT_WORDS={glucose:'Saved as before food.',bp:'Saved as sitting.'};
+// "No accidents so far today" is saved into her record as field accidentfree,
+// value 0: the row the private reader already counts as a documented day with
+// no accident. Undo saves a cancellation for that row. Every phone shows it.
+const ACCIDENTFREE_SENT='fh_accidentfree_sent:';
+function zeroAccidentToday(){
+  const today=localDayStr(),pending=readingOutbox().filter(x=>x.payload&&x.payload.action==='log_entry'&&x.payload.field==='accidentfree').map(x=>({...x.payload,__pending:true}));
+  // A sent row stays on this phone (fh_accidentfree_sent) until the record readback has it,
+  // so the tile shows Saved and Undo right after the save, even before or without a readback.
+  let sent=[];try{sent=JSON.parse(localStorage.getItem(ACCIDENTFREE_SENT+currentClientId)||'[]');}catch{}
+  const rows=[...pending,...sent,...(((window.__clientLogs||{}).logs)||[])].filter(r=>r.field==='accidentfree'&&Number(r.value)===0&&!readingIsCancelled({...r,field:'accidentfree'})&&localDayStr(new Date(r.timestamp))===today);
+  rows.sort((a,b)=>Date.parse(b.timestamp)-Date.parse(a.timestamp));
+  return rows[0]||null;
 }
 function localZeroControls(hasAccident){
-  const day=localDayStr(),value=readDeviceNote('zero',day);
-  const confirmed=typeof value==='string'&&/^\d\d:\d\d$/.test(value);
-  if(hasAccident&&!confirmed)return '';
-  return '<div><p>'+(confirmed?'No accidents reported as of '+value+'. ':'')+'Only on this device; not sent to Coach.</p><button type="button" class="opt-btn" data-day="'+day+'" onclick="changeLocalZero(this,'+confirmed+')">'+(confirmed?'Undo local report':'No accidents so far today')+'</button><span role="status"></span></div>';
+  const day=localDayStr(),row=zeroAccidentToday();
+  if(hasAccident&&!row)return '';
+  const at=row?new Date(row.timestamp).toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'}):'';
+  const status=row?(row.__pending?'Saving to your record.':'Saved to your record.'):'';
+  return '<div><p>'+(row?'No accidents reported as of '+at.replace(/[.]$/,'')+'. '+status:'')+'</p><button type="button" class="opt-btn" data-day="'+day+'" onclick="changeLocalZero(this,'+!!row+')">'+(row?'Undo':'No accidents so far today')+'</button><span role="status"></span></div>';
 }
-function changeLocalZero(button,undo){
+async function changeLocalZero(button,undo){
   const day=localDayStr();
   if(button.dataset.day!==day){renderSessions();return;}
   if(!undo&&bowelToday(loadDay()).some(r=>r.value?.kind==='accident')){renderSessions();return;}
-  const now=new Date(),at=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  try{setDeviceNote('zero',day,undo?null:at);renderSessions();}
-  catch{button.nextElementSibling.textContent='This device could not save the change. Please retry.';}
+  try{
+    if(undo){
+      const row=zeroAccidentToday();if(!row){renderSessions();return;}
+      const id=readingIdOf(row)||row.timestamp,queued=readingOutbox().find(x=>x.id===id&&x.payload.field==='accidentfree');
+      if(queued&&!queued.attempted)storeReadingOutbox(readingOutbox().filter(x=>x.key!==queued.key));
+      else{
+        const cancelled=cancelledReadings();cancelled[id]=Date.now()+READING_RETENTION;
+        localStorage.setItem(READING_CANCELLED+':'+currentClientId,JSON.stringify(cancelled));
+        queueReadingCancellation(id,row.timestamp,['accidentfree']);
+      }
+    }else queueAppRecord('accidentfree',0);
+    renderSessions();
+    await flushReadingOutbox();
+    renderSessions();
+  }catch{if(button.nextElementSibling)button.nextElementSibling.textContent='This phone could not save the change. Please try again.';}
 }
 
 function bowelTodayTile(day){
@@ -1233,7 +1198,7 @@ function openEntry(id, session, kind) {
   }
   if (sessLog.length) {
     priorReadings = `<div class="today-readings"><div class="today-readings-label">${inp.id==='bowel'?'Today: '+sessLog.filter(r=>r.value?.kind!=='none').length:sessName+' so far'}${repeatable?'. A new entry adds to this list, it does not replace it.':''}</div>` +
-      sessLog.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${readingDisplayTime(r)}</span>${inp.id==='glucose'?localMealReceipt(r.readingId||r.iso):''}${inp.id==='bowel'&&r.value?.kind!=='none'?'<button class="cancel-btn" onclick="openBowelDetails(\''+r.readingId+'\')">Add details</button>':''}</div>`).join('') + `</div>`;
+      sessLog.map(r => `<div class="today-reading"><span class="today-reading-val">${r.disp}</span><span class="today-reading-time">${readingDisplayTime(r)}</span>${readingSavedLine(r,'reading-saved')}${inp.id==='bowel'&&r.value?.kind!=='none'?'<button class="cancel-btn" onclick="openBowelDetails(\''+r.readingId+'\')">Add details</button>':''}</div>`).join('') + `</div>`;
   } else if (repeatable) {
     priorReadings = inp.id==='bowel'?'<div class="today-readings-hint">Each movement gets its own time. You can log another whenever you need.</div>':`<div class="today-readings-hint">Save your reading for this ${activeSession==='night'?'evening':activeSession}. If you need to correct a number later, its time stays on your record.</div>`;
   }
@@ -1246,7 +1211,7 @@ function openEntry(id, session, kind) {
     <div id="entry-error" role="alert" style="color:var(--red);margin:0.5rem 0;"></div>
     ${sameAs}
     ${body}
-    ${inp.id==='glucose'?localMealControls():''}
+    ${READING_CONTEXT_WORDS[inp.id]?'<div class="sheet-help">'+READING_CONTEXT_WORDS[inp.id]+'</div>':''}
     ${priorReadings}
     ${REPEATABLE_IDS.includes(inp.id)&&inp.id!=='bowel'&&kind!=='none'?readingTimeControls():''}
 
@@ -1570,16 +1535,20 @@ function renderDeviceHome(){
     const pending=readingOutbox().map(item=>deviceHomeRecord(item.payload,item.id,null)).filter(Boolean);
     const lines=[];
     for(const [field,[label,unit]] of Object.entries(DEVICE_HOME_FIELDS)){
-      const rows=[...deviceHomeHistory(field),...pending.filter(r=>r.field===field)]
+      const shared=(((window.__clientLogs||{}).logs)||[]).map(row=>{
+        const taken=String(row.timeLocal||'').match(/\[takenAt:([^;\]]+)/);
+        return deviceHomeRecord({action:'log_entry',clientId:currentClientId,field:row.field,value:row.value,timestamp:row.timestamp,takenAt:taken?taken[1]:row.timestamp},readingIdOf(row)||row.timestamp,row.timestamp);
+      }).filter(Boolean);
+      const rows=[...deviceHomeHistory(field),...pending.filter(r=>r.field===field),...shared.filter(r=>r.field===field)]
         .filter(r=>!readingIsCancelled({field,readingId:r.id,timestamp:r.timestamp,clientId:currentClientId}))
         .sort((a,b)=>Date.parse(b.takenAt)-Date.parse(a.takenAt)||Date.parse(b.timestamp)-Date.parse(a.timestamp));
       if(!rows.length)continue;
       const r=rows[0],at=new Date(r.takenAt).toLocaleString();
-      lines.push(label+' '+r.value+' '+unit+' · Taken '+at+' · '+(r.confirmedAt?'Save confirmed '+new Date(r.confirmedAt).toLocaleString():'Waiting for save confirmation'));
+      lines.push(label+' '+r.value+' '+unit+' · Taken '+at+' · '+(r.confirmedAt?'Saved to your record '+new Date(r.confirmedAt).toLocaleString():'Waiting to save'));
     }
     target.replaceChildren();
-    const title=document.createElement('b');title.textContent='Latest readings logged on this device';target.appendChild(title);
-    for(const text of lines.length?lines:['No reading receipt on this device yet.']){
+    const title=document.createElement('b');title.textContent='Latest readings in your record';target.appendChild(title);
+    for(const text of lines.length?lines:['No readings in your record yet.']){
       const p=document.createElement('p');p.textContent=text;target.appendChild(p);
     }
   }catch{target.textContent='Reading receipts are unavailable on this device.';}
@@ -1588,11 +1557,19 @@ function renderDeviceHome(){
 function confirmLocalReading(item){
   recordDeviceHomeReceipt(item);
   if(item.payload.field==='readingcancelled'){localStorage.setItem('fh_sent:'+item.key,'1');return;}
+  if(item.payload.action==='log_entry'&&item.payload.field==='accidentfree'){
+    try{const k=ACCIDENTFREE_SENT+item.payload.clientId,today=localDayStr(),kept=JSON.parse(localStorage.getItem(k)||'[]').filter(r=>localDayStr(new Date(r.timestamp))===today&&r.timestamp!==item.payload.timestamp);
+      localStorage.setItem(k,JSON.stringify(kept.concat([{...item.payload}])));}catch(e){}
+    try{renderSessions();}catch(e){}
+    return;
+  }
   if(item.payload.action!=='log_entry'||!INPUTS.some(i=>i.id===item.payload.field))return;
   const p=item.payload,taken=String(p.timeLocal||'').match(/\[takenAt:([^;]+)/),key='fh_'+localDayStr(new Date(p.field==='bowel'?(p.takenAt||taken?.[1]||p.timestamp):p.timestamp));
   const raw=localStorage.getItem(key);if(!raw)return;const day=JSON.parse(raw);let changed=false;
   for(const sid of SESSION_ORDER)for(const row of (day[sid]||{})[p.field]||[])if((row.readingId||row.iso)===item.id){row.sheetConfirmedVersion=readingSyncVersion();changed=true;}
   if(changed)localStorage.setItem(key,JSON.stringify(day));
+  // Redraw so the tile turns from "Saving to your record" to the saved time at once.
+  if(changed&&key==='fh_'+localDayStr())try{renderSessions();}catch(e){}
 }
 function queueAppRecord(field,value,t=nextRecordStamp()){
   const id=typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():t.iso+Math.random();
@@ -1919,7 +1896,6 @@ async function saveEntry() {
   if (inp.id!=='bowel' && prior && JSON.stringify(prior.value) === JSON.stringify(entry.value) && ((automaticTime&&(prior.takenAtAuto||prior.takenAt===prior.iso))||(prior.takenAt||'')===(entry.takenAt||'')) && (prior.beforeCoffee||'')===beforeCoffee && prior.iso && (new Date(t.iso) - new Date(prior.iso)) < 2 * 60 * 1000) {
     const flash=document.getElementById('saved-flash');flash.dataset.readingId=prior.readingId||prior.iso;
     readingSaveStatus(flash.dataset.readingId,readingOutbox().some(x=>x.id===flash.dataset.readingId));
-    if(inp.id==='glucose'&&!keepMealChoice(flash.dataset.readingId)){await flushReadingOutbox();return;}
     // A repeat Save is still a Save: close the sheet the same way.
     if(typeof showSavedReceipt==='function')showSavedReceipt();
     await flushReadingOutbox();
@@ -1930,7 +1906,7 @@ async function saveEntry() {
   if(Date.parse(t.iso)<=latest)t.iso=new Date(latest+1).toISOString();
   entry.iso=t.iso;entry.readingId=typeof crypto!=='undefined' && crypto.randomUUID?crypto.randomUUID():t.iso+'-'+Math.random().toString(36).slice(2);
   // Version 17 keeps timeLocal even though it drops unknown request fields.
-  const timeLocal=t.local+' [readingId:'+entry.readingId+']'+(taken.takenAt?' [takenAt:'+taken.takenAt+';local:'+taken.takenAtLocal+']':'')+' · '+activeSession;
+  const timeLocal=t.local+' [readingId:'+entry.readingId+']'+(taken.takenAt?' [takenAt:'+taken.takenAt+';local:'+taken.takenAtLocal+']':'')+readingContextTag(inp.id)+' · '+activeSession;
   const requests=[{action:'log_entry',clientId:currentClientId,field:inp.id,session:activeSession,value,timestamp:t.iso,readingId:entry.readingId,beforeCoffee,...taken,timeLocal}];
   const paired=inp.id==='glucose'&&activeSession==='morning'&&beforeCoffee==='yes';
   if(paired)requests.push({...requests[0],field:'truefasting'});
@@ -1957,7 +1933,6 @@ async function saveEntry() {
   if(typeof renderFocusCard==='function')renderFocusCard();
   document.getElementById('saved-flash').dataset.readingId=entry.readingId;
   readingSaveStatus(entry.readingId,true);
-  if(inp.id==='glucose'&&!keepMealChoice(entry.readingId)){await flushReadingOutbox();return;}
   // A bowel save never holds the sheet open while the sheet is slow. The
   // outbox keeps retrying and Home shows the saving line.
   if(typeof showSavedReceipt==='function')showSavedReceipt();
@@ -1971,9 +1946,6 @@ async function cancelEntry(sid, mid, idx) {
   const entry = log[idx];
   if (!entry) return;
   const id=entry.readingId||entry.iso;
-  if((mid==='glucose'||mid==='truefasting')&&readDeviceNote('meal',id)!==null){
-    try{setDeviceNote('meal',id,null);}catch{alert('Calorie timing could not be erased from this device. The reading will still be undone.');}
-  }
   const cancelled=cancelledReadings();cancelled[id===entry.iso?'legacy:'+entry.iso+':'+mid:id]=Date.now()+READING_RETENTION;
   localStorage.setItem(READING_CANCELLED+':'+currentClientId,JSON.stringify(cancelled));
   const pending=readingOutbox().filter(x=>x.id===id && x.payload.action==='log_entry');
@@ -2131,11 +2103,8 @@ async function fetchWhooshesToday() {
     window.__whooshAll = r.whooshes;
     window.__whooshToday = r.whooshes.filter(w => new Date(w.timestamp).toDateString() === today);
     renderWhooshList();
-    // coach mode: whoosh data may land after the logs, refresh the tiles and day list
-    if (coachMode) {
-      try { renderCoachHome(); } catch(e) {}
-      try { if (window.__lastLogs) initCoachView(window.__lastLogs); } catch(e) {}
-    }
+    // Whooshes may land after the logs: refresh the Trends day list.
+    try { if (window.__lastLogs) initCoachView(window.__lastLogs); } catch(e) {}
   }
 }
 
@@ -2228,14 +2197,16 @@ function penState(p,day) {
 // END PENS
 
 const SUPPS = [
-  { id:'ala',      name:'Alpha lipoic acid 600mg', dose:"All six capsules together, 30 minutes before breakfast, with a full glass of water. It feeds the nerves in your feet and your gut. If it upsets your stomach, take it with breakfast instead." },
+  { id:'ala',      name:'R-ALA (alpha lipoic acid) 600mg', dose:"600 mg of R-ALA, the stabilized form with a fat carrier, 30 minutes before breakfast, with a full glass of water. It feeds the nerves in your feet and your gut. If it upsets your stomach, take it with breakfast instead." },
+  { id:'nmn',      name:'NMN Surge', dose:'2 capsules of 150 mg (300 mg) in the morning' },
   { id:'florastor',name:'Florastor', dose:'1 capsule with breakfast' },
   { id:'d3',       name:'Vitamin D3', dose:'Four 1000 IU capsules in the morning (4000 IU)' },
   { id:'k2',       name:'Vitamin K2 (MK-7)', dose:'One 100mcg capsule in the morning, with your D3' },
   { id:'vitc_am',  name:'Vitamin C — morning', dose:'500mg chewable' },
   { id:'vitc_pm',  name:'Vitamin C — evening', dose:'500mg chewable' },
   { id:'kraut',    name:'Sauerkraut', dose:'One tablespoon in the morning' },
-  { id:'creatine', name:'Creatine', dose:'4 scoops (20 g) with food, every day' }
+  { id:'creatine', name:'Creatine', dose:'4 scoops (20 g) with food, every day' },
+  { id:'shake',    name:'Protein shake with creatine (20 g)', dose:'About 4 days a week: 2 scoops whey isolate (27 g protein), 1 scoop marine collagen (10 g), 4 scoops creatine (20 g), a pinch of sea salt, and 1 BioSteel sugar-free hydration (7 g) while it lasts. A shake day is your creatine for that day.' }
 ];
 // Pulled Aug 20 for the washout, restored Aug 29 for the reintroduction.
 // A tile you can still tick is a tile that gets ticked, which is why it came off.
@@ -2245,7 +2216,7 @@ const SUPPS = [
 // readout had nothing behind it. Guard G10 now stops the scan dead whenever a
 // running test names a variable she has no way to log.
 
-// Magnesium is one 200mg dose, with a tap to log or undo.
+// Magnesium is one 200mg dose every night (Christopher, 24 Nov 2026), with a tap to log or undo.
 const MAG = { id:'mag_pm', name:'Magnesium bisglycinate — bedtime', pill:200, max:1 };
 // One switch, so the tile and the focus card can never disagree again. Set to
 // false and the every-second-night wording comes back on its own.
@@ -2256,7 +2227,10 @@ const MAG_PAUSE_WHY = 'This is nothing to do with your gut. It is your blood pre
 // Her dose is 200mg every SECOND night. The tile never said so and never looked
 // at last night, so it ran four nights straight into the 18 Aug gut ache.
 const MAG_DAILY_FROM = '2026-10-27';
+// Christopher's decision on 24 Nov 2026 ends the every-second-night hold: 200mg every night.
+const MAG_NIGHTLY_DECIDED = '2026-11-24';
 function magDaily(day=localDayStr()){
+ if(day>=MAG_NIGHTLY_DECIDED)return true;
  const d=window.__focusState?.protocol?.detail?.['Magnesium glycinate'];
  const c=(d?.changes||[]).filter(c=>c.on<=day).sort((a,b)=>a.on.localeCompare(b.on)).at(-1);
  return c?/every night/.test(c.dose):day>=MAG_DAILY_FROM;
@@ -2339,7 +2313,7 @@ function renderSupps() {
   const taken = day.supps || {};
   const times = day.suppTimes || {};
   const magCount = day.magCount || 0;
-  const ordered=['ala','vitc_am','kraut','d3','k2','florastor','vitc_pm'].map(id=>SUPPS.find(s=>s.id===id));
+  const ordered=['ala','vitc_am','kraut','d3','k2','nmn','florastor','vitc_pm'].map(id=>SUPPS.find(s=>s.id===id));
   let html = ordered.map(s => (s.id==='ala'?'<h2>Morning</h2>':s.id==='vitc_pm'?renderCreatine(day)+'<h2>Evening</h2>':'')+ `
     <div class="supp-tick ${taken[s.id]?'checked':''}" onclick="toggleSuppTick('${s.id}',this)">
       <div class="supp-tick-box">${taken[s.id]?'✓':''}</div>
@@ -2356,7 +2330,7 @@ function renderSupps() {
   html += `
     <div id="magnesium-tile" class="supp-tick ${magCount>0?'checked':''}" style="flex-wrap:wrap;">
       <div style="flex:1 1 100%;display:flex;align-items:center;gap:1rem;">
-        <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">Schedule needs confirmation</div></div>
+        <div><div class="supp-tick-name">${MAG.name}</div><div class="supp-tick-dose">200 mg every night at bedtime</div></div>
       </div>
       <div class="mag-row">${boxes}</div>
     </div>`;
@@ -2438,7 +2412,9 @@ function tierItem(x) {
 }
 
 function renderCreatine(day) {
-  return '<h2>With food</h2><div class="supp-tick"><div><div class="supp-tick-name">Creatine: 4 scoops (20 g) with food, every day</div><p>2 scoops with breakfast and 2 scoops with supper, each stirred into a full glass of water, milk or your shake. Drink 2 extra glasses of water during the day. It holds the muscle in your arms and legs. If your stool gets loose, take 1 scoop with each meal instead.</p><div class="mag-row">'+['Breakfast','Supper'].map(label=>{
+  const shake=SUPPS.find(s=>s.id==='shake'),shakeOn=!!(day.supps||{}).shake;
+  const shakeTile='<div class="supp-tick '+(shakeOn?'checked':'')+'" onclick="toggleSuppTick(\'shake\',this)"><div class="supp-tick-box">'+(shakeOn?'✓':'')+'</div><div><div class="supp-tick-name">'+shake.name+'</div><div class="supp-tick-dose">'+(shakeOn?'<span style="color:var(--sage);font-weight:700;">Logged ✓ '+(((day.suppTimes||{}).shake)||'')+'</span> · <small>Tap again to undo</small>':shake.dose)+'</div></div></div>';
+  return '<h2>With food</h2>'+shakeTile+'<div class="supp-tick"><div><div class="supp-tick-name">Creatine: 4 scoops (20 g) with food, every day</div>'+(shakeOn?'<p><strong>Your shake today has your 20 g of creatine. No more creatine today.</strong></p>':'')+'<p>2 scoops with breakfast and 2 scoops with supper, each stirred into a full glass of water, milk or your shake. On a shake day, the shake is your 20 g. Drink 2 extra glasses of water during the day. It holds the muscle in your arms and legs. If your stool gets loose, take 1 scoop with each meal instead.</p><div class="mag-row">'+['Breakfast','Supper'].map(label=>{
     const slot=label.toLowerCase(),on=!!(day.creatine||{})[slot];
     return '<button type="button" class="same-btn '+(on?'checked':'')+'" aria-pressed="'+on+'" onclick="toggleCreatine(\''+slot+'\')">'+label+(on?' ✓ '+((day.creatineTimes||{})[slot]||'')+' · Tap again to undo':'')+'</button>';
   }).join('')+'</div></div></div>';
@@ -2501,6 +2477,8 @@ async function hydrateFromSheet() {
     r.logs=dedupeReadings(r.logs||[]);
     const details=bowelDetailsById([...r.logs,...readingOutbox().filter(x=>x.payload.clientId===currentClientId).map(x=>x.payload)],currentClientId);
     window.__clientLogs = r;
+    try{renderDeviceHome();}catch(e){}
+    try{if(document.getElementById('page-trends')?.classList.contains('active'))renderTrendsPage();}catch(e){}
     const todayStr = localDayStr();
     const day = loadDay();
     let changed = false;
@@ -4495,8 +4473,7 @@ async function sendReply() {
   sheetCall({ action:'send_message', clientId: currentClientId, message: txt, timestamp: t.iso, timeLocal: t.local });
 }
 
-/* ── COACH MODE (Christopher only) ── */
-const coachMode = new URLSearchParams(location.search).get('coach') === 'future1';
+/* ── TRENDS ── charts and her week, on her own Trends page. */
 
 function lineChart(canvasId, emptyId, labels, datasets, min, max) {
   if (!labels.length) return;
@@ -4520,20 +4497,6 @@ function lineChart(canvasId, emptyId, labels, datasets, min, max) {
   });
 }
 
-async function publishUpdate() {
-  const title = document.getElementById('update-title-input').value.trim();
-  const body = document.getElementById('update-body-input').value.trim();
-  if (!body) return;
-  const t = stamp();
-  const r = await sheetCall({ action:'save_update', clientId: currentClientId, title: title, body: body, timestamp: t.iso, timeLocal: t.local });
-  if (r.success) {
-    document.getElementById('update-title-input').value = '';
-    document.getElementById('update-body-input').value = '';
-    const flash = document.getElementById('update-published-flash');
-    if (flash) { flash.style.display='block'; setTimeout(()=>{flash.style.display='none';},3000); }
-    loadCoachUpdates();
-  }
-}
 // ══ SHE ASKS, HIS COMPUTER ANSWERS ══
 //
 // 10 September 2026. This used to call a server that thought in the cloud on a
@@ -4633,229 +4596,6 @@ async function askHowAmIDoing() {
 }
 
 // ── HIS ──
-async function makeAnUpdateNow() {
-  const btn = document.getElementById('make-update-btn');
-  const note = document.getElementById('make-update-note');
-  if (!btn) return;
-  btn.disabled = true;
-  btn.textContent = 'Thinking...';
-  if (note) note.textContent = 'Running the guards, the register and the gate. A minute or two.';
-
-  const left = await leaveAQuestion('coach');
-  if (!left || !left.success) {
-    btn.disabled = false;
-    btn.textContent = 'Update Mom';
-    if (note) note.textContent = 'Could not reach the sheet. Try again in a minute.';
-    return;
-  }
-
-  const got = await waitForTheAnswer('coach', function (r) {
-    if (note) note.textContent = heIsOnline(r.heartbeat)
-      ? 'Still thinking.'
-      : 'Your computer is offline. This will run as soon as it is back.';
-  });
-
-  btn.disabled = false;
-  btn.textContent = 'Update Mom';
-  if (got.tooLong) {
-    if (note) note.textContent = 'Your computer is offline. This will run as soon as it is back.';
-    return;
-  }
-  if (got.held) {
-    if (note) note.textContent = got.note || 'Held. It will try again on its own.';
-    return;
-  }
-  if (got.answer && got.answer.error) { if (note) note.textContent = got.answer.error; return; }
-  const s = got.answer && got.answer.sent;
-  if (note) note.textContent = s && s.tileOnHerPage
-    ? 'Sent. It is on her phone, read back off her page.'
-    : 'It ran and passed the gate, but the send did not read back. Check below.';
-  loadPendingDraft();
-}
-
-// ══ THE PREPARED UPDATE ══
-//
-// The run happens on the PC. It cannot happen here: it needs Node, the day
-// table, the guards, the claim gate and the publish gate, and it costs money
-// against his Claude account. A key that could do it would have to sit in this
-// page, and this page is public.
-//
-// So the PC does the thinking and parks the result. This shows him what it
-// parked, on his phone, and gives him the same two buttons that are on his
-// Desktop: send it, or throw it away. Nothing here writes a word of its own.
-let pendingDraft = null;
-
-// What is ACTUALLY on her phone, read off her live page. Earned 20 September
-// 2026. His coach view told him an update had gone out and her phone showed
-// nothing since the 16th. The two screens were reading different things. Now
-// his screen reads hers, so they cannot disagree.
-async function herNewestTile() {
-  try {
-    const r = await sheetCall({ action:'get_updates', clientId: currentClientId });
-    const u = ((r && r.updates) || [])[0];
-    return u ? { title: u.title, when: u.timeLocal } : null;
-  } catch (e) { return null; }
-}
-function herNewestLine(esc, t) {
-  return '<div class="coach-log-time" style="margin-top:0.6rem;">Newest on her phone right now: ' +
-    (t ? '"' + esc(t.title) + '", ' + esc(t.when) : 'nothing could be read') + '</div>';
-}
-
-async function loadPendingDraft() {
-  const el = document.getElementById('pending-draft');
-  if (!el) return;
-  const r = await sheetCall({ action:'get_draft', clientId: currentClientId });
-  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-  const hers = await herNewestTile();
-  if (!r || !r.success || !r.draft) {
-    pendingDraft = null;
-    el.innerHTML = '<div class="coach-empty">Nothing waiting.</div>' + herNewestLine(esc, hers);
-    return;
-  }
-  pendingDraft = r.draft;
-
-  // The receipt. His button sent it, it read back off her page, and this is
-  // the record, next to what her page shows this second.
-  if (r.draft.sent) {
-    const s = r.draft.sent;
-    el.innerHTML =
-      '<div class="coach-stat coach-stat-wide" style="border-left:5px solid var(--sage);margin-bottom:0.6rem;">' +
-      '<div class="coach-stat-label">Sent to Mom, ' + esc(String(r.draft.preparedLocal || '').replace(/\.\s*$/, '')) + '</div>' +
-      '<div class="coach-stat-sub">' + esc(r.draft.tileTitle || '') + '</div>' +
-      '<div style="font-size:0.95rem;line-height:1.5;margin-top:0.4rem;">Went out: ' + esc(s.what || 'nothing') +
-      '. Read back off her page: tile ' + (s.tileAlreadyThere ? 'already there' : (s.tileOnHerPage ? 'yes' : 'no')) +
-      ', question ' + (s.questionOnHerPage ? 'yes' : 'no') + '.</div>' +
-      herNewestLine(esc, hers) + '</div>' +
-      '<div class="reply-card"><button class="reply-send" style="background:var(--muted);" ' +
-      'onclick="discardPendingDraft()">Got it, clear this</button></div>';
-    return;
-  }
-
-  // She pressed her own button. This is a record of what she was shown, not
-  // something waiting to be sent, so it gets no Send button. She has read it.
-  // The agent could not think when she pressed her button. Usually his Claude
-  // allowance was used up for the moment. Her question is held and will be
-  // answered on its own, and this is him being told, which he asked for.
-  if (r.draft.alert) {
-    el.innerHTML =
-      '<div class="coach-stat coach-stat-wide" style="border-left:5px solid #B8912F;margin-bottom:0.6rem;">' +
-      '<div class="coach-stat-label">Needs you to know, ' + esc(String(r.draft.preparedLocal || '').replace(/\.\s*$/, '')) + '</div>' +
-      '<div style="font-size:0.98rem;line-height:1.5;margin-top:0.4rem;">' + esc(r.draft.alert) + '</div></div>' +
-      '<div class="reply-card"><button class="reply-send" style="background:var(--muted);" ' +
-      'onclick="discardPendingDraft()">Got it, clear this</button></div>';
-    return;
-  }
-
-  if (r.draft.fromHer) {
-    const c = r.draft.card || {};
-    const bits = ['<div class="coach-log-time" style="margin-bottom:0.6rem;">Your mom pressed her button ' +
-      esc(String(r.draft.preparedLocal || '').replace(/\.\s*$/, '')) +
-      '. This is what she was shown. Nothing is waiting to be sent.</div>',
-      '<div class="ask-card">'];
-    if (c.goal) bits.push('<div class="ask-goal">' + esc(c.goal) + '</div>');
-    if (c.sub) bits.push('<div class="ask-sub">' + esc(c.sub) + '</div>');
-    (c.items || []).forEach(function (it) {
-      bits.push('<div class="ask-item"><b>' + esc(it.head) + '</b>' + esc(it.body) + '</div>');
-    });
-    bits.push('</div><div class="reply-card"><button class="reply-send" ' +
-      'style="background:var(--muted);" onclick="discardPendingDraft()">Clear this</button></div>');
-    el.innerHTML = bits.join('');
-    return;
-  }
-
-  const parts = [];
-  // "5:44 p.m." already ends in a full stop, so do not add a second one.
-  const when = String(r.draft.preparedLocal || '').replace(/\.\s*$/, '');
-  parts.push('<div class="coach-log-time" style="margin-bottom:0.6rem;">Prepared ' +
-    esc(when) + '. It passed the gate. Nothing has been sent.</div>');
-  if (r.draft.tile) {
-    parts.push('<div class="coach-stat coach-stat-wide" style="margin-bottom:0.6rem;">' +
-      '<div class="coach-stat-label">Update tile. This cannot be deleted once it is sent.</div>' +
-      '<div class="coach-stat-sub">' + esc(r.draft.tile.title) + '</div>' +
-      '<div style="font-size:0.95rem;line-height:1.5;margin-top:0.4rem;">' + esc(r.draft.tile.body) + '</div></div>');
-  }
-  if (r.draft.question) {
-    parts.push('<div class="coach-stat coach-stat-wide" style="margin-bottom:0.6rem;">' +
-      '<div class="coach-stat-label">A question for her</div>' +
-      '<div style="font-size:0.95rem;line-height:1.5;margin-top:0.4rem;">' + esc(r.draft.question) + '</div></div>');
-  }
-  if (r.draft.toChristopher) {
-    parts.push('<div class="coach-stat coach-stat-wide" style="margin-bottom:0.6rem;">' +
-      '<div class="coach-stat-label">For you, not for her</div>' +
-      '<div style="font-size:0.92rem;line-height:1.5;margin-top:0.4rem;">' + esc(r.draft.toChristopher) + '</div></div>');
-  }
-  parts.push('<div class="reply-card">' +
-    '<button class="reply-send" onclick="sendPendingDraft()">Send this to Mom ✓</button>' +
-    '<button class="reply-send" style="background:var(--muted);margin-top:0.5rem;" ' +
-    'onclick="discardPendingDraft()">Throw it away</button>' +
-    '<div class="reply-sent" id="pending-sent">Sent 🌿</div></div>');
-  el.innerHTML = parts.join('');
-}
-
-async function sendPendingDraft() {
-  if (!pendingDraft) return;
-  const t = stamp();
-  let sent = 0;
-  if (pendingDraft.tile) {
-    const r = await sheetCall({ action:'save_update', clientId: currentClientId,
-      title: pendingDraft.tile.title, body: pendingDraft.tile.body,
-      timestamp: t.iso, timeLocal: t.local });
-    if (r.success) sent++;
-  }
-  if (pendingDraft.question) {
-    const r = await sheetCall({ action:'save_question', clientId: currentClientId,
-      question: pendingDraft.question, timestamp: t.iso, timeLocal: t.local });
-    if (r.success) sent++;
-  }
-  if (sent) {
-    await sheetCall({ action:'clear_draft', clientId: currentClientId });
-    const flash = document.getElementById('pending-sent');
-    if (flash) { flash.style.display='block'; setTimeout(()=>{flash.style.display='none';},3000); }
-    loadPendingDraft();
-    loadCoachUpdates();
-  }
-}
-
-async function discardPendingDraft() {
-  await sheetCall({ action:'clear_draft', clientId: currentClientId });
-  loadPendingDraft();
-}
-
-// HIS NOTES. The run writes him a debrief every time and the daily safety
-// check writes alarms. On 22 Sep the safety check fired saying she had not
-// logged for two days, wrote it to a file, and he never saw it.
-async function loadCoachNotes() {
-  const el = document.getElementById('coach-notes');
-  if (!el) return;
-  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-  let r;
-  try { r = await sheetCall({ action:'get_notes', clientId: currentClientId }); }
-  catch (e) { el.innerHTML = '<div class="coach-empty">Could not read them.</div>'; return; }
-  const notes = (r && r.notes) || [];
-  if (!notes.length) { el.innerHTML = '<div class="coach-empty">Nothing yet.</div>'; return; }
-  el.innerHTML = notes.slice(0, 8).map(function (n) {
-    const urgent = n.kind === 'urgent';
-    return '<div class="coach-stat coach-stat-wide" style="margin-bottom:0.6rem;border-left:5px solid ' +
-      (urgent ? '#C25A2B' : 'var(--sage)') + ';">' +
-      '<div class="coach-stat-label">' + (urgent ? 'NEEDS YOU' : 'Kept in the loop') + '</div>' +
-      '<div style="font-size:0.95rem;line-height:1.55;margin-top:0.4rem;white-space:pre-wrap;">' +
-      esc(n.text) + '</div>' +
-      '<div class="when-stamp" style="text-align:left;margin:0.5rem 0 0;">' + whenStamp(n.timestamp) + '</div></div>';
-  }).join('');
-}
-
-async function loadCoachUpdates() {
-  const el = document.getElementById('coach-updates-list');
-  if (!el) return;
-  const r = await sheetCall({ action:'get_updates', clientId: currentClientId });
-  if (!r.success || !r.updates || !r.updates.length) { el.innerHTML = '<div class="coach-empty">No updates published yet.</div>'; return; }
-  el.innerHTML = r.updates.map(u =>
-    `<div class="upd-tile" onclick="this.classList.toggle('open')">`
-    + `<div class="upd-tile-head"><div><div class="upd-tile-title">${(u.title||'Update').replace(/</g,'&lt;')}</div><div class="upd-tile-date">${escapeHtml(humanDates(String(u.timestamp||u.timeLocal||'').slice(0,10)))}</div></div><div class="upd-tile-chev">▾</div></div>`
-    + `<div class="upd-tile-body">${fmtUpdateBody(u.body)}</div></div>`
-  ).join('');
-}
-
 function sessionTag(sess) {
   const s = String(sess||'').toLowerCase();
   if (s !== 'morning' && s !== 'noon' && s !== 'night') return '';
@@ -4871,7 +4611,7 @@ function sessionFromRow(r) {
 }
 function cleanTimeLocal(t) {
   return String(t||'').replace(/ · (morning|noon|night)$/i,'')
-    .replace(/\s*\[(?:readingId|mealId|supplementId|takenAt):[^\]]+\]/g,'');
+    .replace(/\s*\[(?:readingId|mealId|supplementId|takenAt|calories|posture):[^\]]+\]/g,'');
 }
 function bowelDisplayTime(r) {
   const marker=String(r.timeLocal||'').match(/\[takenAt:([^;]+);local:([^\]]+)\]/);
@@ -4884,6 +4624,14 @@ function bowelDisplayTime(r) {
   const d=new Date(r.takenAt||(marker&&marker[1])||r.iso||r.timestamp);
   return Number.isFinite(d.getTime())?(d.getHours()%12||12)+':'+String(d.getMinutes()).padStart(2,'0')+(d.getHours()<12?' am':' pm'):'';
 }
+// When her record has the reading. A reading pulled from her record, or one
+// this phone saw confirmed, shows its saved time; one still on its way says so.
+function readingSavedLine(r,cls){
+  const id=r&&(r.readingId||r.iso),at=Date.parse(r&&(r.iso||r.timestamp));
+  if(!r||!Number.isFinite(at))return '';
+  if(!r.sheetConfirmedVersion)return readingOutbox().some(x=>x.id===id)?'<span class="'+cls+'">Saving to your record</span>':'';
+  return '<span class="'+cls+'">Saved to your record '+new Date(at).toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'})+'</span>';
+}
 function readingDisplayTime(r) {
   const when=cleanTimeLocal(r.when||r.t||r.timeLocal||'').replace(/\s*· taken .*$/,'');
   const marker=String(r.timeLocal||'').match(/\[takenAt:([^;]+);local:([^\]]+)\]/);
@@ -4893,72 +4641,9 @@ function readingDisplayTime(r) {
   return m?(Number(m[1])%12||12)+':'+m[2]+(Number(m[1])<12?' a.m.':' p.m.'):escapeHtml(when);
 }
 
-function coachShowTab(name) {
-  ['home','chat','updates','trends','entries'].forEach(function(t){
-    const sec = document.getElementById('csec-'+t);
-    const btn = document.getElementById('cnav-'+t);
-    if (sec) sec.style.display = (t === name) ? '' : 'none';
-    if (btn) btn.classList.toggle('active', t === name);
-  });
-  // Look for a prepared update every time he opens the tab, so a run he did on
-  // the PC ten seconds ago is already sitting there when he picks up his phone.
-  if (name === 'updates') loadPendingDraft();
-  if (name === 'trends') {
-    // charts cannot size themselves while hidden, so (re)build them once the tab is visible
-    // (setTimeout, not requestAnimationFrame: rAF never fires in a backgrounded browser tab)
-    setTimeout(function(){
-      if (window.__lastLogs) initCoachCharts(window.__lastLogs);
-    }, 0);
-  }
-  if (name === 'chat') {
-    const b = document.getElementById('coach-dash-badge');
-    if (b) b.classList.remove('show');
-    const thread = document.getElementById('coach-chat-thread');
-    if (thread) setTimeout(function(){ thread.scrollIntoView(false); }, 0);
-    return;
-  }
-  window.scrollTo(0, 0);
-}
-
-// Coach Home: the ten-second picture. Latest vitals plus today's activity counts.
-function renderCoachHome() {
-  const el = document.getElementById('coach-home-tiles');
-  if (!el || !window.__lastGetLogs) return;
-  try {
-    const d = window.__lastGetLogs;
-    const logs = mergeBowelDetails(dedupeReadings(d.logs || []),currentClientId).filter(r=>!['readingcancelled','mealdetails','boweldetails','apperror','logorder'].includes(r.field));
-    const todayStr = localDayStr();
-    const latest = function(field){ for (let i = logs.length - 1; i >= 0; i--) { if (logs[i].field === field) return logs[i]; } return null; };
-    const fmtVal = function(r){
-      if (!r) return null;
-      let v = r.value;
-      if (v && typeof v === 'object') v = v.sys ? v.sys + '/' + v.dia : JSON.stringify(v);
-      return { v: v, when: cleanTimeLocal(r.timeLocal), sess: sessionFromRow(r) };
-    };
-    const vital = function(icon, label, r){
-      const f = fmtVal(r);
-      return `<div class="coach-stat"><div class="coach-stat-label">${icon} ${label}</div>` +
-        (f ? `<div class="coach-stat-val">${f.v}</div><div class="coach-stat-when">${sessionTag(f.sess)}${f.when}</div>`
-           : `<div class="coach-stat-sub" style="color:var(--muted);">Nothing yet</div>`) + `</div>`;
-    };
-    const todayLogs = logs.filter(function(r){ const dt = new Date(r.timestamp); return !isNaN(dt) && localDayStr(dt) === todayStr; }).length;
-    const todaySupps = (d.supps || []).filter(function(s){ const dt = new Date(s.timestamp); return !isNaN(dt) && localDayStr(dt) === todayStr && s.taken === 'YES'; }).length;
-    const todayWhoosh = (window.__whooshToday || []).length;
-    el.innerHTML = `<div class="coach-stat-grid">
-      <div class="coach-stat coach-stat-wide"><div class="coach-stat-label">📋 Today so far</div>
-        <div class="coach-stat-sub">${todayLogs} vitals · ${todaySupps} supplements · <span style="color:${todayWhoosh ? 'var(--gold)' : 'var(--green)'};">${todayWhoosh} whoosh${todayWhoosh === 1 ? '' : 'es'}</span></div></div>
-      ${vital('🩸','Blood sugar', latest('glucose'))}
-      ${vital('💓','Blood pressure', latest('bp'))}
-      ${vital('💗','Pulse', latest('pulse'))}
-      ${vital('⚖️','Weight', latest('weight'))}
-      ${vital('🌙','Sleep hours', latest('sleephours'))}
-      ${vital('🦵','Knee pain', latest('kneepain'))}
-    </div>`;
-  } catch(e) { console.error('Future Health coach home error', e); }
-}
-
 function coachLogRow(r) {
   if(['readingcancelled','mealdetails','boweldetails','apperror','logorder'].includes(r.field))return '';
+  if(r.field==='accidentfree')return `<div class="coach-log-item"><div><div class="coach-log-field">✅ No accidents so far today</div><div class="coach-log-time">${cleanTimeLocal(r.timeLocal)}</div></div><div class="coach-log-val">✓</div></div>`;
   const inp = INPUTS.find(i=>i.id===r.field);
   const label = inp ? inp.icon+' '+inp.label : r.field;
   let val = r.value;
@@ -4995,8 +4680,8 @@ function initCoachView(logsData) {
   } catch(e) { console.error('Future Health coach log list error', e); }
   window.__lastLogs = logsData;
   // Charts only render when the Trends tab is visible; hidden canvases cannot size themselves.
-  const trendsSec = document.getElementById('csec-trends');
-  if (trendsSec && trendsSec.style.display !== 'none') initCoachCharts(logsData);
+  const trendsPage = document.getElementById('page-trends');
+  if (trendsPage && trendsPage.classList && trendsPage.classList.contains('active')) initCoachCharts(logsData);
 }
 
 function initCoachCharts(logsData) {
@@ -5042,58 +4727,13 @@ function initCoachCharts(logsData) {
   } catch(e) { console.error('Future Health chart error', e); }
 }
 
-async function sendCoachMsg() {
-  const box = document.getElementById('coach-reply-input');
-  const txt = box.value.trim();
-  if (!txt) return;
-  const t = stamp();
-  const thread = document.getElementById('coach-chat-thread');
-  const empty = thread.querySelector('.im-empty');
-  if (empty) thread.innerHTML = '';
-  thread.insertAdjacentHTML('beforeend', `
-    <div class="im-row me"><div class="im-bubble">${txt.replace(/</g,'&lt;')}</div><div class="im-time">You · ${t.local}</div></div>`);
-  lastCoachMsgCount++;
-  box.value = '';
-  const flash = document.getElementById('coach-reply-sent');
-  if (flash) { flash.style.display = 'block'; setTimeout(()=>{ flash.style.display='none'; }, 3000); }
-  thread.scrollIntoView(false);
-  sheetCall({ action:'send_coach_message', clientId: currentClientId, message: txt, timestamp: t.iso, timeLocal: t.local });
-}
-
-let lastCoachMsgCount = 0;
-function loadCoachChat() {
-  return sheetCall({ action:'get_coach', clientId: currentClientId, includeClient: true }).then(r => {
-    const thread = document.getElementById('coach-chat-thread');
-    if (r.success && r.messages && r.messages.length) {
-      const ordered = [...r.messages].reverse(); // oldest-first for iMessage
-      const csig = ordered.map(m => (m.from||'') + '|' + (m.date||'') + '|' + (m.text||'')).join('\u0001');
-      if (csig === window.__lastCoachSig) return r;
-      window.__lastCoachSig = csig;
-      thread.innerHTML = ordered.map(m => {
-        const mine = m.from === 'coach'; // coach's own messages on the right
-        return `<div class="im-row ${mine?'me':'them'}">
-          <div class="im-bubble">${(m.text||'').replace(/</g,'&lt;')}</div>
-          <div class="im-time">${mine?'You':'Valerie'} · ${m.date||''}</div>
-        </div>`;
-      }).join('');
-      const badge = document.getElementById('coach-dash-badge');
-      const fromValerie = ordered.filter(m => m.from === 'valerie').length;
-      if (ordered.length > lastCoachMsgCount && lastCoachMsgCount > 0 && badge) badge.classList.add('show');
-      lastCoachMsgCount = ordered.length;
-      const cs = document.getElementById('csec-chat');
-      if (cs && cs.style.display !== 'none') thread.scrollIntoView(false);
-    } else { thread.innerHTML = '<div class="im-empty">No messages yet. Send Valerie the first message below.</div>'; }
-    return r;
-  });
-}
-
 function loadCoachLogs() {
   return sheetCall({ action:'get_logs', clientId: currentClientId }).then(r => {
     if (r.success && Array.isArray(r.logs)) {
       r.logs=dedupeReadings(r.logs||[]);
       window.__lastGetLogs = r;
       try { initCoachView(r.logs); } catch(e) { console.error('Future Health coach view error', e); }
-      try { renderCoachHome(); } catch(e) { console.error('Future Health coach home error', e); }
+      try { renderWeekTrend(r.logs); } catch(e) { console.error('Future Health week trend error', e); }
       // Food diary and supplement feeds were removed from the dashboard by Christopher's
       // request July 21 2026. The data still lands in the sheet for the analysis pass.
     }
@@ -5101,17 +4741,53 @@ function loadCoachLogs() {
   });
 }
 
-function coachRefresh(btn) {
-  if (btn) btn.textContent = 'Refreshing\u2026';
-  Promise.all([loadCoachChat(), loadCoachLogs()]).then(()=>{ if (btn) { btn.textContent = 'Up to date ✓'; setTimeout(()=>{ btn.textContent = 'Refresh dashboard ⟳'; }, 2500); } });
+// HER WEEK. Each measure: this week (the last 7 days) against the 7 days before,
+// with how many readings or days each average is built from, and the direction.
+const TREND_STEP={sugar:0.2,sys:2,dia:2,accidents:0.1,weight:0.5,sleep:0.25};
+function weekTrend(rows,today=localDayStr()){
+  rows=(rows||[]).filter(r=>!['readingcancelled','mealdetails','boweldetails','apperror','logorder'].includes(r.field));
+  const span=(a,b)=>rows.filter(r=>{const d=readingDay(r);return d>=a&&d<=b;});
+  const weeks=[span(calendarDay(today,-6),today),span(calendarDay(today,-13),calendarDay(today,-7))];
+  const avg=a=>a.length?a.reduce((n,v)=>n+v,0)/a.length:null;
+  const morning=w=>{const m=new Map();w.filter(r=>r.field==='glucose'&&(r.session||sessionFromRow(r))==='morning'&&Number(r.value)>0)
+    .sort((a,b)=>Date.parse(a.takenAt||a.timestamp)-Date.parse(b.takenAt||b.timestamp)).forEach(r=>{if(!m.has(readingDay(r)))m.set(readingDay(r),Number(r.value));});return [...m.values()];};
+  const nums=(w,f,pick)=>w.filter(r=>r.field===f).map(pick).map(Number).filter(v=>Number.isFinite(v)&&v>0);
+  const bowel=w=>{const days=new Set(w.filter(r=>r.field==='bowel'||(r.field==='accidentfree'&&Number(r.value)===0)).map(readingDay));const acc=w.filter(r=>r.field==='bowel'&&r.value?.kind==='accident').length;return {days:days.size,acc};};
+  const series=[
+    ['Morning blood sugar','sugar',w=>morning(w),'morning','mornings',1],
+    ['Pressure, top number (sitting)','sys',w=>nums(w,'bp',r=>r.value?.sys),'reading','readings',0],
+    ['Pressure, bottom number (sitting)','dia',w=>nums(w,'bp',r=>r.value?.dia),'reading','readings',0],
+    ['Weight','weight',w=>nums(w,'weight',r=>r.value),'reading','readings',1],
+    ['Sleep hours','sleep',w=>nums(w,'sleephours',r=>r.value),'night','nights',1]
+  ].map(([name,key,get,one,many,dp])=>{const [a,b]=weeks.map(get),va=avg(a),vb=avg(b);
+    return {name,key,now:va,before:vb,nNow:a.length,nBefore:b.length,unit:[one,many],dp};});
+  const [ba,bb]=weeks.map(bowel);
+  series.splice(3,0,{name:'Accidents per day with a bowel record',key:'accidents',now:ba.days?ba.acc/ba.days:null,before:bb.days?bb.acc/bb.days:null,nNow:ba.days,nBefore:bb.days,unit:['day','days'],dp:1,accNow:ba.acc,accBefore:bb.acc});
+  for(const s of series){
+    if(s.now===null||s.before===null){s.direction='Not enough to compare';continue;}
+    const d=s.now-s.before;s.direction=Math.abs(d)<TREND_STEP[s.key]?'→ About the same':d>0?'↑ Up':'↓ Down';
+  }
+  return series;
 }
-
-function initCoachMode() {
-  document.body.classList.add('coach-mode');
-  document.getElementById('coach-chat-thread').innerHTML = '<div class="coach-empty">Loading messages.</div>';
-  loadCoachChat();
-  loadCoachLogs();
-  setInterval(loadCoachChat, 45000);
+function renderWeekTrend(logs){
+  const el=document.getElementById('trend-week');if(!el)return;
+  const rows=logs?mergeBowelDetails(dedupeReadings(logs),currentClientId):focusReadings();
+  const fmt=(v,dp)=>v===null?'none':(Math.round(v*Math.pow(10,dp))/Math.pow(10,dp)).toFixed(dp);
+  const count=(n,u)=>n+' '+(n===1?u[0]:u[1]);
+  el.innerHTML=weekTrend(rows).map(s=>'<div class="trend-row"><div><div class="trend-name">'+escapeHtml(s.name)+'</div><div class="trend-counts">This week '+fmt(s.now,s.dp)+' ('+count(s.nNow,s.unit)+(s.accNow!==undefined?', '+s.accNow+' accidents':'')+') · Week before '+fmt(s.before,s.dp)+' ('+count(s.nBefore,s.unit)+(s.accBefore!==undefined?', '+s.accBefore+' accidents':'')+')</div></div><div class="trend-dir">'+escapeHtml(s.direction)+'</div></div>').join('')+
+    '<div class="trend-note">Blood sugar is before food and pressure is sitting, as you always take them. Each average says how many readings it uses.</div>';
+}
+let trendsLoading=false;
+function renderTrendsPage(){
+  const r=window.__clientLogs||window.__lastGetLogs;
+  if(!r||!Array.isArray(r.logs)){
+    if(!trendsLoading){trendsLoading=true;loadCoachLogs().catch(()=>{}).finally(()=>{trendsLoading=false;});}
+    try{renderWeekTrend();}catch(e){}
+    return;
+  }
+  try{initCoachView(r.logs);}catch(e){console.error('Future Health trends list error',e);}
+  try{renderWeekTrend(focusReadings());}catch(e){console.error('Future Health week trend error',e);}
+  setTimeout(function(){ try{ if(window.__lastLogs)initCoachCharts(window.__lastLogs); }catch(e){} },0);
 }
 
 /* ── NAV ── */
@@ -5128,6 +4804,7 @@ function showPage(id, btn) {
   if (id === 'food') { renderFoodQuick(); renderYesterdayFood(); }
 
   if (id === 'phase2') { p2Stack = []; p2Render(); }
+  if (id === 'trends') renderTrendsPage();
 }
 
 /* ── PHASE TWO ── 26 Sep 2026.
@@ -5771,9 +5448,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('visibilitychange',refreshReview);
   setInterval(refreshReview,5*60*1000);
 
-  if (coachMode) { safeRun('coachmode', initCoachMode); safeRun('coachupdates', loadCoachUpdates); safeRun('coachnotes', loadCoachNotes);
-    if (__pendingNav) { const p = __pendingNav; __pendingNav = null; safeRun('pendingnav', function(){ showPage(p.id, p.btn); }); }
-    return; }
   safeRun('news', loadUpdatesClient);
   afterPaint(()=>{openLogs().then(r=>{void reconcileReadings(r);return hydrateFromSheet(r);}).catch(()=>{});});
   afterPaint(()=>safeRun('reviewlists', loadReviewLists));
